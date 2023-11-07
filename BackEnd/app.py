@@ -59,7 +59,7 @@ def register():
 
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash('Kullanıcı adı zaten kullanılıyor.', 'danger')
+            flash('Kullanıcı adı zaten kullanılıyor.' , 'danger')
         else:
             new_user = User(username=username, password=password)
             db.session.add(new_user)
@@ -67,6 +67,7 @@ def register():
             flash('Kayıt başarılı! Şimdi giriş yapabilirsiniz.', 'success')
 
     return render_template('register.html', form=form)
+    #return render_template('register.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():

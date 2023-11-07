@@ -21,7 +21,7 @@ body {
     margin: 3px; /* Yukarıdan ve alttan 3 piksel boşluk bırakır */
     margin-top: -3px;
     padding: 5px;   /* Alanın içeriğinden etrafındaki boşluğu ayarlar */
-    height: 20px; /* Yükseklik belirleme */
+    height: 20px ; /* Yükseklik belirleme */
     width: 220px;  /* Genişlik belirleme */
 }
 .login-container button {
