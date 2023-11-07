@@ -21,7 +21,7 @@ body {
     margin: 3px; /* Yukarıdan ve alttan 3 piksel boşluk bırakır */
     margin-top: -3px;
     padding: 5px;   /* Alanın içeriğinden etrafındaki boşluğu ayarlar */
-    height: 20px ; /* Yükseklik belirleme */
+    height: 20px; /* Yükseklik belirleme */
     width: 220px;  /* Genişlik belirleme */
 }
 .login-container button {
@@ -146,7 +146,7 @@ a.custom-back-button {
     border-radius: 5px; /* Köşeleri yuvarlama */
     text-decoration: none; /* Altçizgiyi kaldırır */
     font-weight: bold; /* Yazıyı kalınlaştırır */
-    float: right; /* butonu sağa kaydırır */
+    /*float: right; /* butonu sağa kaydırır */
     margin-right: 10px; /* Sağdan 10 piksel boşluk bırakır (isteğe bağlı) */
     margin-top: 3px;
 }
