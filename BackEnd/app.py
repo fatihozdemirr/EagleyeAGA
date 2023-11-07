@@ -67,7 +67,6 @@ def register():
             flash('Kayıt başarılı! Şimdi giriş yapabilirsiniz.', 'success')
 
     return render_template('register.html', form=form)
-    #return render_template('register.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
