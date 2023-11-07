@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kayıt Ol</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Kayıt Ol</h1>
+    <form method="POST" action="/register">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.username.label }}
+            {{ form.username }}
+        </div>
+        <div>
+            {{ form.password.label }}
+            {{ form.password }}
+        </div>
+        <div>
+            {{ form.submit }}
+        </div>
+    </form>
+    <p>{{ get_flashed_messages() }}</p>
+</body>
+</html>

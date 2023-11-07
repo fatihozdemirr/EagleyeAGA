@@ -1,0 +1,162 @@
+/* Orta hizalama için gerekli CSS kodları */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    text-align: center;
+    border: 2px solid #ccc;
+    padding: 15px;
+    max-width: 300px;
+    border-radius: 10px 10px 10px 10px; 
+    height: 290px; /* Yükseklik belirleme */
+    width: 400px;  /* Genişlik belirleme */
+}
+/* Field (input) alanları arasındaki boşluğu ayarlamak için */
+.login-container input {
+    margin: 3px; /* Yukarıdan ve alttan 3 piksel boşluk bırakır */
+    margin-top: -3px;
+    padding: 5px;   /* Alanın içeriğinden etrafındaki boşluğu ayarlar */
+    height: 20px; /* Yükseklik belirleme */
+    width: 220px;  /* Genişlik belirleme */
+}
+.login-container button {
+    margin: 20px;
+    margin-top: 10px;
+    background-color: #007bff; /* Arka plan rengi */
+    color: white;              /* Yazı rengi */
+    border: none;              /* Kenarlık yok */
+    padding: 10px 50px;         /* Buton boyutu */
+    border-radius: 2rem 0.5rem 2rem 0.5rem ;        /* Köşeleri yuvarlama */
+    cursor: pointer;           /* Fare imleci el işareti */
+}
+.login-container button:hover {
+    background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi */
+}
+.custom-text {
+    font-family: Calibri, sans-serif;
+    font-size: 30px;
+}
+label {
+    font-family: Arial, sans-serif; /* Etiketin yazı tipi */
+    font-size: 16px; /* Yazı boyutu */
+    color: #333; /* Yazı rengi */
+    margin-bottom: 10px; /* Alt boşluk */
+    display: block; /* Her label bir satırda görüntülensin */
+    /* Diğer özelleştirmeler buraya eklenebilir */
+}
+.submit-button {
+    background-color: #007bff; /* Arka plan rengi */
+    color: white; /* Yazı rengi */
+    border: none; /* Kenarlık yok */
+    padding: 10px 20px; /* Buton boyutu */
+    border-radius: 5px; /* Köşeleri yuvarlama */
+    cursor: pointer; /* Fare imleci el işareti */
+  }
+  
+.submit-button:hover {
+background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi */
+}
+.alert {
+    margin: 1px;
+    margin-top: -15px;
+    padding: 5px;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border: 2px solid #ccc;
+    padding: none;
+    border-radius: 10px;
+    width: 720px;
+}
+
+.container > .mainabove-container {
+    height: 50px;
+    border: 2px solid #ccc;
+    border-radius: 10px
+    /* .mainabove-container'a ait stil özellikleri */
+}
+
+.container > .mainabove-container + .mainbottom-container {
+    margin: none; /* .mainabove-container ile .mainbottom-container arasına 20 piksellik bir boşluk ekler */
+}
+
+.container > .mainbottom-container {
+    height: 380px;
+    border: 2px solid #ccc;
+    border-radius: 10px
+    /* .mainbottom-container'a ait stil özellikleri */
+}
+.title-text {
+    font-family: Calibri, sans-serif;
+    font-size: 30px;
+    margin: 10px;
+    padding: 5px;
+    text-align: left;
+}
+/* CSS dosyasında butonun görünümünü özelleştirme */
+button {
+    background-color: #007bff; /* Arka plan rengi */
+    color: white; /* Yazı rengi */
+    border: none; /* Kenarlık yok */
+    padding: 10px 20px; /* Buton boyutu */
+    border-radius: 5px; /* Köşeleri yuvarlama */
+    cursor: pointer; /* Fare imleci el işareti */
+    margin: 7px;
+    padding: 10px;
+}
+
+button:hover {
+    background-color: #ffffff; /* Fare imleci butonun üzerindeyken arka plan rengi */
+}
+.custom-button {
+    background-image: url("/static/images/3EHome.png");
+    background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
+    background-repeat: no-repeat; /* Tekrarlamayı engeller */
+    width: 145px; /* Düğme genişliği */
+    height: 40px; /* Düğme yüksekliği */
+    padding-left: 50px; /* Resmi düğme içinde hizalamak için sol boşluk ekler */
+    border: none; /* Kenarlık yok */
+    text-align: left; /* Yazıyı sola hizalar */
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: bolder;
+}
+a.custom-back-button {
+    display: inline-block;
+    background-color: #ffffff; /* Arka plan rengi */
+    color: white; /* Yazı rengi */
+    padding: 10px 20px; /* Buton boyutu */
+    border-radius: 5px; /* Köşeleri yuvarlama */
+    text-decoration: none; /* Altçizgiyi kaldırır */
+    font-weight: bold; /* Yazıyı kalınlaştırır */
+    float: right; /* butonu sağa kaydırır */
+    margin-right: 10px; /* Sağdan 10 piksel boşluk bırakır (isteğe bağlı) */
+    margin-top: 3px;
+}
+
+a.custom-back-button img {
+    width: 20px; /* Resmin genişliğini ayarlayın */
+    height: 20px; /* Resmin yüksekliğini ayarlayın */
+    margin-right: 5px; /* Metin ile resim arasındaki boşluğu ayarlayın */
+}
+
+a.custom-back-button:hover {
+    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+}
