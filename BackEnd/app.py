@@ -30,8 +30,8 @@ class RegistrationForm(FlaskForm):
 
 @app.route('/')
 def home():
-    if 'username' in session:
-        return render_template('anasayfa.html')
+    # if 'username' in session:        
+    #     return render_template('anasayfa.html')
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -43,9 +43,9 @@ def login():
 
         user = User.query.filter_by(username=username, password=password).first()
         if user:
-            session['username'] = username
+            #session['username'] = username
             #flash('Giriş başarılı!', 'success')
-            return redirect(url_for('home'))
+            return render_template('anasayfa.html')
         else:
             flash('Username or password is wrong!', 'danger')
 
