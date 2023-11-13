@@ -84,6 +84,7 @@ background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi 
     padding: none;
     border-radius: 10px;
     width: 720px;
+    min-height: 50vh;
 }
 
 .container > .mainabove-container {
@@ -98,11 +99,17 @@ background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi 
 }
 
 .container > .mainbottom-container {
-    height: 380px;
+    /* height: 380px;
     border: 2px solid #ccc;
-    border-radius: 10px
+    border-radius: 10px */
     /* .mainbottom-container'a ait stil özellikleri */
+    display: grid;
+    grid-template-columns: 1fr; /* Tek sütun */
+    grid-template-rows: repeat(3, 1fr); /* İki satır */
+    height: 100px; /* Ekran yüksekliği kadar yer kaplar */
+    min-height: 50vh;
 }
+
 .title-text {
     font-family: Calibri, sans-serif;
     font-size: 30px;
@@ -123,10 +130,10 @@ button {
 }
 
 button:hover {
-    background-color: #ffffff; /* Fare imleci butonun üzerindeyken arka plan rengi */
+    background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi */
 }
 .custom-button {
-    background-image: url("/static/images/3EHome.png");
+    background-image: url("/static/images/3ehome.png");
     background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
     background-repeat: no-repeat; /* Tekrarlamayı engeller */
     width: 145px; /* Düğme genişliği */
@@ -159,4 +166,70 @@ a.custom-back-button img {
 
 a.custom-back-button:hover {
     background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+}
+
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Üç sütun */
+    grid-template-rows: repeat(2, auto);/* Tek satır */
+    gap: 3px; /* Sütunlar arası boşluk */
+    row-gap: 25px; /* Satır arası boşluk */
+    flex: 1;
+    min-height: 1px; /* minimum yükseklik değeri */
+    max-height: 100px; /* maksimum yükseklik değeri */
+}
+.grid-container .mainbottomadd-container {
+    grid-row: 1; /* İkinci satıra yerleştir */
+    /* Diğer stil özellikleri */
+}
+.mainbottomadd-container {
+    display: flex;
+    margin-top: -55px; 
+    justify-content: center; /* Yatayda merkezleme */
+    align-items: center; /* Dikeyde merkezleme */
+    height: 235%; /* İçeriği dikeyde ortalamak için */
+    border: 1px solid #ccc; /* Sadece sınırları göstermek için, isteğe bağlı */
+    border-radius: 10px; /* Köşeleri yuvarlama */
+}
+.flex-container {
+    display: flex;
+    justify-content: space-between; /* Öğeler arasında eşit boşluk bırakır */
+    margin-top: 70px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Öğeleri yatayda ortalar */
+    align-items: center; /* Öğeleri dikeyde ortalar */
+    background-color: #f0f0f0; /* Arka plan rengi */
+    padding: 10px; /* i̇stenilen iç boşluk */
+    height: 30px;
+}
+.button-center {
+    text-align: center; /* İçeriği yatayda ortalamak için */
+}
+
+.button-center a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button-center img {
+    max-width: 100px; /* Buton resminin maksimum genişliği, isteğe bağlı */
+}
+.custom-button-classes {
+    /* background-image: url("/static/images/3ehome.png");  */
+    background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
+    background-repeat: no-repeat; /* Tekrarlamayı engeller */
+    justify-content: center; /* Öğeleri yatayda ortalar */
+    align-items: center; /* Öğeleri dikeyde ortalar */
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: bolder;
+    text-align: center;
+    text-decoration: none;
+    font-family: Calibri, sans-serif;
+    font-size: 17px;
 }

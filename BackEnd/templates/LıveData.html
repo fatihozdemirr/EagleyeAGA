@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Data</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="mainabove-container">
+            <!-- <a href="/logout">çıkış yap</a> -->
+            <form method="get" action="/logout">
+                <button type="submit" class="custom-button">
+                    Eagleye AGA
+                </button>
+                <a href="#" class="custom-back-button" onclick="history.go(-1); return false;">
+                    <img src="/static/images/back.png">
+                </a>
+            </form>
+        </div>
+        <div class="mainbottom-container">
+            <h1 class="title-text">Live Data</h1>
+        </div>
+    </div>
+</body>
+</html>

@@ -22,10 +22,10 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-# class registrationform(flaskform):
-#     username = stringfield('username', validators=[datarequired()])
-#     password = passwordfield('password', validators=[datarequired()])
-#     submit = submitfield('register')
+class registrationform(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Admin')
     
 logged_in = False
 
@@ -58,29 +58,81 @@ def login():
 
     return render_template('login.html', form=form)
 
-# @app.route('/register', methods=['get', 'post'])
-# def register():
-#     form = registrationform()
-#     if form.validate_on_submit():
-#         username = form.username.data
-#         password = form.password.data
+@app.route('/Admin', methods=['get', 'post'])
+def Admin():
+    form = registrationform()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
 
-#         existing_user = user.query.filter_by(username=username).first()
-#         if existing_user:
-#             flash('kullanıcı adı zaten kullanılıyor.' , 'danger')
-#         else:
-#             new_user = user(username=username, password=password)
-#             db.session.add(new_user)
-#             db.session.commit()
-#             flash('kayıt başarılı! şimdi giriş yapabilirsiniz.', 'success')
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Username is already in use!' , 'danger')
+        else:
+            new_user = User(username=username, password=password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Registration Successful! You can log in now.', 'success')
 
-#     return render_template('register.html', form=form)
+    return render_template('Admin.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     global logged_in
     logged_in = False
     return redirect(url_for('login'))
+
+
+##### MENU PAGE #####
+
+@app.route('/LıveData')
+def LıveData():
+    return render_template('LıveData.html')
+
+@app.route('/Chart')
+def Chart():
+    return render_template('Chart.html')
+
+@app.route('/Calibration')
+def Calibration():
+    return render_template('Calibration.html')
+
+@app.route('/Operation')
+def Operation():
+    return render_template('Operation.html')
+
+@app.route('/Setting')
+def Setting():
+    return render_template('Setting.html')
+
+@app.route('/Info')
+def Info():
+    return render_template('Info.html')
+
+
+##### SETTING PAGE #####
+
+@app.route('/SetTime')
+def SetTime():
+    return render_template('SetTime.html')
+
+@app.route('/Ethernet/Wifi')
+def EthernetWifi():
+    return render_template('EthernetWifi.html')
+
+@app.route('/Restart')
+def Restart():
+    return render_template('Restart.html')
+
+@app.route('/Shutdown')
+def Shutdown():
+    return render_template('Shutdown.html')
+
+@app.route('/Logout')
+def Logout():
+    return render_template('Logout.html')
+
+
 
 if __name__ == '__main__':
     app.run(debug=False)
