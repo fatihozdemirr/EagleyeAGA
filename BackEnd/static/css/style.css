@@ -35,7 +35,7 @@ body {
     cursor: pointer;           /* Fare imleci el işareti */
 }
 .login-container button:hover {
-    background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi */
+    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
 }
 .custom-text {
     font-family: Calibri, sans-serif;
@@ -58,9 +58,6 @@ label {
     cursor: pointer; /* Fare imleci el işareti */
   }
   
-.submit-button:hover {
-background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi */
-}
 .alert {
     margin: 1px;
     margin-top: -15px;
@@ -77,15 +74,20 @@ background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi 
     color: #fff;
 }
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    border: 2px solid #ccc;
-    padding: none;
+    width: 800px;
+    height: 450px;
+    border: 1px solid #ccc;
     border-radius: 10px;
-    width: 720px;
-    min-height: 50vh;
 }
+@media screen and  (max-width:800px){
+    .container {
+        width: 800px;
+        height: 450px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #0056b3;
+    }
+} 
 
 .container > .mainabove-container {
     height: 50px;
@@ -106,8 +108,10 @@ background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi 
     display: grid;
     grid-template-columns: 1fr; /* Tek sütun */
     grid-template-rows: repeat(3, 1fr); /* İki satır */
-    height: 100px; /* Ekran yüksekliği kadar yer kaplar */
-    min-height: 50vh;
+    height: 396px; /* Ekran yüksekliği kadar yer kaplar */
+    /* border: 2px solid #ccc;
+    border-radius: 10px */
+    /* min-height: 50vh; */
 }
 
 .title-text {
@@ -129,9 +133,6 @@ button {
     padding: 10px;
 }
 
-button:hover {
-    background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi */
-}
 .custom-button {
     background-image: url("/static/images/3ehome.png");
     background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
@@ -168,6 +169,13 @@ a.custom-back-button:hover {
     background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
 }
 
+button:hover {
+    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+}
+
+.submit-button:hover {
+    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+}
 
 .grid-container {
     display: grid;
@@ -195,7 +203,8 @@ a.custom-back-button:hover {
 .flex-container {
     display: flex;
     justify-content: space-between; /* Öğeler arasında eşit boşluk bırakır */
-    margin-top: 70px;
+    margin-top: 84px;
+    height: 100px;
 }
 
 .button-container {

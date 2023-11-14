@@ -1,4 +1,11 @@
 /* Orta hizalama için gerekli CSS kodları */
+/* body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+} */
 body {
     display: flex;
     justify-content: center;
@@ -7,14 +14,10 @@ body {
     margin: 0;
 }
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    border: 2px solid #ccc;
-    padding: none;
+    width: 800px;
+    height: 450px;
+    border: 1px solid #ccc;
     border-radius: 10px;
-    width: 720px;
-    min-height: 50vh;
 }
 .container > .mainabove-container {
     height: 50px;
@@ -33,8 +36,10 @@ body {
     display: grid;
     grid-template-columns: 1fr; /* Tek sütun */
     grid-template-rows: repeat(3, 1fr); /* İki satır */
-    height: 100px; /* Ekran yüksekliği kadar yer kaplar */
-    min-height: 50vh;
+    height: 396px; /* Ekran yüksekliği kadar yer kaplar */
+    /* border: 2px solid #ccc;
+    border-radius: 10px */
+    /* min-height: 50vh; */
 }
 
 .title-text {
@@ -57,7 +62,7 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3; /* Fare imleci butonun üzerindeyken arka plan rengi */
+    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
 }
 .custom-button {
     background-image: url("/static/images/3ehome.png");
@@ -95,13 +100,12 @@ a.custom-back-button:hover {
     background-color: #f0af38; /* fare imleci butonun üzerindeyken arka plan rengi */
 }
 
-
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* Üç sütun */
     grid-template-rows: repeat(2, auto);/* Tek satır */
     gap: 3px; /* Sütunlar arası boşluk */
-    row-gap: 25px; /* Satır arası boşluk */
+    row-gap: 10px; /* Satır arası boşluk */
     flex: 1;
     min-height: 1px; /* minimum yükseklik değeri */
     max-height: 100px; /* maksimum yükseklik değeri */
@@ -112,7 +116,7 @@ a.custom-back-button:hover {
 }
 .mainbottomadd-container {
     display: flex;
-    margin-top: -62px; 
+    margin-top: -80px; 
     justify-content: center; /* Yatayda merkezleme */
     align-items: center; /* Dikeyde merkezleme */
     height: 235%; /* İçeriği dikeyde ortalamak için */
@@ -123,6 +127,7 @@ a.custom-back-button:hover {
     display: flex;
     justify-content: space-between; /* Öğeler arasında eşit boşluk bırakır */
     margin-top: 60px;
+    height: 100px;
 }
 
 .button-container {
