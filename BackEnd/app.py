@@ -85,9 +85,9 @@ def logout():
 
 ##### MENU PAGE #####
 
-@app.route('/LıveData')
-def LıveData():
-    return render_template('LıveData.html')
+@app.route('/abc')
+def abc():
+    return render_template('abc.html')
 
 @app.route('/Chart')
 def Chart():
@@ -131,7 +131,6 @@ def Shutdown():
 @app.route('/Logout')
 def Logout():
     return render_template('Logout.html')
-
 
 
 if __name__ == '__main__':

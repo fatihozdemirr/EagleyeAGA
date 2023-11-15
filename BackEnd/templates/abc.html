@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        function enterFullscreen() {
+            var elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) {  /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            }
+        }
+    </script>
+    <title>Live Data</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="mainabove-container">
+            <!-- <a href="/logout">çıkış yap</a> -->
+            <form method="get" action="/logout">
+                <button type="submit" class="custom-button">
+                    Eagleye AGA
+                </button>
+                <a href="#" class="custom-back-button" onclick="history.go(-1); return false;">
+                    <img src="/static/images/back.svg">
+                </a>
+            </form>
+        </div>
+        <div class="mainbottom-container">
+            <h1 class="title-text">Live Data</h1>
+            <div class="label-container">
+                <div class="form-group">
+                    <label for="input1">%CO
+                        <input type="text" id="input1" name="input1" readonly="True">
+                    </label>
+                </div>
+            
+                <div class="form-group">
+                    <label for="input2">%CO2
+                        <input type="text" id="input2" name="input2" readonly="True">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="input3">%CH4
+                        <input type="text" id="input3" name="input3" readonly="True">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="lvedta-label" for="input4">XXX
+                        <input type="text" id="input4" name="input4">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="input5">C(%)
+                        <input type="text" id="input5" name="input5" readonly="True">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="input6">O2(mV)
+                        <input type="text" id="input6" name="input6" readonly="True">
+                    </label>
+                </div>
+            </div>
+            <div class="labelright-container">
+                <div class="form-group">
+                    <label class="lvedta-label" for="input7">COF
+                        <input type="text" id="input7" name="input7">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="lvedta-label" for="input8">CH4 Factor(%)
+                        <input type="text" id="input8" name="input8">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="lvedta-label" for="input9">Alloy Factor(%)
+                        <input type="text" id="input9" name="input9">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="lvedta-label" for="input10">%H2
+                        <input type="text" id="input10" name="input10">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="input11">H2O(%)
+                        <input type="text" id="input11" name="input11" readonly="True">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="input12">Dew(°C)
+                        <input type="text" id="input12" name="input12" readonly="True">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

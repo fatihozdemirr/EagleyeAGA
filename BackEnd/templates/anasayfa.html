@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script>
+        function enterFullscreen() {
+            var elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) {  /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            }
+        }
+    </script>
     <title>Main Menu</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
@@ -26,7 +40,7 @@
                 <div class="grid-container">
                     <div class="mainbottomadd-container">
                         <div class="button-center">
-                            <a href="{{ url_for('LıveData') }}" class="custom-button-classes ">
+                            <a href="{{ url_for('abc') }}" class="custom-button-classes ">
                                 <img src="/static/images/livedata.svg" >
                                 <span>Live Data</span>
                             </a>

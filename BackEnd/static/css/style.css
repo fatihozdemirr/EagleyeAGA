@@ -18,11 +18,15 @@ body {
 }
 /* Field (input) alanları arasındaki boşluğu ayarlamak için */
 .login-container input {
-    margin: 3px; /* Yukarıdan ve alttan 3 piksel boşluk bırakır */
-    margin-top: -3px;
+    /*margin: 3px;  Yukarıdan ve alttan 3 piksel boşluk bırakır */
+    margin-top: -14px;
+    margin-left: 20px;
     padding: 5px;   /* Alanın içeriğinden etrafındaki boşluğu ayarlar */
-    height: 20px; /* Yükseklik belirleme */
-    width: 220px;  /* Genişlik belirleme */
+    height: 25px; /* Yükseklik belirleme */
+    width: 250px;  /* Genişlik belirleme */
+    text-align: left;
+    border-bottom: 2px solid #000;
+    background-color: rgb(255, 255, 255);
 }
 .login-container button {
     margin: 20px;
@@ -41,12 +45,18 @@ body {
     font-family: Calibri, sans-serif;
     font-size: 30px;
 }
-label {
-    font-family: Arial, sans-serif; /* Etiketin yazı tipi */
-    font-size: 16px; /* Yazı boyutu */
+.label1 {
+    font-family: Calibri, sans-serif; /* Etiketin yazı tipi */
+    font-size: 18px; /* Yazı boyutu */
     color: #333; /* Yazı rengi */
     margin-bottom: 10px; /* Alt boşluk */
+    margin-left: 15px;
     display: block; /* Her label bir satırda görüntülensin */
+    width: 250px;
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+    border: none;
     /* Diğer özelleştirmeler buraya eklenebilir */
 }
 .submit-button {
@@ -58,9 +68,9 @@ label {
     cursor: pointer; /* Fare imleci el işareti */
   }
   
-.alert {
+.alert {  /*loginde başarılı veya hatalı giriş yapılınca kullanılıyor */
     margin: 1px;
-    margin-top: -15px;
+    margin-top: -23px;
     padding: 5px;
 }
 
@@ -91,7 +101,7 @@ label {
 
 .container > .mainabove-container {
     height: 50px;
-    border: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
     border-radius: 10px
     /* .mainabove-container'a ait stil özellikleri */
 }
@@ -196,7 +206,7 @@ button:hover {
     margin-top: -55px; 
     justify-content: center; /* Yatayda merkezleme */
     align-items: center; /* Dikeyde merkezleme */
-    height: 235%; /* İçeriği dikeyde ortalamak için */
+    height: 216%; /* İçeriği dikeyde ortalamak için */
     border: 1px solid #ccc; /* Sadece sınırları göstermek için, isteğe bağlı */
     border-radius: 10px; /* Köşeleri yuvarlama */
 }
@@ -241,5 +251,73 @@ button:hover {
     text-decoration: none;
     font-family: Calibri, sans-serif;
     font-size: 17px;
+}
+
+.label-container {
+    margin-top: 10px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+    margin-left: 10px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+}
+
+.labelright-container {
+    margin-left: 390px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+    margin-top: -325px;
+}
+
+label {
+    display: block;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    margin-left: 20px;
+    margin-bottom: -8px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 360px;
+    height: 50px;
+    line-height: 50px;
+}
+
+input {
+    display: block;
+    background-color: #d1d1d1;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    border: none;
+    padding: 10px 0px;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: -48px;
+    margin-left: 140px;
+    width: 210px;
+    height: 25px;
+    text-align: center;
+}
+
+.lvedta-label {
+    position: relative;
+}
+
+.lvedta-label input {
+    display: block;
+    background-color: #eeeeee;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    border: none;
+    padding: 10px 0px;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: -48px;
+    margin-left: 140px;
+    width: 210px;
+    height: 25px;
+    text-align: center;
+}
+.form-group {
+    margin-bottom: 10px; /* Her form grubu arasında bir boşluk bırakmak için */
 }
 
