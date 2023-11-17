@@ -98,8 +98,13 @@
                             document.querySelectorAll('.keyboard .key').forEach(key => {
                                 key.addEventListener('click', function () {
                                     const value = key.textContent;
+                                    key.classList.add("clicked");
                                     if(!(value =="Enter" || value =="Space"|| value =="Clear"))
-                                        document.getElementById(inputId).value += value;                             
+                                        document.getElementById(inputId).value += value;   
+                                    setTimeout(function () {
+                                        key.classList.remove("clicked");
+                                    }, 50);
+                                                              
                                 });
                                 
                             });

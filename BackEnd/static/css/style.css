@@ -381,6 +381,10 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #333; /* Çizgi rengi */
     width: 30px;
     height: 30px;
     border: 1px solid #ccc;
@@ -396,4 +400,7 @@ input {
 }
 .key.clear {
     width: 60px;
+}
+.key.clicked {
+    background-color: lightblue; /* Basıldığında arka plan rengi */
 }
