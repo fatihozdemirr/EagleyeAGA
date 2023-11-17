@@ -254,13 +254,13 @@ button:hover {
 }
 
 .label-container {
-    margin-top: 10px; /* İhtiyacınıza göre ayarlayabilirsiniz */
-    margin-left: 10px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+    margin-top: 17px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+    margin-left: -190px; /* İhtiyacınıza göre ayarlayabilirsiniz */
 }
 
 .labelright-container {
-    margin-left: 390px; /* İhtiyacınıza göre ayarlayabilirsiniz */
-    margin-top: -325px;
+    margin-top: -341px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+    margin-left: 195px; /* İhtiyacınıza göre ayarlayabilirsiniz */
 }
 
 label {
@@ -269,8 +269,7 @@ label {
     font-size: 18px;
     color: #333;
     font-weight: bold;
-    margin-left: 20px;
-    margin-bottom: -8px;
+    margin-left: 220px;
     border: 1px solid #ccc;
     border-radius: 10px;
     width: 360px;
@@ -287,7 +286,7 @@ input {
     border: none;
     padding: 10px 0px;
     border-radius: 0.5rem;
-    cursor: pointer;
+    /* cursor: pointer; */
     font-weight: bold;
     margin-top: -48px;
     margin-left: 140px;
@@ -302,22 +301,96 @@ input {
 
 .lvedta-label input {
     display: block;
-    background-color: #eeeeee;
+    background-color: #ffaaaa;
     font-family: Calibri, sans-serif;
     font-size: 18px;
     color: #333;
     border: none;
     padding: 10px 0px;
     border-radius: 0.5rem;
-    cursor: pointer;
+    /* cursor: pointer; */
     font-weight: bold;
     margin-top: -48px;
     margin-left: 140px;
     width: 210px;
     height: 25px;
     text-align: center;
-}
+} 
+
 .form-group {
-    margin-bottom: 10px; /* Her form grubu arasında bir boşluk bırakmak için */
+    margin-bottom: 4px; /* Her form grubu arasında bir boşluk bırakmak için */
 }
 
+.custom-hr {
+    border: none; /* Mevcut sınırı kaldır */
+    height: 1px; /* Çizgi kalınlığı */
+    width: 360px;
+    background-color: #ccc; /* Çizgi rengi */
+    margin: 14px;
+    margin-left: 220px;
+}
+
+.info-image {
+    display: flex;
+    justify-content: space-around;
+    text-align: left; /* Resmi ortala */
+    /*border: 1px solid #fc0000;  Kenarlık ekleyerek resmi belirginleştir */
+    padding: 1px; /* Kenarlık içinde bir boşluk bırak */
+    margin-left: 20px;
+    width: 755px;
+    font-family: Calibri, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.info-image img {
+    width: 310px;
+    height: 310px;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fff;
+    z-index: 1;
+}
+
+.popup-content {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+}
+
+.row {
+    display: flex;
+    gap: 5px;
+}
+
+.key {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.key.space {
+    width: 120px;
+}
+
+.key.enter {
+    width: 60px;
+}

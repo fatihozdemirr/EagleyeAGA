@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Info</title>
+    <title>Wi-Fi</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 </head>
@@ -19,21 +19,19 @@
             </form>
         </div>
         <div class="mainbottom-container">
-            <h1 class="title-text">Info</h1>
-            <div class="info-image">
-                <img src="/static/images/3Eindustry.png" alt="3E Logo">
-                <div>
-                    <p>3E INDUSTRIAL ENGINEERING COMPANY</p>
-                    <p>TUBITAK Gebze Campus Technology Development Zone</p>
-                    <p>R&D and Innovation Center D Block Floor:2 Door No:51</p>
-                    <p>Gebze/KOCAELI</p>
-                    <p>Phone: +90 262 658 98 40</p>
-                    <p>Phone: +90 850 840 00 33</p>
-                    <p>Fax:   +90 216 290 54 92</p>
-                    <p>Gsm:   +90 543 233 40 26</p>
-                    <p>Mail:  info@3eendustriyel.com.tr</p>
-                </div>
-            </div>
+            <h1 class="title-text">Wi-Fi</h1>
+            {% if wifi_info %}
+                <p>SSID: {{ wifi_info['SSID'] }}</p>
+                <p>Password: {{ wifi_info['Password'] }}</p>
+                <p>Signal Strength: {{ wifi_info['SignalStrength'] }}</p>
+            {% else %}
+                <p>Press the button to get Wi-Fi information.</p>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('wifi_info') }}">
+                {{ csrf_token }}
+                <button type="submit">Get Wi-Fi Info</button>
+            </form>
         </div>
     </div>
 </body>

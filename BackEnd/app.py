@@ -16,6 +16,14 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)   
     password = db.Column(db.String(120), nullable=False)
+    
+class LiveTableDatas(db.Model):
+    __tablename__ = 'livetabledatas'
+    id = db.Column(db.Integer, primary_key=True)
+    Temperature = db.Column(db.Integer, nullable=False)
+    CH4Factor = db.Column(db.Integer, nullable=False)
+    AlloyFactor = db.Column(db.Integer,  nullable=False)
+    H2 = db.Column(db.Integer,  nullable=False)
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -27,6 +35,7 @@ class registrationform(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Admin')
     
+
 logged_in = False
 
 @app.route('/')
@@ -82,12 +91,39 @@ def logout():
     logged_in = False
     return redirect(url_for('login'))
 
-
 ##### MENU PAGE #####
 
 @app.route('/abc')
 def abc():
-    return render_template('abc.html')
+    if request.method == 'POST':
+        # Formdan verileri al
+        Temperature = request.form.get('Temperature')
+        AlloyFactor = request.form.get('AlloyFactor')
+        CH4Factor = request.form.get('CH4Factor')
+        H2 = request.form.get('H2')
+
+        # Veritabanına yeni bir kullanıcı ekle
+        new_datas = LiveTableDatas(Temperature=Temperature, AlloyFactor=AlloyFactor, CH4Factor=CH4Factor, H2=H2)
+        db.session.add(new_datas)
+        db.session.commit()
+
+    # En son veriyi al
+    latest_data = LiveTableDatas.query.order_by(LiveTableDatas.id.desc()).first()
+
+    return render_template('abc.html', latest_data=latest_data)
+
+@app.route('/update_data', methods=['POST'])
+def update_data():
+    new_temperature = request.form.get('new_temperature')
+
+    if new_temperature is not None:
+        # Veritabanında güncelleme işlemleri burada yapılabilir
+        latest_data = LiveTableDatas.query.order_by(LiveTableDatas.id.desc()).first()
+        if latest_data:
+            latest_data.Temperature = new_temperature
+            db.session.commit()
+
+    return redirect(url_for('abc'))
 
 @app.route('/Chart')
 def Chart():
@@ -119,6 +155,24 @@ def SetTime():
 @app.route('/Ethernet/Wifi')
 def EthernetWifi():
     return render_template('EthernetWifi.html')
+
+# Wi-Fi bilgilerini döndüren basit bir fonksiyon
+
+def get_wifi_info():
+    # Burada gerçek Wi-Fi bilgilerini alabilirsiniz
+    wifi_info = {
+        'SSID': 'MyWiFiNetwork',
+        'Password': 'MyPassword',
+        'SignalStrength': 'Excellent'
+    }
+    return wifi_info
+
+@app.route('/wifi_info', methods=['GET', 'POST'])
+def wifi_info():
+    if request.method == 'POST':
+        wifi_info = get_wifi_info()
+        return render_template('wifi_info.html', wifi_info=wifi_info)
+    return render_template('wifi_info.html')
 
 @app.route('/Restart')
 def Restart():
