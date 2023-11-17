@@ -66,19 +66,19 @@
                     <div id="keyboardContainer" class="popup"></div>
 
                     <label class="form-group" for="input7">Temperature
-                        <input type="text" id="input7" name="input7" onclick="openKeyboard(input7)">
+                        <input type="text" id="input7" name="input7" onclick="openKeyboard('input7')">
                     </label>
                     
                     <label class="form-group" for="input8">CH4 Factor(%)
-                        <input type="text" id="input8" name="input8" onclick="openKeyboard(input8)">
+                        <input type="text" id="input8" name="input8" onclick="openKeyboard('input8')">
                     </label>
 
                     <label class="form-group" for="input9">Alloy Factor(%)
-                        <input type="text" id="input9" name="input9" onclick="openKeyboard(input9)">
+                        <input type="text" id="input9" name="input9" onclick="openKeyboard('input9')">
                     </label>
 
                     <label class="form-group" for="input10">%H2
-                        <input type="text" id="input10" name="input10" onclick="openKeyboard(input10)">
+                        <input type="text" id="input10" name="input10" onclick="openKeyboard('input10')">
                     </label>
                     <hr class="custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
                     <label class="form-group lvedta-label" for="input11">H2O(%)
@@ -91,13 +91,17 @@
                     <script>
                         function openKeyboard(inputId) {
                             // Klavye içeriğini keyboardContainer'a ekleyin
+                            
+                          
                             document.getElementById("keyboardContainer").innerHTML = `{% include 'keyboard.html' %}`;
                             // Her tuşa tıklandığında ilgili inputa değeri ekle
                             document.querySelectorAll('.keyboard .key').forEach(key => {
                                 key.addEventListener('click', function () {
                                     const value = key.textContent;
-                                    document.getElementById(inputId).value += value;
+                                    if(!(value =="Enter" || value =="Space"|| value =="Clear"))
+                                        document.getElementById(inputId).value += value;                             
                                 });
+                                
                             });
                     
                             // Space tuşuna basıldığında
@@ -111,6 +115,12 @@
                                 // Örneğin bir form submit işlemi gibi
                                 document.getElementById("keyboardContainer").style.display = "none";
                             });
+                            
+                            // "Clear" tuşuna basıldığında yapılacak işlemler
+                            document.querySelector('.keyboard .clear').addEventListener('click', function () {
+                                //const inputId = "input-field"; // Buradaki inputId değerini kendi kullanımınıza göre değiştirin
+                                document.getElementById(inputId).value = ''; // Input alanını temizle
+                            });
                     
                             // Pop-up'ı görünür yap
                             document.getElementById("keyboardContainer").style.display = "block";
@@ -120,12 +130,6 @@
                             // Pop-up'ı gizle
                             document.getElementById("keyboardContainer").style.display = "none";
                         }
-
-                        function appendtoinput(value) {
-                            var inputfield = document.getelementbyid('input-field');
-                            inputfield.value += value;
-                        }
-
                     </script>
                 </form>
             </div>

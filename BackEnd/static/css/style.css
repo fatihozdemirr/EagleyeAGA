@@ -394,3 +394,6 @@ input {
 .key.enter {
     width: 60px;
 }
+.key.clear {
+    width: 60px;
+}
