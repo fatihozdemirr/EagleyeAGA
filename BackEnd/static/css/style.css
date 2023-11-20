@@ -394,7 +394,6 @@ input {
 .key.space {
     width: 120px;
 }
-
 .key.enter {
     width: 60px;
 }
@@ -402,5 +401,6 @@ input {
     width: 60px;
 }
 .key.clicked {
-    background-color: lightblue; /* Basıldığında arka plan rengi */
+    background-color: rgb(255, 150, 64) /* Basıldığında arka plan rengi */
 }
+
