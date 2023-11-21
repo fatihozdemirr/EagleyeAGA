@@ -353,7 +353,7 @@ input {
     display: none;
     position: fixed;
     left: 50%;
-    top: 50%;
+    top: 53%;
     transform: translate(-50%, -50%);
     border: 1px solid #ccc;
     padding: 10px;
@@ -370,19 +370,17 @@ input {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 10px;
 }
 
 .numpad {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 10px;
 }
 
 .label2 {
     width: 200px;
-    height: 30px;
+    height: 40px;
     font-family: Calibri, sans-serif;
     font-weight: bold;
     font-size: 21px;
@@ -407,17 +405,24 @@ input {
     color: #ffffff;
     background-color: #333; /* Çizgi rengi */
     width: 60px;
-    height: 30px;
+    height: 35px;
     border: 1px solid #ccc;
     cursor: pointer;
     margin-left: 4px;
+    border-radius: 5px;
 }
 
 .key.space {
     width: 120px;
 }
 .key.enter {
-    width: 60px;
+    width: 130px;
+    background-color: rgb(158, 135, 201);
+    color: #000000;
+    font-weight: bold;
+}
+.key.zero {
+    width: 130px;
 }
 .key.clear {
     width: 60px;

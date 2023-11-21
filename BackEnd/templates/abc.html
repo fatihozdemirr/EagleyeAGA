@@ -100,14 +100,20 @@
                             const inputField = document.getElementById(inputId);
                             const labelField = document.getElementById("numpadLabel"); // Yeni eklenen label
                             labelField.textContent = inputField.value;
+                            let isLabelCleared = true;
 
                             // Her tuşa tıklandığında ilgili inputa değeri ekle
                             document.querySelectorAll('.numpad .key').forEach(key => {
                                 key.addEventListener('click', function () {
                                     const value = key.textContent;
                                     key.classList.add("clicked");
-                                    
+
                                     if(!(value =="Enter" || value =="Space"|| value =="Clear" || value =="X")){
+                                        if (isLabelCleared) {
+                                            inputField.value = '';
+                                            labelField.textContent = ''; // Numpad label'ını temizle
+                                            isLabelCleared = false; // Bayrağı sıfırla
+                                        }
                                         inputField.value += value;  
                                         labelField.textContent += value;
                                     }
@@ -136,12 +142,13 @@
                                 // İsterseniz burada enter'a basıldığında yapılacak işlemleri ekleyebilirsiniz
                                 // Örneğin bir form submit işlemi gibi
                                 document.getElementById("keyboardContainer").style.display = "none";
+                                isLabelCleared = false;
                             });
                             
                             // "Clear" tuşuna basıldığında yapılacak işlemler
                             document.querySelector('.numpad .clear').addEventListener('click', function () {
                                 //const inputId = "input-field"; // Buradaki inputId değerini kendi kullanımınıza göre değiştirin
-                                inputField.value = ''; // Input alanını temizle
+                                inputField.value = '0'; // Input alanını temizle
                                 labelField.textContent = '';
                             });
                     
