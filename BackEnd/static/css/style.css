@@ -144,7 +144,7 @@ button {
 }
 
 .custom-button {
-    background-image: url("/static/images/3ehome.png");
+    background-image: url("/static/images/3EHome.png");
     background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
     background-repeat: no-repeat; /* Tekrarlamayı engeller */
     width: 145px; /* Düğme genişliği */
@@ -348,6 +348,7 @@ input {
     height: 310px;
 }
 
+/* keyboard */
 .popup {
     display: none;
     position: fixed;
@@ -372,6 +373,26 @@ input {
     padding: 10px;
 }
 
+.numpad {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+}
+
+.label2 {
+    width: 200px;
+    height: 30px;
+    font-family: Calibri, sans-serif;
+    font-weight: bold;
+    font-size: 21px;
+    color: #333;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 .row {
     display: flex;
     gap: 5px;
@@ -385,10 +406,11 @@ input {
     font-size: 18px;
     color: #ffffff;
     background-color: #333; /* Çizgi rengi */
-    width: 30px;
+    width: 60px;
     height: 30px;
     border: 1px solid #ccc;
     cursor: pointer;
+    margin-left: 4px;
 }
 
 .key.space {
@@ -400,7 +422,14 @@ input {
 .key.clear {
     width: 60px;
 }
+.key.close {
+    width: 20px;
+    height: 20px;
+    background-color: #ff0000;
+    text-align: center; /* Ortalamak için */
+    margin-left: auto;  /* Sağa yanaştırmak için */
+    cursor: pointer;
+}
 .key.clicked {
     background-color: rgb(255, 150, 64) /* Basıldığında arka plan rengi */
 }
-
