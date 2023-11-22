@@ -64,23 +64,23 @@
                 <form method="POST" action="{{ url_for('abc') }}">
 
                     <div id="keyboardContainer" class="popup"></div>
-
+                    {% for data in all_data %}
                     <label class="form-group" for="input7">Temperature
-                        <input type="text" id="input7" name="input7" onclick="openKeyboard('input7')">
+                        <input type="text" id="input7" name="input7" value="{{ data.Temperature }}" onclick="openKeyboard('input7')">
                     </label>
-
+                    
                     <label class="form-group" for="input8">CH4 Factor(%)
-                        <input type="text" id="input8" name="input8" onclick="openKeyboard('input8')">
+                        <input type="text" id="input8" name="input8" value="{{ data.CH4Factor }}" onclick="openKeyboard('input8')">
                     </label>
 
                     <label class="form-group" for="input9">Alloy Factor(%)
-                        <input type="text" id="input9" name="input9" onclick="openKeyboard('input9')">
+                        <input type="text" id="input9" name="input9" value="{{ data.AlloyFactor }}" onclick="openKeyboard('input9')">
                     </label>
 
                     <label class="form-group" for="input10"> %H2
-                        <input type="text" id="input10" name="input10" onclick="openKeyboard('input10')">
+                        <input type="text" id="input10" name="input10" value="{{ data.H2 }}" onclick="openKeyboard('input10')">
                     </label>
-
+                    {% endfor %}
                     <hr class="custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
 
                     <label class="form-group lvedta-label" for="input11">H2O(%)
@@ -140,6 +140,39 @@
                             // Enter tuşuna basıldığında
                             document.querySelector('.numpad .enter').addEventListener('click', function () {
                                 // İsterseniz burada enter'a basıldığında yapılacak işlemleri ekleyebilirsiniz
+
+                                const labelField = document.getElementById("numpadLabel"); 
+                                const new_value = labelField.textContent;
+                                const inputField = document.getElementById(inputId);
+                                const input_id = inputField.name;
+                                
+                                console.log('inputField:', input_id);
+                                console.log('labelField:', new_value);
+
+                                if (input_id && new_value) {
+                                    // AJAX isteği ile Flask endpoint'ını çağır
+                                    fetch('/update_data', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
+                                            new_value: new_value,
+                                        }),
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        // İsteğin başarılı olması durumunda yapılacak işlemler
+                                        console.log(data);
+                                    })
+                                    .catch(error => {
+                                        // İstekte hata olması durumunda yapılacak işlemler
+                                        console.error('Error:', error);
+                                    });
+                                } else {
+                                    console.error('Invalid inputIdchange.');
+                                }
                                 // Örneğin bir form submit işlemi gibi
                                 document.getElementById("keyboardContainer").style.display = "none";
                                 isLabelCleared = false;

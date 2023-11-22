@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -95,35 +96,31 @@ def logout():
 
 @app.route('/abc')
 def abc():
-    if request.method == 'POST':
-        # Formdan verileri al
-        Temperature = request.form.get('Temperature')
-        AlloyFactor = request.form.get('AlloyFactor')
-        CH4Factor = request.form.get('CH4Factor')
-        H2 = request.form.get('H2')
-
-        # Veritabanına yeni bir kullanıcı ekle
-        new_datas = LiveTableDatas(Temperature=Temperature, AlloyFactor=AlloyFactor, CH4Factor=CH4Factor, H2=H2)
-        db.session.add(new_datas)
-        db.session.commit()
-
-    # En son veriyi al
-    latest_data = LiveTableDatas.query.order_by(LiveTableDatas.id.desc()).first()
-
-    return render_template('abc.html', latest_data=latest_data)
+    all_data = LiveTableDatas.query.all()
+    return render_template('abc.html', all_data=all_data)
 
 @app.route('/update_data', methods=['POST'])
 def update_data():
-    new_temperature = request.form.get('new_temperature')
+    if request.method == 'POST':
+        data = request.get_json()
+        input_id = data.get('input_id')  # Bu, hangi input alanının güncelleneceğini belirlemek için kullanılabilir
+        new_value = data.get('new_value')  # Numpad'den alınan yeni değer
+        print("input_id:",input_id)
+        print("new_value:",new_value)
+        # Burada ilgili input alanının güncellenmesi işlemini gerçekleştirin
+        if input_id == 'input7':
+            LiveTableDatas.query.filter_by(id=1).update({'Temperature': new_value})
+        elif input_id == 'input8':
+            LiveTableDatas.query.filter_by(id=1).update({'CH4Factor': new_value})
+        elif input_id == 'input9':
+            LiveTableDatas.query.filter_by(id=1).update({'AlloyFactor': new_value})
+        elif input_id == 'input10':
+            LiveTableDatas.query.filter_by(id=1).update({'H2': new_value})
 
-    if new_temperature is not None:
-        # Veritabanında güncelleme işlemleri burada yapılabilir
-        latest_data = LiveTableDatas.query.order_by(LiveTableDatas.id.desc()).first()
-        if latest_data:
-            latest_data.Temperature = new_temperature
-            db.session.commit()
-
-    return redirect(url_for('abc'))
+        db.session.commit()  # Değişiklikleri kaydet
+        #return redirect(url_for('abc'))  # İlgili ana sayfaya yönlendirme
+         # JSON formatında yanıt döndür
+        return jsonify({'status': 'success', 'message': 'Data updated successfully'})
 
 @app.route('/Chart')
 def Chart():
@@ -156,8 +153,6 @@ def SetTime():
 def EthernetWifi():
     return render_template('EthernetWifi.html')
 
-# Wi-Fi bilgilerini döndüren basit bir fonksiyon
-
 def get_wifi_info():
     # Burada gerçek Wi-Fi bilgilerini alabilirsiniz
     wifi_info = {
@@ -181,11 +176,6 @@ def Restart():
 @app.route('/Shutdown')
 def Shutdown():
     return render_template('Shutdown.html')
-
-@app.route('/Logout')
-def Logout():
-    return render_template('Logout.html')
-
 
 if __name__ == '__main__':
     app.run(debug=False)
