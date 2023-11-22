@@ -17,6 +17,7 @@
     </script>
     <title>Live Data</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toogle.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 </head>
 <body>
@@ -40,8 +41,6 @@
                     <input type="text" id="input1" name="input1" readonly="True">
                 </label>
 
-                
-
                 <label class="form-group lvedta-label" for="input2">%CO2
                     <input type="text" id="input2" name="input2" readonly="True">
                 </label>
@@ -64,8 +63,13 @@
                 <form method="POST" action="{{ url_for('abc') }}">
 
                     <div id="keyboardContainer" class="popup"></div>
+                    
                     {% for data in all_data %}
-                    <label class="form-group" for="input7">Temperature
+                    <label class="form-group" for="input7">
+                        <label class="toggle">
+                            <input type="checkbox">
+                            <span class="labels" data-on="°F" data-off="°C"></span>
+                        </label>
                         <input type="text" id="input7" name="input7" value="{{ data.Temperature }}" onclick="openKeyboard('input7')">
                     </label>
                     
@@ -92,6 +96,26 @@
                     </label>
 
                     <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Sayfa yüklendiğinde çalışacak kodlar
+
+                            // Toggle elementini seç
+                            const toggle = document.querySelector('.toggle input');
+                            
+                            // Input elementini seç
+                            const input7 = document.getElementById('input7');
+                            const temp = input7.value;
+                            
+                            // Toggle durumu değiştiğinde çalışacak fonksiyon
+                            toggle.addEventListener('change', function() {
+                                // Toggle'ın durumuna göre input değerini güncelle
+                                if (toggle.checked) {
+                                    input7.value = (((parseFloat(temp) *9)/5)+32).toFixed(1);
+                                } else {
+                                    input7.value = parseFloat(temp).toFixed(1);
+                                }
+                            });
+                        });
                         function openKeyboard(inputId) {
                             // Klavye içeriğini keyboardContainer'a ekleyin
                             document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
@@ -145,9 +169,25 @@
                                 const new_value = labelField.textContent;
                                 const inputField = document.getElementById(inputId);
                                 const input_id = inputField.name;
-                                
-                                console.log('inputField:', input_id);
-                                console.log('labelField:', new_value);
+
+                                const toggle = document.querySelector('.toggle input');
+                                // const input7 = document.getElementById('input7');
+                                const temp = input7.value;
+
+                                if (input_id == 'input7'){
+                                    toggle.addEventListener('change', function() {
+                                        // Toggle'ın durumuna göre input değerini güncelle
+                                        if (toggle.checked) {
+                                            // Toggle açıksa, input değerini +10 yap
+                                            input7.value = (((parseFloat(temp) *9)/5)+32).toFixed(1);
+                                        } else {
+                                            // Toggle kapalıysa, input değerini -20 yap
+                                            input7.value = parseFloat(temp).toFixed(1);
+                                        }
+                                    });
+                                }
+                                // console.log('inputField:', input_id);
+                                // console.log('labelField:', new_value);
 
                                 if (input_id && new_value) {
                                     // AJAX isteği ile Flask endpoint'ını çağır
@@ -176,6 +216,10 @@
                                 // Örneğin bir form submit işlemi gibi
                                 document.getElementById("keyboardContainer").style.display = "none";
                                 isLabelCleared = false;
+
+                                // document.addEventListener('DOMContentLoaded', function() {
+                                    
+                                // });
                             });
                             
                             // "Clear" tuşuna basıldığında yapılacak işlemler
