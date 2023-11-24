@@ -4,6 +4,7 @@
     <title>Chart</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -20,6 +21,12 @@
         </div>
         <div class="mainbottom-container">
             <h1 class="title-text">Chart</h1>
+            <style>
+                #plot-container {
+                    height: 350px; /* İstediğiniz yüksekliği burada ayarlayabilirsiniz */
+                }
+            </style>
+            <div id="plot-container">{{ plot_html|safe }}</div>
         </div>
     </div>
 </body>

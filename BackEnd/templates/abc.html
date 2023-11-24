@@ -103,19 +103,30 @@
                             const toggle = document.querySelector('.toggle input');
                             
                             // Input elementini seç
-                            const input7 = document.getElementById('input7');
-                            const temp = input7.value;
-                            
+                            const temp = document.getElementById('input7');
+                            console.log('tempfirst:', temp.value);
+
                             // Toggle durumu değiştiğinde çalışacak fonksiyon
                             toggle.addEventListener('change', function() {
                                 // Toggle'ın durumuna göre input değerini güncelle
                                 if (toggle.checked) {
-                                    input7.value = (((parseFloat(temp) *9)/5)+32).toFixed(1);
+                                    temp.value = (((parseFloat(temp.value) * 9) / 5) + 32).toFixed(1);
+                                    console.log('Toggle is checked. fahrenheit:', temp.value);
                                 } else {
-                                    input7.value = parseFloat(temp).toFixed(1);
+                                    temp.value = (((parseFloat(temp.value) - 32) * 5) / 9).toFixed(1);
+                                    console.log('Toggle is not checked. celcius:', temp.value);
                                 }
                             });
+
+                            document.getElementById('input7').addEventListener('click', function() {
+                                document.querySelector('.numpad .enter').addEventListener('click', function () {
+                                    openKeyboard('input7')
+                                    console.log('tempsecond:', temp.value);
+                                    document.getElementById("keyboardContainer").style.display = "none";
+                                });
+                            });
                         });
+
                         function openKeyboard(inputId) {
                             // Klavye içeriğini keyboardContainer'a ekleyin
                             document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
@@ -170,25 +181,6 @@
                                 const inputField = document.getElementById(inputId);
                                 const input_id = inputField.name;
 
-                                const toggle = document.querySelector('.toggle input');
-                                // const input7 = document.getElementById('input7');
-                                const temp = input7.value;
-
-                                if (input_id == 'input7'){
-                                    toggle.addEventListener('change', function() {
-                                        // Toggle'ın durumuna göre input değerini güncelle
-                                        if (toggle.checked) {
-                                            // Toggle açıksa, input değerini +10 yap
-                                            input7.value = (((parseFloat(temp) *9)/5)+32).toFixed(1);
-                                        } else {
-                                            // Toggle kapalıysa, input değerini -20 yap
-                                            input7.value = parseFloat(temp).toFixed(1);
-                                        }
-                                    });
-                                }
-                                // console.log('inputField:', input_id);
-                                // console.log('labelField:', new_value);
-
                                 if (input_id && new_value) {
                                     // AJAX isteği ile Flask endpoint'ını çağır
                                     fetch('/update_data', {
@@ -226,7 +218,34 @@
                             document.querySelector('.numpad .clear').addEventListener('click', function () {
                                 //const inputId = "input-field"; // Buradaki inputId değerini kendi kullanımınıza göre değiştirin
                                 inputField.value = '0'; // Input alanını temizle
-                                labelField.textContent = '';
+                                labelField.textContent = '0';
+                                const new_value = labelField.textContent;
+                                const input_id = inputField.value;
+
+                                if (input_id && new_value) {
+                                    // AJAX isteği ile Flask endpoint'ını çağır
+                                    fetch('/update_data', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
+                                            new_value: new_value,
+                                        }),
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        // İsteğin başarılı olması durumunda yapılacak işlemler
+                                        console.log(data);
+                                    })
+                                    .catch(error => {
+                                        // İstekte hata olması durumunda yapılacak işlemler
+                                        console.error('Error:', error);
+                                    });
+                                } else {
+                                    console.error('Invalid inputIdchange.');
+                                }
                             });
                     
                             // Pop-up'ı görünür yap
