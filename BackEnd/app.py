@@ -22,6 +22,7 @@ class User(db.Model):
 class LiveTableDatas(db.Model):
     __tablename__ = 'livetabledatas'
     id = db.Column(db.Integer, primary_key=True)
+    TempUnit = db.Column(db.String(80), nullable=False)
     Temperature = db.Column(db.Integer, nullable=False)
     CH4Factor = db.Column(db.Integer, nullable=False)
     AlloyFactor = db.Column(db.Integer,  nullable=False)
@@ -95,10 +96,17 @@ def logout():
 
 ##### MENU PAGE #####
 
+# Veritabanından toggle switch durumunu çeken yardımcı fonksiyon
+def get_toggle_status():
+    return LiveTableDatas.query.filter_by(id=1).first().TempUnit
+
 @app.route('/abc')
 def abc():
     all_data = LiveTableDatas.query.all()
-    return render_template('abc.html', all_data=all_data)
+    
+    # Veritabanından toggle switch durumunu al
+    toggle_status = get_toggle_status()
+    return render_template('abc.html', all_data=all_data, toggle_status=toggle_status)
 
 @app.route('/update_data', methods=['POST'])
 def update_data():
@@ -106,11 +114,18 @@ def update_data():
         data = request.get_json()
         input_id = data.get('input_id')  # Bu, hangi input alanının güncelleneceğini belirlemek için kullanılabilir
         new_value = data.get('new_value')  # Numpad'den alınan yeni değer
+        toggle_status = data.get('toggle_status')  # Toggle durumu
+        
         print("input_id:",input_id)
         print("new_value:",new_value)
+        
         # Burada ilgili input alanının güncellenmesi işlemini gerçekleştirin
         if input_id == 'input7':
             LiveTableDatas.query.filter_by(id=1).update({'Temperature': new_value})
+            if toggle_status == 'C':
+                LiveTableDatas.query.filter_by(id=1).update({'TempUnit': toggle_status})
+            elif toggle_status == 'F':
+                LiveTableDatas.query.filter_by(id=1).update({'TempUnit': toggle_status})
         elif input_id == 'input8':
             LiveTableDatas.query.filter_by(id=1).update({'CH4Factor': new_value})
         elif input_id == 'input9':
