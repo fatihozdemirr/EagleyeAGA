@@ -4,7 +4,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from flask import Flask, jsonify
-import plotly.express as px
 import sensor
 import threading 
 from threading import Thread
@@ -169,15 +168,7 @@ def update_data():
 
 @app.route('/Chart')
 def Chart():
-    data = {'X': [1, 2, 3, 4, 5], 'Y': [10, 20, 25, 30, 35]}
-
-    # Plotly ile çizim
-    fig = px.line(data, x='X', y='Y', title='Sample Chart')
-
-    # HTML olarak çıktıyı al
-    plot_html = fig.to_html(full_html=False)
-
-    return render_template('Chart.html', plot_html=plot_html)
+    return render_template('Chart.html')
 
 @app.route('/Calibration')
 def Calibration():

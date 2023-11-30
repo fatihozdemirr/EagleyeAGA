@@ -95,7 +95,7 @@ body {
         height: 450px;
         border: 1px solid #ccc;
         border-radius: 10px;
-        background-color: #0056b3;
+        background-color: rgb(255, 255, 255);
     }
 } 
 
