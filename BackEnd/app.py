@@ -5,6 +5,10 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from flask import Flask, jsonify
 import plotly.express as px
+import sensor
+import threading 
+from threading import Thread
+import time
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -12,6 +16,8 @@ app.app_context().push()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Reel Bilgisayar/python/EagleyeAGA/BackEnd/users.db'
 db = SQLAlchemy(app)
 db.create_all()
+
+lock = threading.Lock()
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -43,15 +49,15 @@ logged_in = False
 
 @app.route('/')
 def ana_sayfa():
-    if logged_in:
-        return render_template('anasayfa.html')
+    # if logged_in:
+    #     return render_template('mainmenu.html')
     return redirect(url_for('login'))
 
-@app.route('/anasayfa', methods=['GET', 'POST'])
-def anasayfa():
-    if logged_in:
-        return render_template('anasayfa.html')
-    return redirect(url_for('login'))
+@app.route('/mainmenu')
+def mainmenu():
+    if not logged_in:
+        return redirect(url_for('login'))  # Kullanıcı giriş yapmadıysa login sayfasına yönlendir
+    return render_template('mainmenu.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -64,7 +70,7 @@ def login():
         if user:
             global logged_in
             logged_in = True
-            return render_template('anasayfa.html')
+            return redirect(url_for('mainmenu'))
         else:
             flash('Username or password is wrong!', 'danger')
 
@@ -94,19 +100,42 @@ def logout():
     logged_in = False
     return redirect(url_for('login'))
 
+
 ##### MENU PAGE #####
 
 # Veritabanından toggle switch durumunu çeken yardımcı fonksiyon
 def get_toggle_status():
     return LiveTableDatas.query.filter_by(id=1).first().TempUnit
 
-@app.route('/abc')
-def abc():
+def update_sensor_thread():
+    while True:
+        # Sensör değerlerini güncelle
+        sensor.readco()
+        sensor.readco2()
+        sensor.readch4()
+        time.sleep(5)
+
+def get_sensor_data():
+    global sensor_data_cache
+    with sensor.lock:
+        sensor_data_cache = {'co': sensor.int_value_1, 'ch4': sensor.int_value_2, 'co2': sensor.int_value_3}
+    return sensor_data_cache
+
+@app.route('/get_sensor_values', methods=['GET'])
+def get_sensor_values():
+    with lock:
+        sensor_data = get_sensor_data()
+    return jsonify(sensor_data)
+
+@app.route('/livedata')
+def livedata():
+    # Sensor verilerini al
+    sensor_data = get_sensor_data()
     all_data = LiveTableDatas.query.all()
     
     # Veritabanından toggle switch durumunu al
     toggle_status = get_toggle_status()
-    return render_template('abc.html', all_data=all_data, toggle_status=toggle_status)
+    return render_template('livedata.html',sensor_data=sensor_data, all_data=all_data, toggle_status=toggle_status)
 
 @app.route('/update_data', methods=['POST'])
 def update_data():
@@ -134,7 +163,7 @@ def update_data():
             LiveTableDatas.query.filter_by(id=1).update({'H2': new_value})
 
         db.session.commit()  # Değişiklikleri kaydet
-        #return redirect(url_for('abc'))  # İlgili ana sayfaya yönlendirme
+        #return redirect(url_for('livedata'))  # İlgili ana sayfaya yönlendirme
          # JSON formatında yanıt döndür
         return jsonify({'status': 'success', 'message': 'Data updated successfully'})
 
@@ -202,4 +231,7 @@ def Shutdown():
     return render_template('Shutdown.html')
 
 if __name__ == '__main__':
+    sensor_thread = Thread(target=update_sensor_thread)
+    sensor_thread.start()
+    # Flask uygulamasını başlat
     app.run(debug=False)
