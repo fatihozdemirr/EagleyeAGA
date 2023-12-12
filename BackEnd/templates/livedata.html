@@ -71,19 +71,19 @@
                             <input type="checkbox" id="myToggle">
                             <span class="labels" data-on="°F" data-off="°C"></span>
                         </label>
-                        <input type="text" id="input7" class="common-input" name="input7" value="{{ data.Temperature }}" onclick="openKeyboard('input7')">
+                        <input type="text" id="input7" class="common-input" name="input7" required value="{{ data.Temperature }}" onclick="openKeyboard('input7')">
                     </label>
                     
                     <label class="form-group" for="input8">CH4 Factor(%)
-                        <input type="text" id="input8" class="common-input" name="input8" value="{{ data.CH4Factor }}" onclick="openKeyboard('input8')">
+                        <input type="text" id="input8" class="common-input" name="input8" required value="{{ data.CH4Factor }}" onclick="openKeyboard('input8')">
                     </label>
 
                     <label class="form-group" for="input9">Alloy Factor(%)
-                        <input type="text" id="input9" class="common-input" name="input9" value="{{ data.AlloyFactor }}" onclick="openKeyboard('input9')">
+                        <input type="text" id="input9" class="common-input" name="input9" required value="{{ data.AlloyFactor }}" onclick="openKeyboard('input9')">
                     </label>
 
                     <label class="form-group" for="input10"> %H2
-                        <input type="text" id="input10" class="common-input" name="input10" value="{{ data.H2 }}" onclick="openKeyboard('input10')">
+                        <input type="text" id="input10" class="common-input" name="input10" required value="{{ data.H2 }}" onclick="openKeyboard('input10')">
                     </label>
                     {% endfor %}
                     <hr class="custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
@@ -327,6 +327,7 @@
                                 element.addEventListener('click', function() {
                                     document.querySelector('.numpad .enter').addEventListener('click', function () {
                                         openKeyboard('input7');
+                                        
                                         if (togglememory.checked === false || toggle.checked === false) {
                                             //
                                             const e = 2.718281828;
@@ -486,7 +487,7 @@
                                 console.error('Error:', error);
                             });
                         }
-
+                        
                         function openKeyboard(inputId) {
                             // Klavye içeriğini keyboardContainer'a ekleyin
                             document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
@@ -530,57 +531,109 @@
                             //     document.getElementById(inputId).value += ' ';
                             // });
 
-                            // Enter tuşuna basıldığında
+                            // Close tuşuna basıldığında
                             document.querySelector('.numpad .close').addEventListener('click', function () {
                                 // İsterseniz burada enter'a basıldığında yapılacak işlemleri ekleyebilirsiniz
                                 // Örneğin bir form submit işlemi gibi
                                 document.getElementById("keyboardContainer").style.display = "none";
                             });
-                    
+                            
                             // Enter tuşuna basıldığında
                             document.querySelector('.numpad .enter').addEventListener('click', function () {
-                                // İsterseniz burada enter'a basıldığında yapılacak işlemleri ekleyebilirsiniz
-
+                                //// VALIDATION /////
+                                let shouldUpdateDatabase  = true;
                                 const labelField = document.getElementById("numpadLabel"); 
                                 const new_value = labelField.textContent;
                                 const inputField = document.getElementById(inputId);
                                 const input_id = inputField.name;
 
+                                document.querySelectorAll('.common-input').forEach(function(input) {
+                                    if (input_id == 'input7') {
+                                        let value7 = parseFloat(new_value);
+                                        let min7 = 0;
+                                        if (isNaN(value7) || value7 < min7) {
+                                            alert('Please enter a value greater than' + min7);
+                                            shouldUpdateDatabase = false;
+                                        }
+                                        else{
+                                            shouldUpdateDatabase = true;
+                                        }
+                                    }
+                                    else if (input_id == 'input8') {
+                                        let value8 = parseFloat(new_value);
+                                        let min8 = 0;
+                                        let max8 = 100;
+                                        if (isNaN(value8) || value8 < min8 || value8 > max8) {
+                                            alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
+                                            shouldUpdateDatabase = false;
+                                        }
+                                        else{
+                                            shouldUpdateDatabase = true;
+                                        }
+                                    }
+                                    else if (input_id == 'input9') {
+                                        let value9 = parseFloat(new_value);
+                                        let min9 = 0;
+                                        let max9 = 100;
+                                        if (isNaN(value9) || value9 < min9 || value9 > max9) {
+                                            alert('Please enter a value between ' + min9 + ' and ' + max9 + '.');
+                                            shouldUpdateDatabase = false;
+                                        }
+                                        else{
+                                            shouldUpdateDatabase = true;
+                                        }
+                                    }
+                                    else if (input_id == 'input10') {
+                                        let value10 = parseFloat(new_value);
+                                        let min10 = 0;
+                                        let max10 = 100;
+                                        if (isNaN(value10) || value10 < min10 || value10 > max10) {
+                                            alert('Please enter a value between ' + min10 + ' and ' + max10 + '.');
+                                            shouldUpdateDatabase = false;
+                                        }
+                                        else{
+                                            shouldUpdateDatabase = true;
+                                        }
+                                    }
+                                });
+
+                                // Hatalı değer girişinde 4 defa uyarı veriyor ve hatalı değeri inputa yazıyor // 
+                                // Database test edildi, problem yok //
+
+                                
                                 if (new_value === '0' || input_id.value === '0') {
                                     inputField.value ='0';
                                 }
-                                
-                                if (input_id && new_value) {
-                                    // AJAX isteği ile Flask endpoint'ını çağır
-                                    fetch('/update_data', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify({
-                                            input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
-                                            new_value: new_value,
-                                        }),
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        // İsteğin başarılı olması durumunda yapılacak işlemler
-                                        console.log(data);
-                                    })
-                                    .catch(error => {
-                                        // İstekte hata olması durumunda yapılacak işlemler
-                                        console.error('Error:', error);
-                                    });
-                                } else {
+                                if(shouldUpdateDatabase == true){
+                                    if (input_id && new_value) {
+                                        // AJAX isteği ile Flask endpoint'ını çağır
+                                        fetch('/update_data', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({
+                                                input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
+                                                new_value: new_value,
+                                            }),
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            // İsteğin başarılı olması durumunda yapılacak işlemler
+                                            console.log(data);
+                                        })
+                                        .catch(error => {
+                                            // İstekte hata olması durumunda yapılacak işlemler
+                                            console.error('Error:', error);
+                                        });
+                                    } 
+                                else {
                                     console.error('Invalid inputIdchange.');
+                                }
                                 }
                                 // Örneğin bir form submit işlemi gibi
                                 document.getElementById("keyboardContainer").style.display = "none";
                                 isLabelCleared = false;
-
-                                // document.addEventListener('DOMContentLoaded', function() {
-                                    
-                                // });
                             });
                             
                             // "Clear" tuşuna basıldığında yapılacak işlemler
