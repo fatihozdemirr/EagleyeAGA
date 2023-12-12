@@ -540,66 +540,50 @@
                             
                             // Enter tuşuna basıldığında
                             document.querySelector('.numpad .enter').addEventListener('click', function () {
-                                //// VALIDATION /////
+                                
                                 let shouldUpdateDatabase  = true;
                                 const labelField = document.getElementById("numpadLabel"); 
                                 const new_value = labelField.textContent;
                                 const inputField = document.getElementById(inputId);
                                 const input_id = inputField.name;
+                                //// VALIDATION /////
+                                if (input_id == 'input7') {
+                                    let value7 = parseFloat(new_value);
+                                    let min7 = 0;
+                                    if (isNaN(value7) || value7 < min7) {
+                                        alert('Please enter a value greater than' + min7);
+                                        shouldUpdateDatabase = false;
+                                    }
+                                }
+                                else if (input_id == 'input8') {
+                                    let value8 = parseFloat(new_value);
+                                    let min8 = 0;
+                                    let max8 = 100;
+                                    if (isNaN(value8) || value8 < min8 || value8 > max8) {
+                                        alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
+                                        shouldUpdateDatabase = false;
+                                    }
+                                }
+                                else if (input_id == 'input9') {
+                                    let value9 = parseFloat(new_value);
+                                    let min9 = 0;
+                                    let max9 = 100;
+                                    if (isNaN(value9) || value9 < min9 || value9 > max9) {
+                                        alert('Please enter a value between ' + min9 + ' and ' + max9 + '.');
+                                        shouldUpdateDatabase = false;
+                                    }
+                                }
+                                else if (input_id == 'input10') {
+                                    let value10 = parseFloat(new_value);
+                                    let min10 = 0;
+                                    let max10 = 100;
+                                    if (isNaN(value10) || value10 < min10 || value10 > max10) {
+                                        alert('Please enter a value between ' + min10 + ' and ' + max10 + '.');
+                                        shouldUpdateDatabase = false;
+                                    }
+                                }
 
-                                document.querySelectorAll('.common-input').forEach(function(input) {
-                                    if (input_id == 'input7') {
-                                        let value7 = parseFloat(new_value);
-                                        let min7 = 0;
-                                        if (isNaN(value7) || value7 < min7) {
-                                            alert('Please enter a value greater than' + min7);
-                                            shouldUpdateDatabase = false;
-                                        }
-                                        else{
-                                            shouldUpdateDatabase = true;
-                                        }
-                                    }
-                                    else if (input_id == 'input8') {
-                                        let value8 = parseFloat(new_value);
-                                        let min8 = 0;
-                                        let max8 = 100;
-                                        if (isNaN(value8) || value8 < min8 || value8 > max8) {
-                                            alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
-                                            shouldUpdateDatabase = false;
-                                        }
-                                        else{
-                                            shouldUpdateDatabase = true;
-                                        }
-                                    }
-                                    else if (input_id == 'input9') {
-                                        let value9 = parseFloat(new_value);
-                                        let min9 = 0;
-                                        let max9 = 100;
-                                        if (isNaN(value9) || value9 < min9 || value9 > max9) {
-                                            alert('Please enter a value between ' + min9 + ' and ' + max9 + '.');
-                                            shouldUpdateDatabase = false;
-                                        }
-                                        else{
-                                            shouldUpdateDatabase = true;
-                                        }
-                                    }
-                                    else if (input_id == 'input10') {
-                                        let value10 = parseFloat(new_value);
-                                        let min10 = 0;
-                                        let max10 = 100;
-                                        if (isNaN(value10) || value10 < min10 || value10 > max10) {
-                                            alert('Please enter a value between ' + min10 + ' and ' + max10 + '.');
-                                            shouldUpdateDatabase = false;
-                                        }
-                                        else{
-                                            shouldUpdateDatabase = true;
-                                        }
-                                    }
-                                });
-
-                                // Hatalı değer girişinde 4 defa uyarı veriyor ve hatalı değeri inputa yazıyor // 
-                                // Database test edildi, problem yok //
-
+                                // Hatalı değeri inputa yazıyor // 
                                 
                                 if (new_value === '0' || input_id.value === '0') {
                                     inputField.value ='0';
