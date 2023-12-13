@@ -173,9 +173,9 @@ def Chart():
 @app.route('/Calibration')
 def Calibration():
     table_data = [
-        {'GAS': '%CO', 'OFFSET': 28, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'Los Angeles'},
-        {'GAS': '%CO2', 'OFFSET': 22, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'Los Angeles'},
-        {'GAS': '%CH4', 'OFFSET': 32, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'Los Angeles'},
+        {'GAS': '%CO', 'OFFSET': 28, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'SPAN1'},
+        {'GAS': '%CO2', 'OFFSET': 22, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'SPAN2'},
+        {'GAS': '%CH4', 'OFFSET': 32, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'SPAN3'},
     ]
     return render_template('Calibration.html', table_data=table_data)
 

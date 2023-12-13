@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{{ url_for('static', filename='JavaScript/calibration.js') }}"></script>
 </head>
 <body>
     <div class="container">
@@ -39,7 +40,7 @@
                             <td><input type="text" name="offset[]" value="{{ row['OFFSET'] }}"></td>
                             <td><input type="text" name="reading[]" value="{{ row['READING'] }}"></td>
                             <td><input type="text" name="value[]" value="{{ row['VALUE'] }}"></td>
-                            <td><button class="span-button" type="submit" name="actions[]" value="{{ row['ACTIONS'] }}">SPAN</button></td>
+                            <td><button class="span-button" type="button" data-action="{{ row['ACTIONS'] }}">SPAN</button></td>
                         </tr>
                     {% endfor %}
                 </tbody>
