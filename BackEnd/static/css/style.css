@@ -438,3 +438,54 @@ input {
 .key.clicked {
     background-color: rgb(255, 150, 64) /* Basıldığında arka plan rengi */
 }
+/* Calibration CSS */
+table {
+    border-collapse: collapse;
+    margin: 20px;
+    margin-top: -30px;
+}
+
+th, td {
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    border-bottom: 1px solid #dddddd;
+    text-align: center;
+    padding: 5px;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    text-align: center;
+    height: 35px;
+    max-width: 135px; /* Maksimum genişlik */
+}
+tbody input {
+    width: 100%; /* input'ların hücre genişliğini tam doldurması için */
+    margin-top: 0px;
+    margin-left: 0px;
+}
+th {
+    background-color: #ffffff;
+}
+/* Butonun genel stil özellikleri */
+.span-button {
+    background-color: #4CAF50; /* Arka plan rengi */
+    color: white; /* Metin rengi */
+    padding: 10px 20px; /* Dış boşluk (padding) */
+    border-bottom: 2px solid #000000;
+    border-radius: 20px; /* Kenar yuvarlaklığı */
+    font-size: 18px; /* Metin boyutu */
+    font-family: Calibri, sans-serif;
+}
+.gas-label {
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    border: none;
+    text-align: center;
+    padding: 5px;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    text-align: center;
+    height: 35px;
+    max-width: 135px; /* Maksimum genişlik */
+    margin-left: 0px;
+    line-height: 2; 
+}

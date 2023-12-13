@@ -4,6 +4,8 @@
     <title>Calibration</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div class="container">
@@ -20,6 +22,28 @@
         </div>
         <div class="mainbottom-container">
             <h1 class="title-text">Calibration</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>GAS</th>
+                        <th>OFFSET</th>
+                        <th>READING</th>
+                        <th>VALUE</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table_data %}
+                        <tr>
+                            <td><label class="gas-label">{{ row['GAS'] }}</label></td>
+                            <td><input type="text" name="offset[]" value="{{ row['OFFSET'] }}"></td>
+                            <td><input type="text" name="reading[]" value="{{ row['READING'] }}"></td>
+                            <td><input type="text" name="value[]" value="{{ row['VALUE'] }}"></td>
+                            <td><button class="span-button" type="submit" name="actions[]" value="{{ row['ACTIONS'] }}">SPAN</button></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </body>
