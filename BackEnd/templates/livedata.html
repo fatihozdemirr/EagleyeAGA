@@ -537,7 +537,14 @@
                                 // Örneğin bir form submit işlemi gibi
                                 document.getElementById("keyboardContainer").style.display = "none";
                             });
-                            
+                            let previousValue7 = document.getElementById("input7"); 
+                            let preinput7 = previousValue7.value;
+                            let previousValue8 = document.getElementById("input8"); 
+                            let preinput8 = previousValue8.value;
+                            let previousValue9 = document.getElementById("input9"); 
+                            let preinput9 = previousValue9.value;
+                            let previousValue10 = document.getElementById("input10"); 
+                            let preinput10 = previousValue10.value;
                             // Enter tuşuna basıldığında
                             document.querySelector('.numpad .enter').addEventListener('click', function () {
                                 
@@ -546,38 +553,52 @@
                                 const new_value = labelField.textContent;
                                 const inputField = document.getElementById(inputId);
                                 const input_id = inputField.name;
+                                let previousValue;
+                                
                                 //// VALIDATION /////
                                 if (input_id == 'input7') {
+                                    previousValue = preinput7;
                                     let value7 = parseFloat(new_value);
                                     let min7 = 0;
                                     if (isNaN(value7) || value7 < min7) {
+                                        previousValue = preinput7;
+                                        inputField.value = previousValue;
                                         alert('Please enter a value greater than' + min7);
                                         shouldUpdateDatabase = false;
                                     }
                                 }
                                 else if (input_id == 'input8') {
+                                    previousValue = preinput8;
                                     let value8 = parseFloat(new_value);
                                     let min8 = 0;
                                     let max8 = 100;
                                     if (isNaN(value8) || value8 < min8 || value8 > max8) {
+                                        previousValue = preinput8;
+                                        inputField.value = previousValue;
                                         alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
                                         shouldUpdateDatabase = false;
                                     }
                                 }
                                 else if (input_id == 'input9') {
+                                    previousValue = preinput9;
                                     let value9 = parseFloat(new_value);
                                     let min9 = 0;
                                     let max9 = 100;
                                     if (isNaN(value9) || value9 < min9 || value9 > max9) {
+                                        previousValue = preinput9;
+                                        inputField.value = previousValue;
                                         alert('Please enter a value between ' + min9 + ' and ' + max9 + '.');
                                         shouldUpdateDatabase = false;
                                     }
                                 }
                                 else if (input_id == 'input10') {
+                                    previousValue = preinput10;
                                     let value10 = parseFloat(new_value);
                                     let min10 = 0;
                                     let max10 = 100;
                                     if (isNaN(value10) || value10 < min10 || value10 > max10) {
+                                        previousValue = preinput10;
+                                        inputField.value = previousValue;
                                         alert('Please enter a value between ' + min10 + ' and ' + max10 + '.');
                                         shouldUpdateDatabase = false;
                                     }
