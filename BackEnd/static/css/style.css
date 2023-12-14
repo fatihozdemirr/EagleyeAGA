@@ -470,7 +470,6 @@ th {
     background-color: #4CAF50; /* Arka plan rengi */
     color: white; /* Metin rengi */
     padding: 10px 20px; /* Dış boşluk (padding) */
-    border-bottom: 2px solid #000000;
     border-radius: 20px; /* Kenar yuvarlaklığı */
     font-size: 18px; /* Metin boyutu */
     font-family: Calibri, sans-serif;
@@ -488,4 +487,49 @@ th {
     max-width: 135px; /* Maksimum genişlik */
     margin-left: 0px;
     line-height: 2; 
+}
+.reset-content {
+    display: flex; /* İçerikleri yan yana hizalar */
+    margin-left: -200px;
+    margin-top: -20px;
+}
+
+.reset-label {
+    display: flex;
+    width: 200px;
+    border: none;
+    height: 40px;
+    border-bottom: 2px solid #ff0000;
+    font-size: 19px; /* Metin boyutu */
+    font-family: Calibri, sans-serif;
+    justify-content: center; /* Dikeyde ortala */
+}
+.reset-button {
+    background-color: #ff9419; /* Arka plan rengi */
+    width: 90px;
+    color: white; /* Metin rengi */
+    padding: 10px 20px; /* Dış boşluk (padding) */
+    border-radius: 20px; /* Kenar yuvarlaklığı */
+    font-size: 18px; /* Metin boyutu */
+    font-family: Calibri, sans-serif;
+}
+.reset-zero {
+    background-color: #ff9419; /* Arka plan rengi */
+    width: 90px;
+    color: white; /* Metin rengi */
+    padding: 10px 20px; /* Dış boşluk (padding) */
+    border-radius: 20px; /* Kenar yuvarlaklığı */
+    font-size: 18px; /* Metin boyutu */
+    font-family: Calibri, sans-serif;
+}
+.log-button {
+    background-color: #3ab0ff; /* Arka plan rengi */
+    width: 780px;
+    color: white; /* Metin rengi */
+    padding: 10px 20px; /* Dış boşluk (padding) */
+    border-radius: 10px; /* Kenar yuvarlaklığı */
+    font-size: 19px; /* Metin boyutu */
+    font-family: Calibri, sans-serif;
+    margin-top: 0px;
+    margin-left: 10px;
 }

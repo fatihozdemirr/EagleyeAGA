@@ -37,15 +37,26 @@
                     {% for row in table_data %}
                         <tr>
                             <td><label class="gas-label">{{ row['GAS'] }}</label></td>
-                            <td><input type="text" name="offset[]" value="{{ row['OFFSET'] }}"></td>
-                            <td><input type="text" name="reading[]" value="{{ row['READING'] }}"></td>
-                            <td><input type="text" name="value[]" value="{{ row['VALUE'] }}"></td>
+                            <td><input type="text" id="inputoffset" name="inputoffset" value="{{ row['OFFSET'] }}" onclick="openNumpad('inputoffset')"></td>
+                            <td><input type="text" name="reading[]" value="{{ row['READING'] }}" readonly="True"></td>
+                            <td><input type="text" name="value[]" value="{{ row['VALUE'] }}" readonly="True"></td>
                             <td><button class="span-button" type="button" data-action="{{ row['ACTIONS'] }}">SPAN</button></td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <div id="keyboardContainer" class="popup"></div>
+            <div class="reset-button-container">
+                <div class="reset-content">
+                    <label class="reset-label">Last Factory Calibration</label>
+                    <button class="reset-button" type="button">RESET</button>
+                    <button class="reset-zero" type="button">ZERO</button>
+                </div>
+                <button class="log-button" type="button">Show Calibration Logs</button>
+            </div>
         </div>
     </div>
 </body>
 </html>
+
+
