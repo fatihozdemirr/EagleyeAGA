@@ -32,6 +32,14 @@ class LiveTableDatas(db.Model):
     CH4Factor = db.Column(db.Integer, nullable=False)
     AlloyFactor = db.Column(db.Integer,  nullable=False)
     H2 = db.Column(db.Integer,  nullable=False)
+    
+class CalibrationTableDatas(db.Model):
+    __tablename__ = 'calibration'
+    id = db.Column(db.Integer, primary_key=True)
+    GAS = db.Column(db.String, nullable=False)
+    OFFSET = db.Column(db.Float, nullable=False)
+    READING = db.Column(db.Float, nullable=False)
+    VALUE = db.Column(db.Float,  nullable=False)
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -172,12 +180,35 @@ def Chart():
 
 @app.route('/Calibration')
 def Calibration():
+    sensor_data = get_sensor_data()
+    all_calibrationdata = CalibrationTableDatas.query.all()
     table_data = [
-        {'GAS': '%CO', 'OFFSET': 28, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'SPAN1'},
-        {'GAS': '%CO2', 'OFFSET': 22, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'SPAN2'},
-        {'GAS': '%CH4', 'OFFSET': 32, 'READING': 28, 'VALUE': 32, 'ACTIONS': 'SPAN3'},
+        {'GAS': data.GAS, 'OFFSET': data.OFFSET, 'READING': data.READING, 'VALUE': data.VALUE, 'ACTIONS': 'Default Action'}
+        for data in all_calibrationdata
     ]
-    return render_template('Calibration.html', table_data=table_data)
+    return render_template('Calibration.html', sensor_data=sensor_data, table_data=table_data, all_calibrationdata=all_calibrationdata)
+
+@app.route('/update_calibration_data', methods=['POST'])
+def update_calibration_data():
+    if request.method == 'POST':
+        data = request.get_json()
+        input_id = data.get('input_id')  
+        new_value = data.get('new_value')       
+        
+        print("input_id:",input_id)
+        print("new_value:",new_value)
+
+        # Burada ilgili input alanının güncellenmesi işlemini gerçekleştirin
+        if input_id == 'inputoffset_1':
+            CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
+        elif input_id == 'inputoffset_2':
+            CalibrationTableDatas.query.filter_by(id=2).update({'OFFSET': new_value})
+        elif input_id == 'inputoffset_3':
+            CalibrationTableDatas.query.filter_by(id=3).update({'OFFSET': new_value})
+
+        db.session.commit()  # Değişiklikleri kaydet
+         # JSON formatında yanıt döndür
+        return jsonify({'status': 'success', 'message': 'Data updated successfully'})
 
 @app.route('/Operation')
 def Operation():
