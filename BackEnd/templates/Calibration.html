@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{ url_for('static', filename='JavaScript/calibration.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -70,29 +71,28 @@
                         });
                     });
 
+                    //////        Reading sutünunda anlık sensör okuması yapılacak ve veritabanındaki değer güncellenecek
+                    /////         inputId hatası düzeltilecek
                     function updateSensorData() {
                         $.ajax({
                             type: 'GET',
                             url: '/get_sensor_values',
                             success: function(data) {
-                                // Başarılı bir şekilde veri alındığında HTML içine yerleştir
-                                
                                 $('#input1').val(data.co);
                                 $('#input2').val(data.co2);
                                 $('#input3').val(data.ch4);
-                                input1Value = data.co;
-                                input2Value = data.co2;
-                                input3Value = data.ch4
+                                // input1Value = data.co;
+                                // input2Value = data.co2;
+                                // input3Value = data.ch4
                             },
                             error: function() {
                                 console.error('Sensor data request failed.');
                             }
                         });
                     }
-                    // Sayfa yüklendiğinde ve belirli aralıklarla sensör verilerini güncelle
                     $(document).ready(function() {
                         updateSensorData();
-                        setInterval(updateSensorData, 5000);  // 5 saniyede bir güncelleme yapılacak şekilde ayarlanmıştır
+                        setInterval(updateSensorData, 5000);  
                     });
 
                 });
@@ -197,5 +197,3 @@
     </div>
 </body>
 </html>
-
-
