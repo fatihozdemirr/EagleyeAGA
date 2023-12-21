@@ -183,7 +183,13 @@ def Calibration():
     sensor_data = get_sensor_data()
     all_calibrationdata = CalibrationTableDatas.query.all()
     table_data = [
-        {'GAS': data.GAS, 'OFFSET': data.OFFSET, 'READING': data.READING, 'VALUE': data.VALUE, 'ACTIONS': 'Default Action'}
+        {
+            'GAS': data.GAS,
+            'OFFSET': data.OFFSET,
+            'READING': str(sensor_data.get(data.READING, '')).lower() if isinstance(sensor_data.get(data.READING), str) else sensor_data.get(data.READING, ''),
+            'VALUE': data.VALUE,
+            'ACTIONS': 'Default Action'
+        }
         for data in all_calibrationdata
     ]
     return render_template('Calibration.html', sensor_data=sensor_data, table_data=table_data, all_calibrationdata=all_calibrationdata)
@@ -193,11 +199,15 @@ def update_calibration_data():
     if request.method == 'POST':
         data = request.get_json()
         input_id = data.get('input_id')  
-        new_value = data.get('new_value')       
+        new_value = data.get('new_value')   
+        readingID = data.get('readingID')
+        readingVAL =data.get('readingVAL')
         
-        print("input_id:",input_id)
-        print("new_value:",new_value)
-
+        # print("input_id:",input_id)
+        # print("new_value:",new_value)
+        # print("readingID:",readingID)
+        # print("readingVAL:",readingVAL)
+        
         # Burada ilgili input alanının güncellenmesi işlemini gerçekleştirin
         if input_id == 'inputoffset_1':
             CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
@@ -205,6 +215,12 @@ def update_calibration_data():
             CalibrationTableDatas.query.filter_by(id=2).update({'OFFSET': new_value})
         elif input_id == 'inputoffset_3':
             CalibrationTableDatas.query.filter_by(id=3).update({'OFFSET': new_value})
+        elif readingID == 'reading_1':
+            CalibrationTableDatas.query.filter_by(id=1).update({'READING': readingVAL})
+        elif readingID == 'reading_2':
+            CalibrationTableDatas.query.filter_by(id=2).update({'READING': readingVAL})
+        elif readingID == 'reading_3':
+            CalibrationTableDatas.query.filter_by(id=3).update({'READING': readingVAL})
 
         db.session.commit()  # Değişiklikleri kaydet
          # JSON formatında yanıt döndür

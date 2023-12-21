@@ -56,6 +56,7 @@
                 <button class="log-button" type="button">Show Calibration Logs</button>
             </div>
             <script>
+                var programStarted = false;
                 document.addEventListener('DOMContentLoaded', function() {
                     document.querySelectorAll('.span-button').forEach(button => {
                         button.addEventListener('click', function() {
@@ -70,20 +71,59 @@
                             document.getElementById("keyboardContainer").style.display = "none";
                         });
                     });
+                    
+                    ////// Reading değerleri veritabanında güncellenecek
+                    /////  inputId hatası düzeltilecek
 
-                    //////        Reading sutünunda anlık sensör okuması yapılacak ve veritabanındaki değer güncellenecek
-                    /////         inputId hatası düzeltilecek
+                    // $(document).ready(function() {
+                    //     setInterval(function() {
+                    //         $('input[name="reading"]').each(function(index) {
+                    //             console.log('Input ID:', $(this).attr('id'));
+                    //         });
+                    //     }, 5000); 
+                    // });
+
                     function updateSensorData() {
                         $.ajax({
                             type: 'GET',
                             url: '/get_sensor_values',
                             success: function(data) {
-                                $('#input1').val(data.co);
-                                $('#input2').val(data.co2);
-                                $('#input3').val(data.ch4);
-                                // input1Value = data.co;
-                                // input2Value = data.co2;
-                                // input3Value = data.ch4
+                                $('#reading_1').val(data.co);
+                                $('#reading_2').val(data.co2);
+                                $('#reading_3').val(data.ch4);
+                                if(!programStarted){
+                                    document.querySelectorAll('input[name="reading"]').forEach(function(inputField) {
+                                        // console.log('Input ID:', inputField.id);
+                                        // console.log('Input VAL:', inputField.value);
+                                        const readingID = inputField.id 
+                                        const readingVAL = inputField.value
+                                        if (readingID && readingVAL) {
+                                            // AJAX isteği ile Flask endpoint'ını çağır
+                                            fetch('/update_calibration_data', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({
+                                                    readingID: readingID,  // Güncellenmesi istenen input alanının ID'si
+                                                    readingVAL: readingVAL,
+                                                }),
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                // İsteğin başarılı olması durumunda yapılacak işlemler
+                                                console.log(data);
+                                            })
+                                            .catch(error => {
+                                                // İstekte hata olması durumunda yapılacak işlemler
+                                                console.error('Error:', error);
+                                            });
+                                        } 
+                                        else {
+                                            console.error('Invalid inputIdchange.');
+                                        }
+                                    });
+                                }
                             },
                             error: function() {
                                 console.error('Sensor data request failed.');
@@ -98,8 +138,6 @@
                 });
 
                 function openNumpad(inputId) {
-                    console.log('Tıklama olayı tetiklendi.');
-                    console.log('inputElement:', inputId);
                     // alert("Numpad açılıyor: " + inputId);
                     document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
                     // Belirtilen input alanına değeri ekle
@@ -133,6 +171,19 @@
                                                     
                         });
                     });
+
+                    ///////////// VALUE \\\\\\\\\\\\\\
+                    // var offsetValue = parseFloat($('#inputoffset_').val());
+                    // var readingValue = parseFloat($('#reading_' + index).val());
+
+                    // // Check if the values are not NaN
+                    // if (!isNaN(offsetValue) && !isNaN(readingValue)) {
+                    //     // Update the 'value' input with the sum of 'offset' and 'reading'
+                    //     var totalValue = offsetValue + readingValue;
+                    //     $('#value_' + index).val(totalValue);
+                    // }
+
+
                     document.querySelector('.numpad .close').addEventListener('click', function () {
                         // İsterseniz burada enter'a basıldığında yapılacak işlemleri ekleyebilirsiniz
                         // Örneğin bir form submit işlemi gibi
