@@ -511,11 +511,11 @@
 
                                     if(!(value =="Enter" || value =="Space"|| value =="Clear" || value =="X")){
                                         if (isLabelCleared) {
-                                            inputField.value = '';
+                                            // inputField.value = '';
                                             labelField.textContent = ''; // Numpad label'ını temizle
                                             isLabelCleared = false; // Bayrağı sıfırla
                                         }
-                                        inputField.value += value;  
+                                        // inputField.value += value;  
                                         labelField.textContent += value;
                                     }
                                     setTimeout(function () {
@@ -553,6 +553,7 @@
                                 const new_value = labelField.textContent;
                                 const inputField = document.getElementById(inputId);
                                 const input_id = inputField.name;
+                                inputField.value = labelField.textContent;
                                 let previousValue;
                                 
                                 //// VALIDATION /////
@@ -642,7 +643,7 @@
                             // "Clear" tuşuna basıldığında yapılacak işlemler
                             document.querySelector('.numpad .clear').addEventListener('click', function () {
                                 //const inputId = "input-field"; // Buradaki inputId değerini kendi kullanımınıza göre değiştirin
-                                inputField.value = '0'; // Input alanını temizle
+                                // inputField.value = '0'; // Input alanını temizle
                                 labelField.textContent = '0';
                                 const new_value = labelField.textContent;
                                 const input_id = inputField.value;
