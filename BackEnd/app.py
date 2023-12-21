@@ -186,7 +186,8 @@ def Calibration():
         {
             'GAS': data.GAS,
             'OFFSET': data.OFFSET,
-            'READING': str(sensor_data.get(data.READING, '')).lower() if isinstance(sensor_data.get(data.READING), str) else sensor_data.get(data.READING, ''),
+            # 'READING': str(sensor_data.get(data.READING, '')).lower() if isinstance(sensor_data.get(data.READING), str) else sensor_data.get(data.READING, ''),
+            'READING': data.READING,
             'VALUE': data.VALUE,
             'ACTIONS': 'Default Action'
         }

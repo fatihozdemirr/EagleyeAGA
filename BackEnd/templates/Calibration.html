@@ -39,7 +39,7 @@
                         <tr>
                             <td><label class="gas-label">{{ row['GAS'] }}</label></td>
                             <td><input type="text" id="inputoffset_{{ loop.index }}" name="inputoffset" value="{{ row['OFFSET'] }}" onclick="openNumpad('inputoffset_{{ loop.index }}')"></td>
-                            <td><input type="text" id="reading_{{ loop.index }}" name="reading" value="{{ row['READING'] }}" readonly="True"></td>
+                            <td><input class="reading-input" type="text" id="reading_{{ loop.index }}" name="reading" value="{{ row['READING'] }}" readonly="True"></td>
                             <td><input type="text" id="value_{{ loop.index }}" name="value" value="{{ row['VALUE'] }}" readonly="True"></td>
                             <td><button class="span-button" id="buttonspan" type="button" data-action="{{ row['ACTIONS'] }}">SPAN</button></td>
                         </tr>
@@ -57,6 +57,7 @@
             </div>
             <script>
                 var programStarted = false;
+                var numpadInputCompleted = false;
                 document.addEventListener('DOMContentLoaded', function() {
                     document.querySelectorAll('.span-button').forEach(button => {
                         button.addEventListener('click', function() {
@@ -72,17 +73,6 @@
                         });
                     });
                     
-                    ////// Reading değerleri veritabanında güncellenecek
-                    /////  inputId hatası düzeltilecek
-
-                    // $(document).ready(function() {
-                    //     setInterval(function() {
-                    //         $('input[name="reading"]').each(function(index) {
-                    //             console.log('Input ID:', $(this).attr('id'));
-                    //         });
-                    //     }, 5000); 
-                    // });
-
                     function updateSensorData() {
                         $.ajax({
                             type: 'GET',
@@ -92,37 +82,33 @@
                                 $('#reading_2').val(data.co2);
                                 $('#reading_3').val(data.ch4);
                                 if(!programStarted){
-                                    document.querySelectorAll('input[name="reading"]').forEach(function(inputField) {
-                                        // console.log('Input ID:', inputField.id);
-                                        // console.log('Input VAL:', inputField.value);
-                                        const readingID = inputField.id 
-                                        const readingVAL = inputField.value
+                                    for (let index = 1; index <= 3; index++) {
+                                        const readingID = `reading_${index}`;
+                                        const readingVAL = $(`#${readingID}`).val();
+                                        
                                         if (readingID && readingVAL) {
-                                            // AJAX isteği ile Flask endpoint'ını çağır
                                             fetch('/update_calibration_data', {
                                                 method: 'POST',
                                                 headers: {
                                                     'Content-Type': 'application/json',
                                                 },
                                                 body: JSON.stringify({
-                                                    readingID: readingID,  // Güncellenmesi istenen input alanının ID'si
+                                                    readingID: readingID,  
                                                     readingVAL: readingVAL,
                                                 }),
                                             })
                                             .then(response => response.json())
                                             .then(data => {
-                                                // İsteğin başarılı olması durumunda yapılacak işlemler
                                                 console.log(data);
                                             })
                                             .catch(error => {
-                                                // İstekte hata olması durumunda yapılacak işlemler
                                                 console.error('Error:', error);
                                             });
                                         } 
                                         else {
                                             console.error('Invalid inputIdchange.');
                                         }
-                                    });
+                                    }
                                 }
                             },
                             error: function() {
@@ -134,18 +120,67 @@
                         updateSensorData();
                         setInterval(updateSensorData, 5000);  
                     });
+                    
+                    function updateTotalValue(index) {
+                        var offsetValue = parseFloat($(`#inputoffset_${index}`).val()) || 0;
+                        var readingValue = parseFloat($(`#reading_${index}`).val()) || 0;
+
+                        if (!isNaN(offsetValue) && !isNaN(readingValue)) {
+                            var totalValue = offsetValue + readingValue;
+                            $(`#value_${index}`).val(totalValue);
+                        } else {
+                            $(`#value_${index}`).val(0);
+                        }
+                    }
+
+                    $(document).ready(function() {
+                        // Sayfa yüklendiğinde her bir çift için toplam değeri güncelle
+                        $('[id^="inputoffset_"]').each(function() {
+                            var index = this.id.split('_')[1];
+                            updateTotalValue(index);
+                        });
+
+                        // Her bir input değeri değiştiğinde toplam değeri güncelle
+                        $('[id^="inputoffset_"]').on('input', function() {
+                            var index = this.id.split('_')[1];
+                            updateTotalValue(index);
+                        });
+
+                        $('[id^="reading_"]').on('input', function() {
+                            var index = this.id.split('_')[1];
+                            updateTotalValue(index);
+                        });
+                        setInterval(function() {
+                            if (numpadInputCompleted) {
+                                $('.reading-input').each(function() {
+                                    var index = this.id.split('_')[1];
+                                    updateTotalValue(index);
+                                });
+
+                                // Numpad işlemi tamamlandıktan sonra flag'i sıfırla
+                                numpadInputCompleted = false;
+                            }
+                        }, 100);
+
+                        // Numpad tamamlanmamışsa çalışacak olan interval
+                        setInterval(function() {
+                            $('.reading-input').each(function() {
+                                var index = this.id.split('_')[1];
+                                updateTotalValue(index);
+                            });
+                        }, 1000);
+                    });
 
                 });
 
                 function openNumpad(inputId) {
-                    // alert("Numpad açılıyor: " + inputId);
                     document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
-                    // Belirtilen input alanına değeri ekle
+                    
                     const inputField = document.getElementById(inputId);
-                    const labelField = document.getElementById("numpadLabel"); // Yeni eklenen label
+                    const labelField = document.getElementById("numpadLabel"); 
                     labelField.textContent = inputField.value;
                     let isLabelCleared = true;
-                    // Her tuşa tıklandığında ilgili inputa değeri ekle
+                    
                     document.querySelectorAll('.numpad .key').forEach(key => {
                         key.addEventListener('click', function () {
                             const value = key.textContent;
@@ -158,11 +193,11 @@
 
                             if(!(value =="Enter" || value =="Space"|| value =="Clear" || value =="X")){
                                 if (isLabelCleared) {
-                                    inputField.value = '';
+                                    // inputField.value = '';
                                     labelField.textContent = ''; // Numpad label'ını temizle
                                     isLabelCleared = false; // Bayrağı sıfırla
                                 }
-                                inputField.value += value;  
+                                // inputField.value += value;  
                                 labelField.textContent += value;
                             }
                             setTimeout(function () {
@@ -172,18 +207,6 @@
                         });
                     });
 
-                    ///////////// VALUE \\\\\\\\\\\\\\
-                    // var offsetValue = parseFloat($('#inputoffset_').val());
-                    // var readingValue = parseFloat($('#reading_' + index).val());
-
-                    // // Check if the values are not NaN
-                    // if (!isNaN(offsetValue) && !isNaN(readingValue)) {
-                    //     // Update the 'value' input with the sum of 'offset' and 'reading'
-                    //     var totalValue = offsetValue + readingValue;
-                    //     $('#value_' + index).val(totalValue);
-                    // }
-
-
                     document.querySelector('.numpad .close').addEventListener('click', function () {
                         // İsterseniz burada enter'a basıldığında yapılacak işlemleri ekleyebilirsiniz
                         // Örneğin bir form submit işlemi gibi
@@ -192,11 +215,12 @@
 
                     // Enter tuşuna basıldığında
                     document.querySelector('.numpad .enter').addEventListener('click', function () {
-                        
+                        numpadInputCompleted = true;
                         const labelField = document.getElementById("numpadLabel"); 
                         const new_value = labelField.textContent;
                         const inputField = document.getElementById(inputId);
                         const input_id = inputField.id;
+                        inputField.value = labelField.textContent;
 
                         if (new_value === '0' || input_id.value === '0') {
                             inputField.value ='0';
