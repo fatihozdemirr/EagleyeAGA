@@ -18,10 +18,13 @@
     <title>Live Data</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toogle.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{{ url_for('static', filename='JavaScript/sensor.js') }}"></script>
+    <script src="{{ url_for('static', filename='JavaScript/updateCalibrationData.js') }}"></script>
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"> -->
 </head>
 <body>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    
     <div class="container">
         <div class="mainabove-container">
             <!-- <a href="/logout">çıkış yap</a> -->
@@ -97,10 +100,11 @@
                     </label>
 
                     <script>
+                        // var programStarted = false;
                         var input1Value, input2Value, input3Value;
                         document.addEventListener('DOMContentLoaded', function() {
                             // Sayfa yüklendiğinde çalışacak kodlar
-
+                            
                             // Sayfa yüklendiğinde toggle switch durumunu al
                             const toggleStatusFromServer = "{{ toggle_status }}";
 
@@ -113,7 +117,7 @@
                                 // Eğer toggle switch "C" ise
                                 togglememory.checked = false;
                             }
-
+                            
                             // Input elementini seç
                             const temp = document.getElementById('input7');
                             // console.log('tempfirst:', temp.value);
@@ -163,158 +167,175 @@
                                 }
                             });
 
+                            //// Kalibrasyon sayfasındaki VALUE değerleri livedata sayfasında gösterilecek
+                            
+                            function updateLiveData() {
+                                var value_1 = localStorage.getItem('value_1');
+                                var value_2 = localStorage.getItem('value_2');
+                                var value_3 = localStorage.getItem('value_3');
+
+                                console.log('value_1:', value_1);
+                                console.log('value_2:', value_2);
+                                console.log('value_3:', value_3);
+
+                                document.getElementById("input1").value = value_1;
+                                document.getElementById("input2").value = value_2;
+                                document.getElementById("input3").value = value_3;
+
+                                input1Value = document.getElementById("input1").value;
+                                input2Value = document.getElementById("input2").value;
+                                input3Value = document.getElementById("input3").value;
+                            }
+
+                            updateLiveData();
+                            setInterval(updateLiveData, 5000);
+
                             function updateSensorData() {
-                                $.ajax({
-                                    type: 'GET',
-                                    url: '/get_sensor_values',
-                                    success: function(data) {
-                                        // Başarılı bir şekilde veri alındığında HTML içine yerleştir
-                                        
-                                        $('#input1').val(data.co);
-                                        $('#input2').val(data.co2);
-                                        $('#input3').val(data.ch4);
-                                        input1Value = data.co;
-                                        input2Value = data.co2;
-                                        input3Value = data.ch4;
-                                        
+                                input1Value = input1Value.trim() === '' || isNaN(input1Value) ? '***' : input1Value;
+                                input2Value = input2Value.trim() === '' || isNaN(input2Value) ? '***' : input2Value;
+                                input3Value = input3Value.trim() === '' || isNaN(input3Value) ? '***' : input3Value;
+                                
+                                document.getElementById("input1").value = input1Value;
+                                document.getElementById("input2").value = input2Value;
+                                document.getElementById("input3").value = input3Value;
 
-                                        if (togglememory.checked === false || toggle.checked === false) {
-                                            //
-                                            const e = 2.718281828;
-                                            const C8 = (parseFloat(temp.value) + 273.15).toFixed(2);
-                                            let log10K2 = -1 * (3.2673 - 8820.69 / C8 - 0.001208714 * C8 + 0.153734 * Math.pow(10, -6) * Math.pow(C8, 2) + 2.295483 * (Math.log(C8) / Math.log(10)));
-                                            let K2 = Math.pow(10, log10K2)
-                                            let a = (((Math.pow(input1Value, 2) / input2Value) * K2) / 100);
-                                            let Xc1 = a / (1.07 * Math.pow(e, (4798.6 / C8)));
-                                            const alloy = document.getElementById('input9').value;
-                                            let XcAF = a / (1.07 * alloy * Math.pow(10, (3751 / (C8 * 1.8 )))/100); 
-                                            let CarbonAF = ((XcAF / (1 + 19.6 * XcAF))*100).toFixed(2);
-                                            // Carbon //
-                                            let Carbon = ((Xc1 / (1 + 19.6 * Xc1))*100).toFixed(2);
-                                            const input5Element = document.getElementById("input5");
-                                            if (isNaN(Carbon) || Carbon === 'Infinity') {
-                                                input5Element.value = '***';
-                                            }
-                                            else{
-                                                input5Element.value = Carbon;
-                                            }
-                                            let Z3 = (0.0107 * Math.pow(e, (4798.6 / C8)));
-                                            let AF3 = -(3.2673 - 8820.69/C8 - 0.001208714 * C8 + 0.153734 * 0.000001 * Math.pow(C8, 2) + 2.295483 * (Math.log(C8) / Math.log(10)));
-                                            let AC3 = 36.72508 - 3994.704 / C8 + 0.004462408 * C8 - 0.671814 * 0.000001 * Math.pow(C8, 2) - 12.220277 * (Math.log(C8) / Math.log(10));
-                                            let AI3 = (Math.pow(10, AF3) * Math.pow(10, AC3));
-
-                                            /////////////// AA3 te sonuç birebir çıkmadı, tekrar bakılacak ///////////////
-
-                                            let AA3 = (alloy/100) * Z3 * (Carbon * 100)/100;   
-                                            console.log('AA3:', AA3);
-
-                                            const H2variable = document.getElementById('input10').value;
-                                            // H2O //
-                                            let H20 = ((input1Value * H2variable / AA3 * AI3) / 100).toFixed(2); 
-                                            const input11Element = document.getElementById("input11");
-                                            if (isNaN(H20) || H20 === 'Infinity') {
-                                                input11Element.value = '***';
-                                            }
-                                            else{
-                                                input11Element.value = H20;
-                                            }
-                                            
-
-                                            let AT31 = Math.pow(10, (2.9419064318711 - 13007.7694364901 / C8)) * H20 / H2variable; 
-                                            let AT3 = Math.pow(AT31,2); 
-                                            // O2 //   
-                                            let O2 = (-0.0275 * C8 * 1.8 * (Math.log(AT3 / 0.209) / Math.log(10))).toFixed(2);
-                                            const input6Element = document.getElementById("input6");
-                                            if (isNaN(O2) || O2 === 'Infinity') {
-                                                input6Element.value = '***';
-                                            }
-                                            else{
-                                                input6Element.value = O2;
-                                            }
-                                            
-                                            let AO3 = (4238.7/(6.3979 - (Math.log(H20/100) / Math.log(10)))) - 460;
-                                            // Dew //   
-                                            let AP3 = ((AO3 - 32) / 1.8).toFixed(2);
-                                            const input12Element = document.getElementById("input12");
-                                            if (isNaN(AP3) || AP3 === 'Infinity') {
-                                                input12Element.value = '***';
-                                            }
-                                            else{
-                                                input12Element.value = AP3;
-                                            }
-                                        }
-                                        else if(togglememory.checked === true || toggle.checked === true) {
-                                           ///
-                                            const e = 2.718281828;
-                                            const C8 = (((parseFloat(temp.value) - 32) * 5) / 9 + 273.15).toFixed(2);
-                                            let log10K2 = -1 * (3.2673 - 8820.69 / C8 - 0.001208714 * C8 + 0.153734 * Math.pow(10, -6) * Math.pow(C8, 2) + 2.295483 * (Math.log(C8) / Math.log(10)));
-                                            let K2 = Math.pow(10, log10K2)
-                                            let a = (((Math.pow(input1Value, 2) / input2Value) * K2) / 100);
-                                            let Xc1 = a / (1.07 * Math.pow(e, (4798.6 / C8)));
-                                            const alloy = document.getElementById('input9').value;
-                                            let XcAF = a / (1.07 * alloy * Math.pow(10, (3751 / (C8 * 1.8 )))/100); 
-                                            let CarbonAF = ((XcAF / (1 + 19.6 * XcAF))*100).toFixed(2);
-                                            // Carbon //
-                                            let Carbon = ((Xc1 / (1 + 19.6 * Xc1))*100).toFixed(2);
-                                            console.log('Carbon:', Carbon);
-                                            const input5Element = document.getElementById("input5");
-                                            if (isNaN(Carbon) || Carbon === 'Infinity') {
-                                                input5Element.value = '***';
-                                            }
-                                            else{
-                                                input5Element.value = Carbon;
-                                            }
-                                            let Z3 = (0.0107 * Math.pow(e, (4798.6 / C8)));
-                                            let AF3 = -(3.2673 - 8820.69/C8 - 0.001208714 * C8 + 0.153734 * 0.000001 * Math.pow(C8, 2) + 2.295483 * (Math.log(C8) / Math.log(10)));
-                                            let AC3 = 36.72508 - 3994.704 / C8 + 0.004462408 * C8 - 0.671814 * 0.000001 * Math.pow(C8, 2) - 12.220277 * (Math.log(C8) / Math.log(10));
-                                            let AI3 = (Math.pow(10, AF3) * Math.pow(10, AC3));
-
-                                            /////////////// AA3 te sonuç birebir çıkmadı, tekrar bakılacak ///////////////
-
-                                            let AA3 = (alloy/100) * Z3 * (Carbon * 100)/100;   
-                                            console.log('AA3:', AA3);
-
-                                            const H2variable = document.getElementById('input10').value;
-                                            // H2O //
-                                            let H20 = ((input1Value * H2variable / AA3 * AI3) / 100).toFixed(2); 
-                                            const input11Element = document.getElementById("input11");
-                                            if (isNaN(H20) || H20 === 'Infinity') {
-                                                input11Element.value = '***';
-                                            }
-                                            else{
-                                                input11Element.value = H20;
-                                            }
-                                            
-
-                                            let AT31 = Math.pow(10, (2.9419064318711 - 13007.7694364901 / C8)) * H20 / H2variable; 
-                                            let AT3 = Math.pow(AT31,2); 
-                                            // O2 //   
-                                            let O2 = (-0.0275 * C8 * 1.8 * (Math.log(AT3 / 0.209) / Math.log(10))).toFixed(2);
-                                            const input6Element = document.getElementById("input6");
-                                            if (isNaN(O2) || O2 === 'Infinity') {
-                                                input6Element.value = '***';
-                                            }
-                                            else{
-                                                input6Element.value = O2;
-                                            }
-                                            
-                                            let AO3 = (4238.7/(6.3979 - (Math.log(H20/100) / Math.log(10)))) - 460;
-                                            // Dew //   
-                                            let AP3 = ((AO3 - 32) / 1.8).toFixed(2);
-                                            const input12Element = document.getElementById("input12");
-                                            if (isNaN(AP3) || AP3 === 'Infinity') {
-                                                input12Element.value = '***';
-                                            }
-                                            else{
-                                                input12Element.value = AP3;
-                                            }
-                                        }
-
-                                    },
-                                    error: function() {
-                                        console.error('Sensor data request failed.');
+                                if (togglememory.checked === false || toggle.checked === false) {
+                                    //
+                                    const e = 2.718281828;
+                                    const C8 = (parseFloat(temp.value) + 273.15).toFixed(2);
+                                    let log10K2 = -1 * (3.2673 - 8820.69 / C8 - 0.001208714 * C8 + 0.153734 * Math.pow(10, -6) * Math.pow(C8, 2) + 2.295483 * (Math.log(C8) / Math.log(10)));
+                                    let K2 = Math.pow(10, log10K2)
+                                    let a = (((Math.pow(input1Value, 2) / input2Value) * K2) / 100);
+                                    let Xc1 = a / (1.07 * Math.pow(e, (4798.6 / C8)));
+                                    const alloy = document.getElementById('input9').value;
+                                    let XcAF = a / (1.07 * alloy * Math.pow(10, (3751 / (C8 * 1.8 )))/100); 
+                                    let CarbonAF = ((XcAF / (1 + 19.6 * XcAF))*100).toFixed(2);
+                                    // Carbon //
+                                    let Carbon = ((Xc1 / (1 + 19.6 * Xc1))*100).toFixed(2);
+                                    const input5Element = document.getElementById("input5");
+                                    if (isNaN(Carbon) || Carbon === '-Infinity' || Carbon === 'Infinity') {
+                                        input5Element.value = '***';
                                     }
-                                });
+                                    else{
+                                        input5Element.value = Carbon;
+                                    }
+                                    let Z3 = (0.0107 * Math.pow(e, (4798.6 / C8)));
+                                    let AF3 = -(3.2673 - 8820.69/C8 - 0.001208714 * C8 + 0.153734 * 0.000001 * Math.pow(C8, 2) + 2.295483 * (Math.log(C8) / Math.log(10)));
+                                    let AC3 = 36.72508 - 3994.704 / C8 + 0.004462408 * C8 - 0.671814 * 0.000001 * Math.pow(C8, 2) - 12.220277 * (Math.log(C8) / Math.log(10));
+                                    let AI3 = (Math.pow(10, AF3) * Math.pow(10, AC3));
+
+                                    /////////////// AA3 te sonuç birebir çıkmadı, tekrar bakılacak ///////////////
+
+                                    let AA3 = (alloy/100) * Z3 * (Carbon * 100)/100;   
+                                    // console.log('AA3:', AA3);
+
+                                    const H2variable = document.getElementById('input10').value;
+                                    // H2O //
+                                    let H20 = ((input1Value * H2variable / AA3 * AI3) / 100).toFixed(2); 
+                                    const input11Element = document.getElementById("input11");
+                                    if (isNaN(H20) || H20 === '-Infinity' || H20 === 'Infinity') {
+                                        input11Element.value = '***';
+                                    }
+                                    else{
+                                        input11Element.value = H20;
+                                    }
+                                    
+
+                                    let AT31 = Math.pow(10, (2.9419064318711 - 13007.7694364901 / C8)) * H20 / H2variable; 
+                                    let AT3 = Math.pow(AT31,2); 
+                                    // O2 //   
+                                    let O2 = (-0.0275 * C8 * 1.8 * (Math.log(AT3 / 0.209) / Math.log(10))).toFixed(2);
+                                    const input6Element = document.getElementById("input6");
+                                    if (isNaN(O2) || O2 === 'Infinity') {
+                                        input6Element.value = '***';
+                                    }
+                                    else if (O2 === '-Infinity') {
+                                        input6Element.value = '***';
+                                    }
+                                    else{
+                                        input6Element.value = O2;
+                                    }
+                                    
+                                    let AO3 = (4238.7/(6.3979 - (Math.log(H20/100) / Math.log(10)))) - 460;
+                                    // Dew //   
+                                    let AP3 = ((AO3 - 32) / 1.8).toFixed(2);
+                                    const input12Element = document.getElementById("input12");
+                                    if (isNaN(AP3) || AP3 === '-Infinity' || AP3 === 'Infinity') {
+                                        input12Element.value = '***';
+                                    }
+                                    else{
+                                        input12Element.value = AP3;
+                                    }
+                                }
+                                else if(togglememory.checked === true || toggle.checked === true) {
+                                    ///
+                                    const e = 2.718281828;
+                                    const C8 = (((parseFloat(temp.value) - 32) * 5) / 9 + 273.15).toFixed(2);
+                                    let log10K2 = -1 * (3.2673 - 8820.69 / C8 - 0.001208714 * C8 + 0.153734 * Math.pow(10, -6) * Math.pow(C8, 2) + 2.295483 * (Math.log(C8) / Math.log(10)));
+                                    let K2 = Math.pow(10, log10K2)
+                                    let a = (((Math.pow(input1Value, 2) / input2Value) * K2) / 100);
+                                    let Xc1 = a / (1.07 * Math.pow(e, (4798.6 / C8)));
+                                    const alloy = document.getElementById('input9').value;
+                                    let XcAF = a / (1.07 * alloy * Math.pow(10, (3751 / (C8 * 1.8 )))/100); 
+                                    let CarbonAF = ((XcAF / (1 + 19.6 * XcAF))*100).toFixed(2);
+                                    // Carbon //
+                                    let Carbon = ((Xc1 / (1 + 19.6 * Xc1))*100).toFixed(2);
+                                    console.log('Carbon:', Carbon);
+                                    const input5Element = document.getElementById("input5");
+                                    if (isNaN(Carbon) || Carbon === '-Infinity' || Carbon === 'Infinity') {
+                                        input5Element.value = '***';
+                                    }
+                                    else{
+                                        input5Element.value = Carbon;
+                                    }
+                                    let Z3 = (0.0107 * Math.pow(e, (4798.6 / C8)));
+                                    let AF3 = -(3.2673 - 8820.69/C8 - 0.001208714 * C8 + 0.153734 * 0.000001 * Math.pow(C8, 2) + 2.295483 * (Math.log(C8) / Math.log(10)));
+                                    let AC3 = 36.72508 - 3994.704 / C8 + 0.004462408 * C8 - 0.671814 * 0.000001 * Math.pow(C8, 2) - 12.220277 * (Math.log(C8) / Math.log(10));
+                                    let AI3 = (Math.pow(10, AF3) * Math.pow(10, AC3));
+
+                                    /////////////// AA3 te sonuç birebir çıkmadı, tekrar bakılacak ///////////////
+
+                                    let AA3 = (alloy/100) * Z3 * (Carbon * 100)/100;   
+                                    // console.log('AA3:', AA3);
+
+                                    const H2variable = document.getElementById('input10').value;
+                                    // H2O //
+                                    let H20 = ((input1Value * H2variable / AA3 * AI3) / 100).toFixed(2); 
+                                    const input11Element = document.getElementById("input11");
+                                    if (isNaN(H20) || H20 === '-Infinity' || H20 === 'Infinity') {
+                                        input11Element.value = '***';
+                                    }
+                                    else{
+                                        input11Element.value = H20;
+                                    }
+                                    
+
+                                    let AT31 = Math.pow(10, (2.9419064318711 - 13007.7694364901 / C8)) * H20 / H2variable; 
+                                    let AT3 = Math.pow(AT31,2); 
+                                    // O2 //   
+                                    let O2 = (-0.0275 * C8 * 1.8 * (Math.log(AT3 / 0.209) / Math.log(10))).toFixed(2);
+                                    const input6Element = document.getElementById("input6");
+                                    if (isNaN(O2) || O2 === 'Infinity') {
+                                        input6Element.value = '***';
+                                    }
+                                    else if (O2 === '-Infinity') {
+                                        input6Element.value = '***';
+                                    }
+                                    else{
+                                        input6Element.value = O2;
+                                    }
+                                    
+                                    let AO3 = (4238.7/(6.3979 - (Math.log(H20/100) / Math.log(10)))) - 460;
+                                    // Dew //   
+                                    let AP3 = ((AO3 - 32) / 1.8).toFixed(2);
+                                    const input12Element = document.getElementById("input12");
+                                    if (isNaN(AP3) || AP3 === '-Infinity' || AP3 === 'Infinity') {
+                                        input12Element.value = '***';
+                                    }
+                                    else{
+                                        input12Element.value = AP3;
+                                    }
+                                }
                             }
 
                             // Sayfa yüklendiğinde ve belirli aralıklarla sensör verilerini güncelle
@@ -343,7 +364,7 @@
                                             let Carbon = ((Xc1 / (1 + 19.6 * Xc1))*100).toFixed(2);
                                             console.log('Carbon:', Carbon);
                                             const input5Element = document.getElementById("input5");
-                                            if (isNaN(Carbon) || Carbon === 'Infinity') {
+                                            if (isNaN(Carbon) || Carbon === '-Infinity' || Carbon === 'Infinity') {
                                                 input5Element.value = '***';
                                             }
                                             else{
@@ -357,13 +378,13 @@
                                             /////////////// AA3 te sonuç birebir çıkmadı, tekrar bakılacak ///////////////
 
                                             let AA3 = (alloy/100) * Z3 * (Carbon * 100)/100;   
-                                            console.log('AA3:', AA3);
+                                            // console.log('AA3:', AA3);
 
                                             const H2variable = document.getElementById('input10').value;
                                             // H2O //
                                             let H20 = ((input1Value * H2variable / AA3 * AI3) / 100).toFixed(2); 
                                             const input11Element = document.getElementById("input11");
-                                            if (isNaN(H20) || H20 === 'Infinity') {
+                                            if (isNaN(H20) || H20 === '-Infinity' || H20 === 'Infinity') {
                                                 input11Element.value = '***';
                                             }
                                             else{
@@ -379,6 +400,9 @@
                                             if (isNaN(O2) || O2 === 'Infinity') {
                                                 input6Element.value = '***';
                                             }
+                                            else if (O2 === '-Infinity') {
+                                                input6Element.value = '***';
+                                            }
                                             else{
                                                 input6Element.value = O2;
                                             }
@@ -387,7 +411,7 @@
                                             // Dew //   
                                             let AP3 = ((AO3 - 32) / 1.8).toFixed(2);
                                             const input12Element = document.getElementById("input12");
-                                            if (isNaN(AP3) || AP3 === 'Infinity') {
+                                            if (isNaN(AP3) || AP3 === '-Infinity' || AP3 === 'Infinity') {
                                                 input12Element.value = '***';
                                             }
                                             else{
@@ -409,7 +433,7 @@
                                             let Carbon = ((Xc1 / (1 + 19.6 * Xc1))*100).toFixed(2);
                                             console.log('Carbon:', Carbon);
                                             const input5Element = document.getElementById("input5");
-                                            if (isNaN(Carbon) || Carbon === 'Infinity') {
+                                            if (isNaN(Carbon) || Carbon === '-Infinity' || Carbon === 'Infinity') {
                                                 input5Element.value = '***';
                                             }
                                             else{
@@ -423,13 +447,13 @@
                                             /////////////// AA3 te sonuç birebir çıkmadı, tekrar bakılacak ///////////////
 
                                             let AA3 = (alloy/100) * Z3 * (Carbon * 100)/100;   
-                                            console.log('AA3:', AA3);
+                                            // console.log('AA3:', AA3);
 
                                             const H2variable = document.getElementById('input10').value;
                                             // H2O //
                                             let H20 = ((input1Value * H2variable / AA3 * AI3) / 100).toFixed(2); 
                                             const input11Element = document.getElementById("input11");
-                                            if (isNaN(H20) || H20 === 'Infinity') {
+                                            if (isNaN(H20) || H20 === '-Infinity' || H20 === 'Infinity') {
                                                 input11Element.value = '***';
                                             }
                                             else{
@@ -445,6 +469,9 @@
                                             if (isNaN(O2) || O2 === 'Infinity') {
                                                 input6Element.value = '***';
                                             }
+                                            else if (O2 === '-Infinity') {
+                                                input6Element.value = '***';
+                                            }
                                             else{
                                                 input6Element.value = O2;
                                             }
@@ -453,7 +480,7 @@
                                             // Dew //   
                                             let AP3 = ((AO3 - 32) / 1.8).toFixed(2);
                                             const input12Element = document.getElementById("input12");
-                                            if (isNaN(AP3) || AP3 === 'Infinity') {
+                                            if (isNaN(AP3) || AP3 === '-Infinity' || AP3 === 'Infinity') {
                                                 input12Element.value = '***';
                                             }
                                             else{

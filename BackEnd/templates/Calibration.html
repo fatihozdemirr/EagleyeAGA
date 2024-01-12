@@ -6,8 +6,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="{{ url_for('static', filename='JavaScript/calibration.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{{ url_for('static', filename='JavaScript/sensor.js') }}"></script>
+    <script src="{{ url_for('static', filename='JavaScript/updateCalibrationData.js') }}"></script>
 </head>
 <body>
     <div class="container">
@@ -56,9 +57,18 @@
                 <button class="log-button" type="button">Show Calibration Logs</button>
             </div>
             <script>
-                var programStarted = false;
+                // var programStarted = false;
                 var numpadInputCompleted = false;
                 document.addEventListener('DOMContentLoaded', function() {
+                    updateCalibrationData()
+                    for (let index = 1; index <= 3; index++) {
+                        const inputField = document.getElementById(`inputoffset_${index}`);
+                        if (inputField) {
+                            const originalValue = parseFloat(inputField.value);
+                            const formattedValue = index === 2 ? originalValue.toFixed(3) : originalValue.toFixed(2);
+                            inputField.value = formattedValue;
+                        }
+                    }
                     document.querySelectorAll('.span-button').forEach(button => {
                         button.addEventListener('click', function() {
                             const action = this.getAttribute('data-action');
@@ -72,64 +82,21 @@
                             document.getElementById("keyboardContainer").style.display = "none";
                         });
                     });
-                    
-                    function updateSensorData() {
-                        $.ajax({
-                            type: 'GET',
-                            url: '/get_sensor_values',
-                            success: function(data) {
-                                $('#reading_1').val(data.co);
-                                $('#reading_2').val(data.co2);
-                                $('#reading_3').val(data.ch4);
-                                if(!programStarted){
-                                    for (let index = 1; index <= 3; index++) {
-                                        const readingID = `reading_${index}`;
-                                        const readingVAL = $(`#${readingID}`).val();
-                                        
-                                        if (readingID && readingVAL) {
-                                            fetch('/update_calibration_data', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                },
-                                                body: JSON.stringify({
-                                                    readingID: readingID,  
-                                                    readingVAL: readingVAL,
-                                                }),
-                                            })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                console.log(data);
-                                            })
-                                            .catch(error => {
-                                                console.error('Error:', error);
-                                            });
-                                        } 
-                                        else {
-                                            console.error('Invalid inputIdchange.');
-                                        }
-                                    }
-                                }
-                            },
-                            error: function() {
-                                console.error('Sensor data request failed.');
-                            }
-                        });
-                    }
-                    $(document).ready(function() {
-                        updateSensorData();
-                        setInterval(updateSensorData, 5000);  
-                    });
-                    
+
                     function updateTotalValue(index) {
                         var offsetValue = parseFloat($(`#inputoffset_${index}`).val()) || 0;
                         var readingValue = parseFloat($(`#reading_${index}`).val()) || 0;
+                        const digitCount = parseInt(index)=== 2 ? 3 : 2;
+                        var totalValue; // totalValue'yi dışarıda tanımla
 
                         if (!isNaN(offsetValue) && !isNaN(readingValue)) {
                             var totalValue = offsetValue + readingValue;
-                            $(`#value_${index}`).val(totalValue);
+                            $(`#value_${index}`).val((totalValue).toFixed(digitCount));
+                            // console.log(`index: ${index}, fixedTotalValue: ${totalValue}`);
+                            updateCalibrationData(`value_${index}`, $(`#value_${index}`).val());
                         } else {
                             $(`#value_${index}`).val(0);
+                            totalValue = 0; 
                         }
                     }
 
@@ -169,6 +136,7 @@
                                 updateTotalValue(index);
                             });
                         }, 1000);
+                        
                     });
 
                 });
@@ -220,11 +188,16 @@
                         const new_value = labelField.textContent;
                         const inputField = document.getElementById(inputId);
                         const input_id = inputField.id;
-                        inputField.value = labelField.textContent;
-
+                        // inputField.value = labelField.textContent;
+                        if(input_id === 'inputoffset_1' || input_id === 'inputoffset_3'){
+                            inputField.value = parseFloat(labelField.textContent).toFixed(2);
+                        }else if(input_id === 'inputoffset_2'){
+                            inputField.value = parseFloat(labelField.textContent).toFixed(3);
+                        }
                         if (new_value === '0' || input_id.value === '0') {
                             inputField.value ='0';
                         }
+                        console.log('input_id:',inputField.value)
                         if (input_id && new_value) {
                             // AJAX isteği ile Flask endpoint'ını çağır
                             fetch('/update_calibration_data', {
@@ -258,7 +231,18 @@
                     document.querySelector('.numpad .clear').addEventListener('click', function () {
                         //const inputId = "input-field"; // Buradaki inputId değerini kendi kullanımınıza göre değiştirin
                         // inputField.value = '0'; // Input alanını temizle
-                        labelField.textContent = '0';
+                        // labelField.textContent = '0';
+                        for (let index = 1; index <= 3; index++) {
+                            const inputField = document.getElementById(`inputoffset_${index}`);
+                            console.log('inputField:',inputField);
+                            if (inputField) {
+                                if (index === 2) {
+                                    inputField.value = '0.000';
+                                } else {
+                                    inputField.value = '0.00';
+                                }
+                            }
+                        }
                     });
                     // Pop-up'ı görünür yap
                     document.getElementById("keyboardContainer").style.display = "block";

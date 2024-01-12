@@ -5,6 +5,7 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from flask import Flask, jsonify
 import sensor
+import smartGas
 import threading 
 from threading import Thread
 import time
@@ -117,15 +118,24 @@ def get_toggle_status():
 def update_sensor_thread():
     while True:
         # Sensör değerlerini güncelle
-        sensor.readco()
-        sensor.readco2()
-        sensor.readch4()
-        time.sleep(5)
+        # sensor.readco()
+        # sensor.readco2()
+        # sensor.readch4()
+        smartGas.read_sensors()
+        time.sleep(10)
+        
+# Sensör okuma işlemini başlatan işlev
+def start_sensor_reading():
+    sensor_thread = threading.Thread(target=update_sensor_thread)
+    sensor_thread.start()
+
 
 def get_sensor_data():
     global sensor_data_cache
-    with sensor.lock:
-        sensor_data_cache = {'co': sensor.int_value_1, 'ch4': sensor.int_value_2, 'co2': sensor.int_value_3}
+    # with sensor.lock:
+    #     sensor_data_cache = {'co': sensor.int_value_1, 'ch4': sensor.int_value_2, 'co2': sensor.int_value_3}
+    with smartGas.lock:
+        sensor_data_cache = {'co': smartGas.co_value, 'co2': smartGas.co2_value, 'ch4': smartGas.ch4_value}
     return sensor_data_cache
 
 @app.route('/get_sensor_values', methods=['GET'])
@@ -139,10 +149,12 @@ def livedata():
     # Sensor verilerini al
     sensor_data = get_sensor_data()
     all_data = LiveTableDatas.query.all()
+    all_calibrationdata = CalibrationTableDatas.query.all()
+    values = [data.VALUE for data in all_calibrationdata]
     
     # Veritabanından toggle switch durumunu al
     toggle_status = get_toggle_status()
-    return render_template('livedata.html',sensor_data=sensor_data, all_data=all_data, toggle_status=toggle_status)
+    return render_template('livedata.html', values=values,sensor_data=sensor_data, all_data=all_data, toggle_status=toggle_status)
 
 @app.route('/update_data', methods=['POST'])
 def update_data():
@@ -203,12 +215,11 @@ def update_calibration_data():
         new_value = data.get('new_value')   
         readingID = data.get('readingID')
         readingVAL =data.get('readingVAL')
+        valueID = data.get('valueID')
+        valueVAL =data.get('valueVAL')
         
-        # print("input_id:",input_id)
-        # print("new_value:",new_value)
-        # print("readingID:",readingID)
-        # print("readingVAL:",readingVAL)
-        
+        # id_map = {'reading_1': 1, 'reading_2': 2, 'reading_3': 3}
+                
         # Burada ilgili input alanının güncellenmesi işlemini gerçekleştirin
         if input_id == 'inputoffset_1':
             CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
@@ -222,6 +233,12 @@ def update_calibration_data():
             CalibrationTableDatas.query.filter_by(id=2).update({'READING': readingVAL})
         elif readingID == 'reading_3':
             CalibrationTableDatas.query.filter_by(id=3).update({'READING': readingVAL})
+        elif valueID == 'value_1':
+            CalibrationTableDatas.query.filter_by(id=1).update({'VALUE': valueVAL})
+        elif valueID == 'value_2':
+            CalibrationTableDatas.query.filter_by(id=2).update({'VALUE': valueVAL})
+        elif valueID == 'value_3':
+            CalibrationTableDatas.query.filter_by(id=3).update({'VALUE': valueVAL})
 
         db.session.commit()  # Değişiklikleri kaydet
          # JSON formatında yanıt döndür
@@ -275,7 +292,8 @@ def Shutdown():
     return render_template('Shutdown.html')
 
 if __name__ == '__main__':
-    sensor_thread = Thread(target=update_sensor_thread)
-    sensor_thread.start()
+    # sensor_thread = Thread(target=update_sensor_thread)
+    # sensor_thread.start()
+    start_sensor_reading()
     # Flask uygulamasını başlat
     app.run(debug=False)
