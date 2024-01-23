@@ -3,9 +3,9 @@
 <head>
     <title>Calibration</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"> -->
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="{{ url_for('static', filename='JavaScript/sensor.js') }}"></script>
     <script src="{{ url_for('static', filename='JavaScript/updateCalibrationData.js') }}"></script>
@@ -39,15 +39,24 @@
                     {% for row in table_data %}
                         <tr>
                             <td><label class="gas-label">{{ row['GAS'] }}</label></td>
-                            <td><input type="text" id="inputoffset_{{ loop.index }}" name="inputoffset" value="{{ row['OFFSET'] }}" onclick="openNumpad('inputoffset_{{ loop.index }}')"></td>
+                            <td><input class="offset-input" type="text" id="inputoffset_{{ loop.index }}" name="inputoffset" value="{{ row['OFFSET'] }}" onclick="openNumpad('inputoffset_{{ loop.index }}')"></td>
                             <td><input class="reading-input" type="text" id="reading_{{ loop.index }}" name="reading" value="{{ row['READING'] }}" readonly="True"></td>
                             <td><input type="text" id="value_{{ loop.index }}" name="value" value="{{ row['VALUE'] }}" readonly="True"></td>
-                            <td><button class="span-button" id="buttonspan" type="button" data-action="{{ row['ACTIONS'] }}">SPAN</button></td>
+                            <td><button class="span-button" id="buttonspan_{{ loop.index }}" type="button" data-action="{{ row['ACTIONS'] }}" onclick="sendCalibrationRequest('buttonspan_{{ loop.index }}')">SPAN</button></td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
             <div id="keyboardContainer" class="popup"></div>
+            <div id="spanpopup" class="spanpopup">
+                <div class="spanpopup-content">
+                    <h2 id="popUpTitle">Span Calibration</h2>
+                    <label class="spanpopup-label" id="currentValue">Current Value: <span id="currentSensorValue">0.00</span></label>
+                    <input class="spanpopup-input" type="text" id="spannewvalue" placeholder="Enter new value!" onclick="openNumpad('spannewvalue')">
+                    <button id="calibratePopupButton">Calibrate</button>
+                    <button id="closePopupButton">Close</button>
+                </div>
+            </div>
             <div class="reset-button-container">
                 <div class="reset-content">
                     <label class="reset-label">Last Factory Calibration</label>
@@ -59,8 +68,54 @@
             <script>
                 // var programStarted = false;
                 var numpadInputCompleted = false;
+                var isButtonClicked = false;
                 document.addEventListener('DOMContentLoaded', function() {
                     updateCalibrationData()
+                    function openPopup() {
+                        var popup = document.getElementById("spanpopup");
+                        if (popup) {
+                            popup.style.display = "block";
+                        } else {
+                            console.error("Popup element not found.");
+                        }
+                    }
+
+                    var calibrateBtn = document.getElementById("calibratePopupButton");
+
+                    if (calibrateBtn) {
+                        calibrateBtn.addEventListener("click", function() {
+                            isButtonClicked = true;
+                            sendButtonClickStatusToServer(isButtonClicked);
+                        });
+                    } else {
+                        console.error("calibrateBtn not found.");
+                    }
+
+                    function closePopup() {
+                        var closeBt = document.getElementById("spanpopup");
+                        if (closeBt) {
+                            const clearspanvalue = document.getElementById("spannewvalue"); 
+                            clearspanvalue.value = '';
+                            closeBt.style.display = "none";
+                        } else {
+                            console.error("Popup element not found.");
+                        }
+                    }
+
+                    closePopupButton.addEventListener('click', function () {
+                        closePopup();
+                    });
+
+                    // SPAN butonlarına click event listener ekleyin
+                    var spanButtons = document.querySelectorAll('.span-button');
+                    spanButtons.forEach(function (button) {
+                        button.addEventListener('click', function () {
+                            var buttonId = button.id;
+                            sendCalibrationRequest(buttonId);
+                            openPopup(buttonId);
+                        });
+                    });
+
                     for (let index = 1; index <= 3; index++) {
                         const inputField = document.getElementById(`inputoffset_${index}`);
                         if (inputField) {
@@ -69,13 +124,19 @@
                             inputField.value = formattedValue;
                         }
                     }
-                    document.querySelectorAll('.span-button').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const action = this.getAttribute('data-action');
-                            console.log(`Performing action: ${action}`);
-                        });
-                    });
 
+                    ////////////   inputId problemi
+
+                    ///// numpad açılmıyor
+                    // document.querySelectorAll('input[name="inputoffset"]').forEach(function(element, index) {
+                    //     element.addEventListener('click', function() {
+                    //         var inputId = `inputoffset_${index + 1}`;  // index 0'dan başladığı için +1 eklenmiştir
+                    //         openNumpad(inputId);
+                    //         document.getElementById("keyboardContainer").style.display = "none";
+                    //     });
+                    // });
+
+                    /// numpad açılıyor
                     document.querySelectorAll('input[name="inputoffset"]').forEach(function(element) {
                         element.addEventListener('click', function() {
                             openNumpad(inputId);
@@ -139,11 +200,132 @@
                         
                     });
 
+                    document.querySelectorAll('.spanpopup-input').forEach(function(element) {
+                        element.addEventListener('click', function() {
+                            document.querySelector('.numpad .enter').addEventListener('click', function () {
+                                const Conc_cal = document.getElementById("spannewvalue").value; 
+                                console.log('Conc_cal:',Conc_cal)
+                                fetch('/update_conc_cal', { 
+                                    method: 'POST', 
+                                    headers: { 
+                                        'Content-Type': 'application/json' 
+                                    }, 
+                                    body: JSON.stringify({ 
+                                        conc_cal: Conc_cal, 
+                                    }), 
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(data);
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                            });
+                        });
+                    });               
+                });
+
+                function sendButtonClickStatusToServer(status) {
+                    fetch('/update_button_status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ buttonStatus: status })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+
+                let isRequestPending = false;
+                function sendCalibrationRequest(buttonId, action) {
+                    const popUpTitle = document.getElementById('popUpTitle');
+                    const buttonElement = document.getElementById(buttonId);
+                    const currentValueLabel = document.getElementById('currentValue');
+
+                    if (popUpTitle && buttonElement) {
+                        let calibrationType, sensorReading, decimalPlaces;
+
+                        // Butonun ID'sinden numarayı çıkartarak calibrationType belirle
+                        const buttonNumber = buttonId.replace('buttonspan_', '');
+
+                        // CalibrationType'ı belirle
+                        switch (buttonNumber) {
+                            case '1':
+                                calibrationType = '%CO';
+                                sensorReading = sensorData.reading_1;
+                                decimalPlaces = 2;
+                                break;
+                            case '2':
+                                calibrationType = '%CO2';
+                                sensorReading = sensorData.reading_2;
+                                decimalPlaces = 3;
+                                break;
+                            case '3':
+                                calibrationType = '%CH4';
+                                sensorReading = sensorData.reading_3;
+                                decimalPlaces = 2;
+                                break;
+                            default:
+                                calibrationType = 'Unknown';
+                        }
+
+                        popUpTitle.textContent = `${calibrationType} Enter Span Value`;
+                        if (!isNaN(parseFloat(sensorReading))) {
+                            currentValueLabel.textContent = `${calibrationType} Live Span Value: ${parseFloat(sensorReading).toFixed(decimalPlaces)}`;
+                        } else {
+                            console.error('Invalid sensor data:', sensorReading);
+                        }                     
+                    }
+
+                    // JavaScript ile Flask endpoint'ine istek gönder
+                    if (isRequestPending) {
+                        console.log(`Request for ${buttonId} is already pending. Ignoring this request.`);
+                        isRequestPending = false;
+                        return;
+                    }
+                    isRequestPending = true;
+                    fetch('/start_calibration', { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json', 
+                        }, 
+                        body: JSON.stringify({ 
+                            buttonId, action 
+                        }) 
+                    })
+                    .then(response => {
+                        console.log('Network response:', response);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(`Response data for ${buttonId}:`, data);
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    })
+                    .finally(() => {
+                        isRequestPending = false;
+                    });
+                }
+
+                document.querySelectorAll('.span-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const buttonId = button.id;
+                        sendCalibrationRequest(buttonId)
+                    });
                 });
 
                 function openNumpad(inputId) {
                     document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
-                    
                     const inputField = document.getElementById(inputId);
                     const labelField = document.getElementById("numpadLabel"); 
                     labelField.textContent = inputField.value;
@@ -156,7 +338,7 @@
 
                             if (inputField.value.charAt(0) === '0') {
                                 // Başında "0" varsa, "0" karakterini kaldır
-                                inputField.value = inputField.value.slice(1);
+                                inputField.value = inputField.value.slice(1);3
                             }
 
                             if(!(value =="Enter" || value =="Space"|| value =="Clear" || value =="X")){
@@ -193,6 +375,8 @@
                             inputField.value = parseFloat(labelField.textContent).toFixed(2);
                         }else if(input_id === 'inputoffset_2'){
                             inputField.value = parseFloat(labelField.textContent).toFixed(3);
+                        }else if(input_id === 'spannewvalue'){
+                            inputField.value = labelField.textContent;
                         }
                         if (new_value === '0' || input_id.value === '0') {
                             inputField.value ='0';
@@ -232,16 +416,33 @@
                         //const inputId = "input-field"; // Buradaki inputId değerini kendi kullanımınıza göre değiştirin
                         // inputField.value = '0'; // Input alanını temizle
                         // labelField.textContent = '0';
-                        for (let index = 1; index <= 3; index++) {
-                            const inputField = document.getElementById(`inputoffset_${index}`);
-                            console.log('inputField:',inputField);
-                            if (inputField) {
-                                if (index === 2) {
-                                    inputField.value = '0.000';
-                                } else {
-                                    inputField.value = '0.00';
-                                }
-                            }
+                        labelField.textContent = '0';
+                        const new_value = labelField.textContent;
+                        const input_id = inputField.value;
+
+                        if (input_id && new_value) {
+                            // AJAX isteği ile Flask endpoint'ını çağır
+                            fetch('/update_calibration_data', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
+                                    new_value: new_value,
+                                }),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                // İsteğin başarılı olması durumunda yapılacak işlemler
+                                console.log(data);
+                            })
+                            .catch(error => {
+                                // İstekte hata olması durumunda yapılacak işlemler
+                                console.error('Error:', error);
+                            });
+                        } else {
+                            console.error('Invalid inputIdchange.');
                         }
                     });
                     // Pop-up'ı görünür yap

@@ -121,7 +121,8 @@ def update_sensor_thread():
         # sensor.readco()
         # sensor.readco2()
         # sensor.readch4()
-        smartGas.read_sensors()
+        if not smartGas.calibration_in_progress:
+            smartGas.read_sensors()
         time.sleep(10)
         
 # Sensör okuma işlemini başlatan işlev
@@ -143,6 +144,40 @@ def get_sensor_values():
     with lock:
         sensor_data = get_sensor_data()
     return jsonify(sensor_data)
+
+@app.route('/update_conc_cal', methods=['POST'])
+def update_conc_cal():
+    data = request.get_json()
+    conc_cal = data.get('conc_cal')
+    
+    smartGas.update_conc_cal(conc_cal)
+
+    return jsonify({'message': 'Conc_cal updated successfully'})
+
+@app.route('/update_button_status', methods=['POST'])
+def update_button_status():
+    global button_status
+    data = request.get_json()
+    button_status = data.get('buttonStatus', False)
+    
+    smartGas.calibratebuttoninformation(button_status)
+
+    return jsonify({'message': 'Button status updated successfully'})
+
+@app.route('/start_calibration', methods=['POST'])
+def start_calibration():
+    global calibration_in_progress
+    button_id = request.json.get('buttonId', None)
+    action = request.json.get('action', None)
+    
+    # Span_old değerini okuma işlemi başlatılıyor
+    calibration_in_progress = True
+    smartGas.span_calibration_queries(button_id, action)
+    print("Burada sensöre kalibrasyon verilerini gönder ve cevabı al")
+    # Span_old değerini okuma işlemi tamamlandı
+    calibration_in_progress = False
+    
+    return {'status': 'success', 'message': f'Calibration started successfully for {button_id} with action: {action}'}
 
 @app.route('/livedata')
 def livedata():
@@ -295,5 +330,6 @@ if __name__ == '__main__':
     # sensor_thread = Thread(target=update_sensor_thread)
     # sensor_thread.start()
     start_sensor_reading()
+    time.sleep(5)
     # Flask uygulamasını başlat
     app.run(debug=False)

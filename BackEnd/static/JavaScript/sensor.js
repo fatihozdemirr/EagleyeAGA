@@ -59,7 +59,7 @@ function updateSensorData() {
 }
 $(document).ready(function() {
     updateSensorData();
-    setInterval(updateSensorData, 5000);  
+    setInterval(updateSensorData, 1000);  
 });
 
 function updateCalibrationInputs() {

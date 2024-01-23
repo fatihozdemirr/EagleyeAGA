@@ -358,12 +358,94 @@ input {
     border: 1px solid #ccc;
     padding: 10px;
     background-color: #fff;
-    z-index: 1;
+    z-index: 1001;
 }
 
 .popup-content {
     max-height: 200px;
     overflow-y: auto;
+}
+
+.spanpopup {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    background-color: #fff;
+    padding: 20px;
+    z-index: 1000;
+    width: 400px;
+    height: 200px;
+}
+
+.spanpopup-content {
+    text-align: left;
+    margin-top: 10px;
+    font-family: Calibri, sans-serif;
+    font-weight: bold;
+    font-size: 28px;
+}
+
+.spanpopup-content h2 {
+    font-family: Calibri, sans-serif;
+    font-weight: bold;
+    font-size: 26px;
+    margin-top: -10px; /* Veya ihtiyaca göre bir boşluk */
+}
+
+.spanpopup-label {
+    font-size: 18px;
+    color: #333;
+    display: block; /* Yeni eklenen stil */
+    margin-left: 5px;
+    height: 40px;
+    width: 380px;
+    border: none;
+    align-items: center;
+}
+
+.spanpopup-input {
+    padding: 8px;
+    width: calc(100% - 16px); /* Yeni eklenen stil */
+    box-sizing: border-box;
+    display: block; /* Yeni eklenen stil */
+    margin-left: 5px;
+    margin-top: 5px;
+    height: 40px;
+    text-align: left;
+}
+
+#calibratePopupButton {
+    position: absolute;
+    bottom: 10px; /* İstenilen alt boşluk miktarı */
+    right: 30px; /* İstenilen sağ boşluk miktarı */
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#calibratePopupButton:hover {
+    background-color: #f0af38;
+}
+
+#closePopupButton {
+    position: absolute;
+    bottom: 10px; /* İstenilen alt boşluk miktarı */
+    right: 125px; /* İstenilen sağ boşluk miktarı */
+    padding: 8px 16px;
+    background-color: #bebebe;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#closePopupButton:hover {
+    background-color: #0056b3;
 }
 
 .keyboard {
