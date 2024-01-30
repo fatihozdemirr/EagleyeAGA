@@ -71,6 +71,17 @@
                 var isButtonClicked = false;
                 document.addEventListener('DOMContentLoaded', function() {
                     updateCalibrationData()
+
+                    function updateSpanButtonStyle() {
+                        var spanButtons = document.querySelectorAll('.span-button');
+                        for (var i = 0; i < spanButtons.length; i++) {
+                            spanButtons[i].style.backgroundColor = '{{ "red" if calibration_in_progress else "#4CAF50" }}'; // Kırmızı veya yeşil renk
+                        }
+                    }
+
+                    // calibration_in_progress flag'ine göre stil güncellemesi yap
+                    updateSpanButtonStyle();4
+
                     function openPopup() {
                         var popup = document.getElementById("spanpopup");
                         if (popup) {
@@ -152,6 +163,7 @@
 
                         if (!isNaN(offsetValue) && !isNaN(readingValue)) {
                             var totalValue = offsetValue + readingValue;
+                            console.log('totalValue:',totalValue)
                             $(`#value_${index}`).val((totalValue).toFixed(digitCount));
                             // console.log(`index: ${index}, fixedTotalValue: ${totalValue}`);
                             updateCalibrationData(`value_${index}`, $(`#value_${index}`).val());
