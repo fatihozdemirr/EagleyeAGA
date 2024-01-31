@@ -127,7 +127,7 @@ body {
 .title-text {
     font-family: Calibri, sans-serif;
     font-size: 30px;
-    margin: 5px;
+    margin: 5,0,0,0;
     padding: 5px;
     text-align: left;
 }
@@ -263,7 +263,8 @@ button:hover {
     margin-left: 195px; /* İhtiyacınıza göre ayarlayabilirsiniz */
 }
 
-label {
+ 
+/* label {
     display: block;
     font-family: Calibri, sans-serif;
     font-size: 18px;
@@ -275,9 +276,22 @@ label {
     width: 360px;
     height: 50px;
     line-height: 50px;
-}
+}  */
 
-input {
+.label-calibration {
+    display: block;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 360px;
+    height: 50px;
+    line-height: 50px;
+} 
+
+/* input {
     display: block;
     background-color: #d1d1d1;
     font-family: Calibri, sans-serif;
@@ -286,14 +300,33 @@ input {
     border: none;
     padding: 10px 0px;
     border-radius: 0.5rem;
-    /* cursor: pointer; */
     font-weight: bold;
     margin-top: -48px;
     margin-left: 140px;
     width: 210px;
     height: 25px;
     text-align: center;
+}  */
+
+.input-calibration{
+display: block;
+color: #333;
+font-weight: bold;
+border: 1px solid #ccc;
+background-color: #d1d1d1;
+border-radius: 10px;
+width: 100%; /* input'ların hücre genişliğini tam doldurması için */
+line-height: 50px;
+font-family: Calibri, sans-serif;
+font-size: 18px;
+border-bottom: 1px solid #dddddd;
+text-align: center;
+padding: 5px;
+height: 35px;
+max-width: 135px; /* Maksimum genişlik */
+
 }
+
 
 .lvedta-label {
     position: relative;
@@ -328,6 +361,15 @@ input {
     background-color: #ccc; /* Çizgi rengi */
     margin: 14px;
     margin-left: 220px;
+}
+
+.calibration-custom-hr {
+    border: none; /* Mevcut sınırı kaldır */
+    height: 1px; /* Çizgi kalınlığı */
+    width: 724px;
+    background-color: #ccc; /* Çizgi rengi */
+    margin: 3px;
+    margin-left: 40px;
 }
 
 .info-image {
@@ -556,24 +598,24 @@ th {
     font-size: 18px; /* Metin boyutu */
     font-family: Calibri, sans-serif;
 }
+
 .gas-label {
     font-family: Calibri, sans-serif;
     font-size: 18px;
     border: none;
     text-align: center;
-    padding: 5px;
+    padding: 10px;
     border-radius: 0.5rem;
     font-weight: bold;
-    text-align: center;
+    justify-content: center;
     height: 35px;
     max-width: 135px; /* Maksimum genişlik */
     margin-left: 0px;
     line-height: 2; 
+    min-width: 55px;
 }
 .reset-content {
     display: flex; /* İçerikleri yan yana hizalar */
-    margin-left: -200px;
-    margin-top: -20px;
 }
 
 .reset-label {
@@ -582,9 +624,13 @@ th {
     border: none;
     height: 40px;
     border-bottom: 2px solid #ff0000;
-    font-size: 19px; /* Metin boyutu */
+    border-radius: 10px; 
     font-family: Calibri, sans-serif;
-    justify-content: center; /* Dikeyde ortala */
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    justify-content: center; 
+    align-items: flex-end
 }
 .reset-button {
     background-color: #ff9419; /* Arka plan rengi */
@@ -608,10 +654,9 @@ th {
     background-color: #3ab0ff; /* Arka plan rengi */
     width: 780px;
     color: white; /* Metin rengi */
-    padding: 10px 20px; /* Dış boşluk (padding) */
+    padding: 5px 20px; /* Dış boşluk (padding) */
     border-radius: 10px; /* Kenar yuvarlaklığı */
     font-size: 19px; /* Metin boyutu */
     font-family: Calibri, sans-serif;
-    margin-top: 0px;
     margin-left: 10px;
 }

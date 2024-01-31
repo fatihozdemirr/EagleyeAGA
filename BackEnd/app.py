@@ -14,7 +14,7 @@ from GlobalVars import globalVars
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
 app.app_context().push()
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Reel Bilgisayar/python/EagleyeAGA/BackEnd/users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + globalVars.DatabasePath 
 db = SQLAlchemy(app)
 db.create_all()
 
@@ -132,6 +132,7 @@ def get_sensor_data():
     global sensor_data_cache
     with smartGas.lock:
         sensor_data_cache = {'co': globalVars.CO_Read, 'co2': globalVars.CO2_Read, 'ch4': globalVars.CH4_Read}
+
     return sensor_data_cache
 
 @app.route('/get_sensor_values', methods=['GET'])
@@ -220,17 +221,29 @@ def Chart():
 def Calibration():
     sensor_data = get_sensor_data()
     all_calibrationdata = CalibrationTableDatas.query.all()
-    table_data = [
-        {
-            'GAS': data.GAS,
-            'OFFSET': data.OFFSET,
-            'READING': data.READING,
-            'VALUE': data.VALUE,
-            'ACTIONS': 'Default Action'
-        }
-        for data in all_calibrationdata
-    ]
-    return render_template('Calibration.html', sensor_data=sensor_data, table_data=table_data, all_calibrationdata=all_calibrationdata)
+    
+    globalVars.CO_Offset = all_calibrationdata[0].OFFSET
+    globalVars.CO2_Offset = all_calibrationdata[1].OFFSET
+    globalVars.CH4_Offset = all_calibrationdata[2].OFFSET
+    
+    CO_Read = globalVars.CO_Read
+    CO2_Read = globalVars.CO2_Read
+    CH4_Read = globalVars.CH4_Read
+    
+    # globalVars.CO_Result= float(globalVars.CO_Read)+float(globalVars.CO_Offset)
+
+    
+    # table_data = [
+    #     {
+    #         'GAS': data.GAS,
+    #         'OFFSET': data.OFFSET,
+    #         'READING': data.READING,
+    #         'VALUE': data.VALUE,
+    #         'ACTIONS': 'Default Action'
+    #     }
+    #    for data in all_calibrationdata
+    # ]
+    return render_template('Calibration.html', CO_Result=globalVars.CO_Result,CO_Read=CO_Read,CO2_Read=CO2_Read,CH4_Read=CH4_Read,CO_Offset=globalVars.CO_Offset,CO2_Offset=globalVars.CO2_Offset,CH4_Offset=globalVars.CH4_Offset,sensor_data=sensor_data,  all_calibrationdata=all_calibrationdata)
 
 @app.route('/update_calibration_data', methods=['POST'])
 def update_calibration_data():
@@ -238,31 +251,34 @@ def update_calibration_data():
         data = request.get_json()
         input_id = data.get('input_id')  
         new_value = data.get('new_value')   
-        readingID = data.get('readingID')
-        readingVAL =data.get('readingVAL')
-        valueID = data.get('valueID')
-        valueVAL =data.get('valueVAL')
-
-        if input_id == 'inputoffset_1':
+        # readingID = data.get('readingID')
+        # readingVAL =data.get('readingVAL')
+        # valueID = data.get('valueID')
+        # valueVAL =data.get('valueVAL')             
+        if input_id == 'CO_inputoffset':
             CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
-        elif input_id == 'inputoffset_2':
+            globalVars.CO_Offset = new_value
+        elif input_id == 'CO2_inputoffset':
             CalibrationTableDatas.query.filter_by(id=2).update({'OFFSET': new_value})
-        elif input_id == 'inputoffset_3':
+            globalVars.CO2_Offset = new_value
+        elif input_id == 'CH4_inputoffset':
             CalibrationTableDatas.query.filter_by(id=3).update({'OFFSET': new_value})
-        elif readingID == 'reading_1':
-            CalibrationTableDatas.query.filter_by(id=1).update({'READING': readingVAL})
-        elif readingID == 'reading_2':
-            CalibrationTableDatas.query.filter_by(id=2).update({'READING': readingVAL})
-        elif readingID == 'reading_3':
-            CalibrationTableDatas.query.filter_by(id=3).update({'READING': readingVAL})
-        elif valueID == 'value_1':
-            CalibrationTableDatas.query.filter_by(id=1).update({'VALUE': valueVAL})
-        elif valueID == 'value_2':
-            CalibrationTableDatas.query.filter_by(id=2).update({'VALUE': valueVAL})
-        elif valueID == 'value_3':
-            CalibrationTableDatas.query.filter_by(id=3).update({'VALUE': valueVAL})
+            globalVars.CH4_Offset = new_value
+        # elif readingID == 'reading_1':
+        #     CalibrationTableDatas.query.filter_by(id=1).update({'READING': readingVAL})
+        # elif readingID == 'reading_2':
+        #     CalibrationTableDatas.query.filter_by(id=2).update({'READING': readingVAL})
+        # elif readingID == 'reading_3':
+        #     CalibrationTableDatas.query.filter_by(id=3).update({'READING': readingVAL})
+        # elif valueID == 'value_1':
+        #     CalibrationTableDatas.query.filter_by(id=1).update({'VALUE': valueVAL})
+        # elif valueID == 'value_2':
+        #     CalibrationTableDatas.query.filter_by(id=2).update({'VALUE': valueVAL})
+        # elif valueID == 'value_3':
+        #     CalibrationTableDatas.query.filter_by(id=3).update({'VALUE': valueVAL})
 
         db.session.commit()  
+        
         # JSON formatında yanıt döndür
         return jsonify({'status': 'success', 'message': 'Data updated successfully'})
 
