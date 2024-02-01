@@ -17,7 +17,7 @@ body {
     width: 400px;  /* Genişlik belirleme */
 }
 /* Field (input) alanları arasındaki boşluğu ayarlamak için */
-.login-container input {
+.login-container-input {
     /*margin: 3px;  Yukarıdan ve alttan 3 piksel boşluk bırakır */
     margin-top: -14px;
     margin-left: 20px;
@@ -26,9 +26,10 @@ body {
     width: 250px;  /* Genişlik belirleme */
     text-align: left;
     border-bottom: 2px solid #000;
+    border-radius: 10px; 
     background-color: rgb(255, 255, 255);
 }
-.login-container button {
+.login-container-button {
     margin: 20px;
     margin-top: 10px;
     background-color: #007bff; /* Arka plan rengi */
@@ -48,6 +49,7 @@ body {
 .label1 {
     font-family: Calibri, sans-serif; /* Etiketin yazı tipi */
     font-size: 18px; /* Yazı boyutu */
+    font-weight: bold;
     color: #333; /* Yazı rengi */
     margin-bottom: 10px; /* Alt boşluk */
     margin-left: 15px;
@@ -127,7 +129,7 @@ body {
 .title-text {
     font-family: Calibri, sans-serif;
     font-size: 30px;
-    margin: 5,0,0,0;
+    margin-top: 0px;
     padding: 5px;
     text-align: left;
 }
@@ -141,6 +143,11 @@ button {
     cursor: pointer; /* Fare imleci el işareti */
     margin: 7px;
     padding: 10px;
+}
+
+.canvas-style{
+    margin-top : -45px;
+    margin-left :3px;
 }
 
 .custom-button {
@@ -259,12 +266,12 @@ button:hover {
 }
 
 .labelright-container {
-    margin-top: -341px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+    margin-top: -340px; /* İhtiyacınıza göre ayarlayabilirsiniz */
     margin-left: 195px; /* İhtiyacınıza göre ayarlayabilirsiniz */
 }
 
  
-/* label {
+.label-livedata {
     display: block;
     font-family: Calibri, sans-serif;
     font-size: 18px;
@@ -276,7 +283,21 @@ button:hover {
     width: 360px;
     height: 50px;
     line-height: 50px;
-}  */
+} 
+
+.label-livedata-unforbidden {
+    display: block;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    margin-left: 220px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 360px;
+    height: 50px;
+    line-height: 50px;
+} 
 
 .label-calibration {
     display: block;
@@ -291,7 +312,7 @@ button:hover {
     line-height: 50px;
 } 
 
-/* input {
+.input-livedata {
     display: block;
     background-color: #d1d1d1;
     font-family: Calibri, sans-serif;
@@ -306,7 +327,7 @@ button:hover {
     width: 210px;
     height: 25px;
     text-align: center;
-}  */
+} 
 
 .input-calibration{
 display: block;
@@ -327,12 +348,11 @@ max-width: 135px; /* Maksimum genişlik */
 
 }
 
-
 .lvedta-label {
     position: relative;
 }
 
-.lvedta-label input {
+.label-livedata input {
     display: block;
     background-color: #ffaaaa;
     font-family: Calibri, sans-serif;
@@ -341,7 +361,7 @@ max-width: 135px; /* Maksimum genişlik */
     border: none;
     padding: 10px 0px;
     border-radius: 0.5rem;
-    /* cursor: pointer; */
+    cursor: pointer; 
     font-weight: bold;
     margin-top: -48px;
     margin-left: 140px;
@@ -349,10 +369,6 @@ max-width: 135px; /* Maksimum genişlik */
     height: 25px;
     text-align: center;
 } 
-
-.form-group {
-    margin-bottom: 4px; /* Her form grubu arasında bir boşluk bırakmak için */
-}
 
 .custom-hr {
     border: none; /* Mevcut sınırı kaldır */

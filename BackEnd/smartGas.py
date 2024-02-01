@@ -14,6 +14,7 @@ span_old_3 = 0
 button_id = None
 button_status = False
 concentration_cal = 0.0
+calibration_in_progress = False
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Reel Bilgisayar/python/EagleyeAGA/BackEnd/users.db'
@@ -35,7 +36,7 @@ class sensor_spanold_datatable(db.Model):
 
 # Lock for thread safety
 lock = threading.Lock()
-calibration_in_progress = False
+
 
 def calculate_crc(data_bytes):
     crc = 0xFFFF
@@ -53,7 +54,7 @@ def calculate_crc(data_bytes):
     return crc.to_bytes(2, byteorder='little')
 ########## burası
 def read_sensor(sensor_id, sensor_name, register_address, quantity, ser, button_id):
-    global calibration_in_progress,span_old_1,span_old_2,span_old_3
+    global span_old_1,span_old_2,span_old_3
     try:
         slave_id_hex = format(sensor_id, '02X')
         register_address = 84 if calibration_in_progress else 10
@@ -65,82 +66,46 @@ def read_sensor(sensor_id, sensor_name, register_address, quantity, ser, button_
         
         # 10 Adres Sorgusundaki Yeni Değerler
         response = ser.read(7)  # 7 byte uzunluğunda yanıt bekleniyor
-        if len(response) == 7 and calculate_crc(response[:-2]) == response[-2:]:
+       # if len(response) == 7 and calculate_crc(response[:-2]) == response[-2:]:
             # Yanıt doğru ise, 4. ve 5. byte'lar arasındaki değeri çıkart
-            sensor_value_bytes = response[3:5]
-            sensor_value = int.from_bytes(sensor_value_bytes, byteorder='big')
-            if not calibration_in_progress:
-                if sensor_id == 43:             ## sensörün manueldeki cevap karşılığı = 5 = 0.01
-                    sensor_value *= 0.01
-                elif sensor_id == 2:            ## sensörün manueldeki cevap karşılığı = 4 = 0.001
-                    sensor_value *= 0.001
-                elif sensor_id == 79:           ## sensörün manueldeki cevap karşılığı = 4 = 0.001
-                    sensor_value *= 0.001
+        sensor_value_bytes = response[3:5]
+        sensor_value = int.from_bytes(sensor_value_bytes, byteorder='big')
+        if not calibration_in_progress:
+            if sensor_id == 43:             ## sensörün manueldeki cevap karşılığı = 5 = 0.01
+                sensor_value *= 0.01
+            elif sensor_id == 2:            ## sensörün manueldeki cevap karşılığı = 4 = 0.001
+                sensor_value *= 0.001
+            elif sensor_id == 79:           ## sensörün manueldeki cevap karşılığı = 4 = 0.001
+                sensor_value *= 0.001
 
-                # Sensördeki Anlık Okunan Değerler
-                if sensor_id == 43:
-                    globalVars.CO_Read = "{:.2f}".format(sensor_value) 
-                    print('co_value:',globalVars.CO_Read )
-                elif sensor_id == 2:
-                    globalVars.CO2_Read = "{:.3f}".format(sensor_value)
-                elif sensor_id == 79:
-                    globalVars.CH4_Read = "{:.2f}".format(sensor_value)
+            # Sensördeki Anlık Okunan Değerler
+            if sensor_id == 43:
+                globalVars.CO_Read = float("{:.2f}".format(sensor_value))
+                globalVars.CO_Result = globalVars.CO_Read + globalVars.CO_Offset
+            elif sensor_id == 2:
+                globalVars.CO2_Read = float("{:.3f}".format(sensor_value))
+                globalVars.CO2_Result = globalVars.CO2_Read + globalVars.CO_Offset
+            elif sensor_id == 79:
+                globalVars.CH4_Read = float("{:.2f}".format(sensor_value))
+                globalVars.CH4_Result = globalVars.CH4_Read + globalVars.CO_Offset
                     
-                # # Veritabanına güncelleme işlemini gerçekleştir
-                # with app.app_context():
-                #     sensor_reading = sensor_reading_datatable.query.filter_by(id=1).first()
-                #     if sensor_reading:
-                #         sensor_reading.CO = float(co_value)
-                #         sensor_reading.CO2 = float(co2_value)
-                #         sensor_reading.CH4 = float(ch4_value)
-                #     else:
-                #         sensor_reading = sensor_reading_datatable(id=1, CO=float(co_value), CO2=float(co2_value), CH4=float(ch4_value))
-                #         db.session.add(sensor_reading)
-
-                #     # Değişiklikleri veritabanına uygula
-                #     db.session.commit()
-                    
-            # 84 Adres Sorgusunda Manueldeki Formülde Bulunan Span_old Değeri
-            if calibration_in_progress:
-                if sensor_id == 43 and button_id == 'buttonspan_1':
-                    span_old_1 = sensor_value
-                    print('spanold1:',span_old_1)
-                    update_calibration_data('span_old_1', span_old_1)
-                elif sensor_id == 2 and button_id == 'buttonspan_2':
-                    span_old_2 = sensor_value
-                    print('spanold2:',span_old_2)
-                    update_calibration_data('span_old_2', span_old_2)
-                elif sensor_id == 79 and button_id == 'buttonspan_3':
-                    span_old_3 = sensor_value
-                    print('spanold3:',span_old_3)
-                    update_calibration_data('span_old_3', span_old_3)
-                calibration_in_progress = False
-                print("button_id3:",button_id)
-                print(f"calibration_in_progressüst: {calibration_in_progress}")
+        # 84 Adres Sorgusunda Manueldeki Formülde Bulunan Span_old Değeri
         else:
-            # # Veritabanına güncelleme işlemini gerçekleştir
-            # with app.app_context():
-            #     sensor_reading = sensor_reading_datatable.query.filter_by(id=1).first()
-            #     if sensor_reading:
-            #         sensor_reading.CO = 0.00
-            #         sensor_reading.CO2 = 0.000
-            #         sensor_reading.CH4 = 0.00
-            #         print('else sensor_reading ok')
-            #     else:
-            #         sensor_reading = sensor_reading_datatable(id=1, CO=float(co_value), CO2=float(co2_value), CH4=float(ch4_value))
-            #         db.session.add(sensor_reading)
-
-            #     # Değişiklikleri veritabanına uygula
-            #     db.session.commit()
-            print(f"CRC kontrolü başarısız. {sensor_name} (ID: {sensor_id}) yanıtı kontrol edin.")
+            if sensor_id == 43 and button_id == 'buttonspan_1':
+                span_old_1 = sensor_value
+                update_calibration_data('span_old_1', span_old_1)
+            elif sensor_id == 2 and button_id == 'buttonspan_2':
+                span_old_2 = sensor_value
+                update_calibration_data('span_old_2', span_old_2)
+            elif sensor_id == 79 and button_id == 'buttonspan_3':
+                span_old_3 = sensor_value
+                update_calibration_data('span_old_3', span_old_3)
 
     except KeyboardInterrupt:
         print("Kullanıcı tarafından kesildi.")
     except Exception as e:
         print("Hatastr:", str(e))
-        print("Hata:", (e))
-        # Hata durumunda geri al (rollback)
-        db.session.rollback()
+
 
 def update_calibration_data(column_name, value):
     # Veritabanına güncelleme işlemini gerçekleştir
@@ -191,12 +156,11 @@ def read_and_calibrate_sensor(sensor_id, sensor_name, button_id):
         print(f"Hata: {e}")
         
 # SPAN fonksiyonunu çağırarak sensör Span_old değerini okuma işlemlerini başlat
-def span_calibration_queries(button_id, action):
-    global calibration_in_progress
+def span_calibration_queries(button_id, calibrationState ,action):
+    calibration_in_progress = calibrationState
     print("button_id1:",button_id)
     try:
         if button_id in ['buttonspan_1', 'buttonspan_2', 'buttonspan_3']:
-            calibration_in_progress = True
             if calibration_in_progress:            
                 if button_id == 'buttonspan_1':
                     read_and_calibrate_sensor(43, "%CO", button_id)
@@ -213,13 +177,13 @@ def span_calibration_queries(button_id, action):
         print(f"Hata: {e}")
         
     finally:
-        print("Span da 84 adresinden sorgu yapıldı, spanold değeri sorgulandı.")
         calibration_in_progress = False
+        print("Span da 84 adresinden sorgu yapıldı, spanold değeri sorgulandı.")      
         print(f"calibration_in_progressalt: {calibration_in_progress}")
     
 # Timer fonksiyonunu çağırarak sensör OKUMA işlemlerini başlat
 def read_sensors():
-    global co_value, co2_value, ch4_value, calibration_in_progress
+    global co_value, co2_value, ch4_value
     with lock:
         threading.Timer(1, read_sensors).start()  
         if not calibration_in_progress:
@@ -229,10 +193,29 @@ def read_sensors():
             # time.sleep(0.3)
             read_sensor(79, "%CH4", 10, 1, ser,'some_button_id')
             # time.sleep(0.3)
-            print("Sensör okumaları devam ediyor.")
+            #print("Sensör okumaları devam ediyor.")
 
         else:
             print("Kalibrasyon işlemi başladı.")
+ 
+def update_ui(socketio):
+    while True:
+        # SocketIO üzerinden güncel değerleri gönder.
+        socketio.emit('sensor_data', {'co_offset': globalVars.CO_Offset, 
+                                      'co2_offset': globalVars.CO2_Offset, 
+                                      'ch4_offset': globalVars.CH4_Offset,
+                                      
+                                      'co_read': globalVars.CO_Read, 
+                                      'co2_read': globalVars.CO2_Read, 
+                                      'ch4_read': globalVars.CH4_Read,
+                                      
+                                      'co_result':globalVars.CO_Read + globalVars.CO_Offset,
+                                      'co2_result':globalVars.CO2_Read + globalVars.CO2_Offset,
+                                      'ch4_result':globalVars.CH4_Read + globalVars.CH4_Offset,
+                                      })
+        
+        # 10 milisaniye bekleyerek sürekli veri gönder.
+        socketio.sleep(0.5)
         
 # İlk okumayı başlat
 # read_sensors()

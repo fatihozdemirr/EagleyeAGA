@@ -19,9 +19,9 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toogle.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="{{ url_for('static', filename='JavaScript/sensor.js') }}"></script>
-    <!-- <script src="{{ url_for('static', filename='JavaScript/updateCalibrationData.js') }}"></script> -->
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"> -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script> 
+    <script src="{{ url_for('static', filename='JavaScript/socket_connection.js') }}"></script> 
+
 </head>
 <body>
     
@@ -41,25 +41,25 @@
         <div class="mainbottom-container">
             <h1 class="title-text">Live Data</h1>
             <div class="label-container">
-                <label class=" form-group lvedta-label" for="input1">%CO
-                    <input type="text" id="input1" name="input1" readonly="True">
+                <label class=" label-livedata" for="CO_value">%CO
+                    <input type="text" id="CO_value" name="CO_value" readonly="True">
                 </label>
 
-                <label class="form-group lvedta-label" for="input2">%CO2
-                    <input type="text" id="input2" name="input2" readonly="True">
+                <label class="label-livedata" for="CO2_value">%CO2
+                    <input type="text" id="CO2_value" name="CO2_value" readonly="True">
                 </label>
 
-                <label class="form-group lvedta-label" for="input3">%CH4
-                    <input type="text" id="input3" name="input3" readonly="True">
+                <label class="label-livedata" for="CH4_value">%CH4
+                    <input type="text" id="CH4_value" name="CH4_value" readonly="True">
                 </label>
                 
                 <hr class="custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
                 
-                <label class="form-group lvedta-label" for="input5">C(%)
+                <label class="label-livedata" for="input5">C(%)
                     <input type="text" id="input5" name="input5" readonly="True">
                 </label>
 
-                <label class="form-group lvedta-label" for="input6">O2(mV)
+                <label class="label-livedata" for="input6">O2(mV)
                     <input type="text" id="input6" name="input6" readonly="True">
                 </label>
             </div>
@@ -69,33 +69,33 @@
                     <div id="keyboardContainer" class="popup"></div>
                     
                     {% for data in all_data %}
-                    <label class="form-group" for="input7">
+                    <label class="label-livedata-unforbidden" for="input7">
                         <label class="toggle">
                             <input type="checkbox" id="myToggle">
                             <span class="labels" data-on="°F" data-off="°C"></span>
                         </label>
-                        <input type="text" id="input7" class="common-input" name="input7" required value="{{ data.Temperature }}" onclick="openKeyboard('input7')">
+                        <input class="input-livedata" type="text" id="input7" class="common-input" name="input7" required value="{{ data.Temperature }}" onclick="openKeyboard('input7')">
                     </label>
                     
-                    <label class="form-group" for="input8">CH4 Factor(%)
-                        <input type="text" id="input8" class="common-input" name="input8" required value="{{ data.CH4Factor }}" onclick="openKeyboard('input8')">
+                    <label class="label-livedata-unforbidden" for="input8">CH4 Factor(%)
+                        <input class="input-livedata" type="text" id="input8" class="common-input" name="input8" required value="{{ data.CH4Factor }}" onclick="openKeyboard('input8')">
                     </label>
 
-                    <label class="form-group" for="input9">Alloy Factor(%)
-                        <input type="text" id="input9" class="common-input" name="input9" required value="{{ data.AlloyFactor }}" onclick="openKeyboard('input9')">
+                    <label class="label-livedata-unforbidden" for="input9">Alloy Factor(%)
+                        <input class="input-livedata" type="text" id="input9" class="common-input" name="input9" required value="{{ data.AlloyFactor }}" onclick="openKeyboard('input9')">
                     </label>
 
-                    <label class="form-group" for="input10"> %H2
-                        <input type="text" id="input10" class="common-input" name="input10" required value="{{ data.H2 }}" onclick="openKeyboard('input10')">
+                    <label class="label-livedata-unforbidden" for="input10"> %H2
+                        <input class="input-livedata" type="text" id="input10" class="common-input" name="input10" required value="{{ data.H2 }}" onclick="openKeyboard('input10')">
                     </label>
                     {% endfor %}
                     <hr class="custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
 
-                    <label class="form-group lvedta-label" for="input11">H2O(%)
+                    <label class="label-livedata" for="input11">H2O(%)
                         <input type="text" id="input11" name="input11" readonly="True">
                     </label>
 
-                    <label class="form-group lvedta-label" for="input12">Dew(°C)
+                    <label class="label-livedata" for="input12">Dew(°C)
                         <input type="text" id="input12" name="input12" readonly="True">
                     </label>
 
@@ -169,36 +169,13 @@
 
                             //// Kalibrasyon sayfasındaki VALUE değerleri livedata sayfasında gösterilecek
                             
-                            function updateLiveData() {
-                                var value_1 = localStorage.getItem('value_1');
-                                var value_2 = localStorage.getItem('value_2');
-                                var value_3 = localStorage.getItem('value_3');
-
-                                console.log('value_1:', value_1);
-                                console.log('value_2:', value_2);
-                                console.log('value_3:', value_3);
-
-                                document.getElementById("input1").value = value_1;
-                                document.getElementById("input2").value = value_2;
-                                document.getElementById("input3").value = value_3;
-
-                                input1Value = document.getElementById("input1").value;
-                                input2Value = document.getElementById("input2").value;
-                                input3Value = document.getElementById("input3").value;
-                            }
-
-                            updateLiveData();
-                            setInterval(updateLiveData, 5000);
+                           
 
                             function updateSensorData() {
-                                input1Value = input1Value.trim() === '' || isNaN(input1Value) ? '***' : input1Value;
-                                input2Value = input2Value.trim() === '' || isNaN(input2Value) ? '***' : input2Value;
-                                input3Value = input3Value.trim() === '' || isNaN(input3Value) ? '***' : input3Value;
-                                
-                                document.getElementById("input1").value = input1Value;
-                                document.getElementById("input2").value = input2Value;
-                                document.getElementById("input3").value = input3Value;
-
+                                input1Value = document.getElementById("CO_value").value;
+                                input2Value = document.getElementById("CO2_value").value;
+                                input3Value = document.getElementById("CH4_value").value;
+                                console.log('dskjgksdng')
                                 if (togglememory.checked === false || toggle.checked === false) {
                                     //
                                     const e = 2.718281828;
@@ -337,12 +314,7 @@
                                     }
                                 }
                             }
-
-                            // Sayfa yüklendiğinde ve belirli aralıklarla sensör verilerini güncelle
-                            $(document).ready(function() {
-                                updateSensorData();
-                                setInterval(updateSensorData, 5000);  // 5 saniyede bir güncelleme yapılacak şekilde ayarlanmıştır
-                            });
+                            setInterval(updateSensorData, 1000);
 
                             document.querySelectorAll('.common-input').forEach(function(element) {
                                 element.addEventListener('click', function() {

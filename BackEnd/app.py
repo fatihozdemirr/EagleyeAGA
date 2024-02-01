@@ -11,7 +11,14 @@ from threading import Thread
 import time
 from GlobalVars import globalVars
 
+from flask_socketio import SocketIO
+from random import uniform
+
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
+
 app.secret_key = 'mysecretkey'
 app.app_context().push()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + globalVars.DatabasePath 
@@ -20,6 +27,17 @@ db.create_all()
 
 lock = threading.Lock()
 
+def background_thread():
+    while True:
+        time.sleep(1)
+        socketio.emit('chart_sensor_data', {
+            'time': time.strftime('%H:%M:%S'),
+            'valueCO': globalVars.CO_Result,
+            'valueCO2': globalVars.CO2_Result,
+            'valueCH4': globalVars.CH4_Result,
+        })
+
+        
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -112,6 +130,13 @@ def logout():
 
 ##### MENU PAGE #####
 
+@socketio.on('connect')
+def test_connect():
+    # İstemci bağlandığında, sensör değerlerini okumak için bir arka plan görevi başlat.
+    socketio.start_background_task(target=smartGas.update_ui, socketio=socketio)
+
+
+
 # Veritabanından toggle switch durumunu çeken yardımcı fonksiyon
 def get_toggle_status():
     return LiveTableDatas.query.filter_by(id=1).first().TempUnit
@@ -128,18 +153,18 @@ def start_sensor_reading():
     sensor_thread = threading.Thread(target=update_sensor_thread)
     sensor_thread.start()
 
-def get_sensor_data():
-    global sensor_data_cache
-    with smartGas.lock:
-        sensor_data_cache = {'co': globalVars.CO_Read, 'co2': globalVars.CO2_Read, 'ch4': globalVars.CH4_Read}
+# def get_sensor_data():
+#     global sensor_data_cache
+#     with smartGas.lock:
+#         sensor_data_cache = {'co': globalVars.CO_Read, 'co2': globalVars.CO2_Read, 'ch4': globalVars.CH4_Read}
 
-    return sensor_data_cache
+#     return sensor_data_cache
 
-@app.route('/get_sensor_values', methods=['GET'])
-def get_sensor_values():
-    with lock:
-        sensor_data = get_sensor_data()
-    return jsonify(sensor_data)
+# @app.route('/get_sensor_values', methods=['GET'])
+# def get_sensor_values():
+#     with lock:
+#         sensor_data = get_sensor_data()
+#     return jsonify(sensor_data)
 
 @app.route('/update_conc_cal', methods=['POST'])
 def update_conc_cal():
@@ -161,29 +186,22 @@ def update_button_status():
     return jsonify({'message': 'Button status updated successfully'})
 
 @app.route('/start_calibration', methods=['POST'])
-def start_calibration():
-    global calibration_in_progress
+def start_calibration():    
     button_id = request.json.get('buttonId', None)
-    action = request.json.get('action', None)
-    
-    calibration_in_progress = True
-    smartGas.span_calibration_queries(button_id, action)
-    print("Burada sensöre kalibrasyon verilerini gönder ve cevabı al")
-    calibration_in_progress = False
-    
+    action = request.json.get('action', None)     
+    smartGas.span_calibration_queries(button_id, True, action)   
     return {'status': 'success', 'message': f'Calibration started successfully for {button_id} with action: {action}'}
 
 @app.route('/livedata')
 def livedata():
     # Sensor verilerini al
-    sensor_data = get_sensor_data()
     all_data = LiveTableDatas.query.all()
-    all_calibrationdata = CalibrationTableDatas.query.all()
-    values = [data.VALUE for data in all_calibrationdata]
+    # all_calibrationdata = CalibrationTableDatas.query.all()
+    # values = [data.VALUE for data in all_calibrationdata]
     
     # Veritabanından toggle switch durumunu al
     toggle_status = get_toggle_status()
-    return render_template('livedata.html', values=values,sensor_data=sensor_data, all_data=all_data, toggle_status=toggle_status)
+    return render_template('livedata.html',  all_data=all_data, toggle_status=toggle_status)
 
 @app.route('/update_data', methods=['POST'])
 def update_data():
@@ -219,31 +237,19 @@ def Chart():
 
 @app.route('/Calibration')
 def Calibration():
-    sensor_data = get_sensor_data()
-    all_calibrationdata = CalibrationTableDatas.query.all()
+    # all_calibrationdata = CalibrationTableDatas.query.all()
     
-    globalVars.CO_Offset = all_calibrationdata[0].OFFSET
-    globalVars.CO2_Offset = all_calibrationdata[1].OFFSET
-    globalVars.CH4_Offset = all_calibrationdata[2].OFFSET
+    # globalVars.CO_Offset = all_calibrationdata[0].OFFSET
+    # globalVars.CO2_Offset = all_calibrationdata[1].OFFSET
+    # globalVars.CH4_Offset = all_calibrationdata[2].OFFSET
     
     CO_Read = globalVars.CO_Read
     CO2_Read = globalVars.CO2_Read
     CH4_Read = globalVars.CH4_Read
     
-    # globalVars.CO_Result= float(globalVars.CO_Read)+float(globalVars.CO_Offset)
+    CO_Result = globalVars.CO_Result
 
-    
-    # table_data = [
-    #     {
-    #         'GAS': data.GAS,
-    #         'OFFSET': data.OFFSET,
-    #         'READING': data.READING,
-    #         'VALUE': data.VALUE,
-    #         'ACTIONS': 'Default Action'
-    #     }
-    #    for data in all_calibrationdata
-    # ]
-    return render_template('Calibration.html', CO_Result=globalVars.CO_Result,CO_Read=CO_Read,CO2_Read=CO2_Read,CH4_Read=CH4_Read,CO_Offset=globalVars.CO_Offset,CO2_Offset=globalVars.CO2_Offset,CH4_Offset=globalVars.CH4_Offset,sensor_data=sensor_data,  all_calibrationdata=all_calibrationdata)
+    return render_template('Calibration.html', CO_Result=CO_Result,CO_Read=CO_Read,CO2_Read=CO2_Read,CH4_Read=CH4_Read,CO_Offset=globalVars.CO_Offset,CO2_Offset=globalVars.CO2_Offset,CH4_Offset=globalVars.CH4_Offset)
 
 @app.route('/update_calibration_data', methods=['POST'])
 def update_calibration_data():
@@ -257,13 +263,13 @@ def update_calibration_data():
         # valueVAL =data.get('valueVAL')             
         if input_id == 'CO_inputoffset':
             CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
-            globalVars.CO_Offset = new_value
+            globalVars.CO_Offset = float(new_value)
         elif input_id == 'CO2_inputoffset':
             CalibrationTableDatas.query.filter_by(id=2).update({'OFFSET': new_value})
-            globalVars.CO2_Offset = new_value
+            globalVars.CO2_Offset = float(new_value)
         elif input_id == 'CH4_inputoffset':
             CalibrationTableDatas.query.filter_by(id=3).update({'OFFSET': new_value})
-            globalVars.CH4_Offset = new_value
+            globalVars.CH4_Offset = float(new_value)
         # elif readingID == 'reading_1':
         #     CalibrationTableDatas.query.filter_by(id=1).update({'READING': readingVAL})
         # elif readingID == 'reading_2':
@@ -331,6 +337,9 @@ def Shutdown():
 
 if __name__ == '__main__':
     start_sensor_reading()
+    thread = Thread(target=background_thread)
+    thread.daemon = True
+    thread.start()
     # time.sleep(5)
     # Flask uygulamasını başlat
     app.run(debug=False)

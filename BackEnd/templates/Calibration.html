@@ -7,7 +7,9 @@
     <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="{{ url_for('static', filename='JavaScript/sensor.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='JavaScript/sensor.js') }}"></script> -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='JavaScript/socket_connection.js') }}"></script> 
 </head>
 <body>
     
@@ -25,7 +27,7 @@
         </div>
         <div class="mainbottom-container">
             <h1 class="title-text">Calibration</h1>
-            <div style = "margin-top: -35px">
+            <div style = "margin-top: -35px;">
                 <div style="display: flex; align-items: center; justify-content: space-evenly;">
                     <label class="gas-label">GAS</label>
                     <label class="gas-label" style="width: 100%">OFFSET</label>
@@ -36,25 +38,25 @@
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
                 <div style="display: flex; align-items: center; justify-content: space-evenly;">
                     <label class="gas-label">%CO </label>
-                    <input class="input-calibration" id="CO_inputoffset" type="text" value="{{ CO_Offset }}" onclick="openNumpad('CO_inputoffset')">
-                    <input class="input-calibration" id="CO_reading"type="text" value="{{ CO_Read }}">
-                    <input class="input-calibration" id="CO_value" type="text" value="{{ CO_Result }}">
+                    <input class="input-calibration" id="CO_inputoffset" type="text" value="0" onclick="openNumpad('CO_inputoffset')">
+                    <input class="input-calibration" id="CO_reading"type="text" value="0">
+                    <input class="input-calibration" id="CO_value" type="text" value="0">
                     <button class="span-button" id="CObuttonspan">SPAN</button>
                 </div>
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
                 <div style="display: flex; align-items: center; justify-content: space-evenly;">
                     <label class="gas-label">%CO2</label>
-                    <input class="input-calibration" id="CO2_inputoffset" type="text" value="{{ CO2_Offset }}" onclick="openNumpad('CO2_inputoffset')"> 
-                    <input class="input-calibration" id="CO2_reading" type="text" value="{{ CO2_Read }}">
-                    <input class="input-calibration" id="CO2_value" type="text">
+                    <input class="input-calibration" id="CO2_inputoffset" type="text" value="0" onclick="openNumpad('CO2_inputoffset')"> 
+                    <input class="input-calibration" id="CO2_reading" type="text" value="0">
+                    <input class="input-calibration" id="CO2_value" type="text" value="0">
                     <button class="span-button" id="CO2buttonspan">SPAN</button>
                 </div>  
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
                 <div style="display: flex; align-items: center; justify-content: space-evenly;">
                     <label class="gas-label">%CH4</label>
-                    <input class="input-calibration" id="CH4_inputoffset" type="text" value="{{ CH4_Offset }}" onclick="openNumpad('CH4_inputoffset')"> 
-                    <input class="input-calibration" id="CH4_reading" type="text" value="{{ CH4_Read }}">
-                    <input class="input-calibration" id="CH4_value" type="text">
+                    <input class="input-calibration" id="CH4_inputoffset" type="text" value="0" onclick="openNumpad('CH4_inputoffset')"> 
+                    <input class="input-calibration" id="CH4_reading" type="text" value="0">
+                    <input class="input-calibration" id="CH4_value" type="text" value="0">
                     <button class="span-button" id="CH4buttonspan">SPAN</button>
                 </div>
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
