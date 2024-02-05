@@ -3,8 +3,11 @@ import sqlite3
 
 class GlobalVars :
     def __init__(self) :
-        self.DatabasePath = os.path.join(os.getcwd(), "BackEnd", "users.db")
-                       
+        #Working On PC
+        self.DatabasePath = os.path.join(os.getcwd(), "BackEnd","users.db")
+        # Working On RPI
+        #self.DatabasePath  = "/home/pi/EagleyeAGA/BackEnd/users.db"
+            
         self.CO_Read = 00.00
         self.CO2_Read = 0.000
         self.CH4_Read = 00.00
@@ -17,10 +20,13 @@ class GlobalVars :
         self.CO2_Result = 00.00
         self.CH4_Result = 00.00
         
-        self.X = 0
-        self.Y = 0
-        self.Z = 0
-        
+        self.temp = 0.0
+        self.ch4factor = 0.0
+        self.alloyfactor = 0.0
+        self.h2 = 0.0
+       
+        self.RecordInterval = 1.0
+        self.Port = 'COM3' if os.name == 'nt' else '/dev/ttyUSB0'
         self.load_offsets()
         self.load_live_constant()
     
@@ -47,25 +53,27 @@ class GlobalVars :
         conn.close()
         
     def load_live_constant(self):
-        # Veritabanı bağlantısını aç
+        # veritabanı bağlantısını aç
         conn = sqlite3.connect(self.DatabasePath)
         cursor = conn.cursor()
 
-        # OFFSET değerlerini sorgula
-        cursor.execute("SELECT Temperature, CH4Factor,AlloyFactor,H2 FROM livetabledatas")
+        # offset değerlerini sorgula
+        cursor.execute("SELECT Temperature, CH4Factor,AlloyFactor,H2 from livetabledatas")
         rows = cursor.fetchall()
 
-        # OFFSET değerlerini sınıf özelliklerine ata
+        # offset değerlerini sınıf özelliklerine ata
         for Temperature, CH4Factor, AlloyFactor, H2 in rows:
-            self.Temp = Temperature
-            self.CH4Factor = CH4Factor
-            self.AlloyFactor = AlloyFactor
-            self.H2 = H2
+            self.temp = Temperature
+            self.ch4factor = CH4Factor
+            self.alloyfactor = AlloyFactor
+            self.h2 = H2
 
-        # Veritabanı bağlantısını kapat
+        # veritabanı bağlantısını kapat
         conn.close()
             
 globalVars = GlobalVars()
+
+
 
 
 

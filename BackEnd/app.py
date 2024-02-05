@@ -4,15 +4,15 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from flask import Flask, jsonify
-from smartGas import app, db, read_sensor
+from smartGas import app, db
 import smartGas
 import threading 
 from threading import Thread
 import time
-from GlobalVars import globalVars
-
 from flask_socketio import SocketIO
-from random import uniform
+from GlobalVars import globalVars
+from Datalogger import dataLogger
+import os
 
 app = Flask(__name__)
 
@@ -29,7 +29,7 @@ lock = threading.Lock()
 
 def background_thread():
     while True:
-        time.sleep(1)
+        time.sleep(0.5)
         socketio.emit('chart_sensor_data', {
             'time': time.strftime('%H:%M:%S'),
             'valueCO': globalVars.CO_Result,
@@ -132,47 +132,25 @@ def logout():
 
 @socketio.on('connect')
 def test_connect():
-    # İstemci bağlandığında, sensör değerlerini okumak için bir arka plan görevi başlat.
     socketio.start_background_task(target=smartGas.update_ui, socketio=socketio)
-
-
 
 # Veritabanından toggle switch durumunu çeken yardımcı fonksiyon
 def get_toggle_status():
     return LiveTableDatas.query.filter_by(id=1).first().TempUnit
 
 def update_sensor_thread():
-    # while True:
-    # Sensör değerlerini güncelle
     if not smartGas.calibration_in_progress:
         smartGas.read_sensors()
-    # time.sleep(10)
         
-# Sensör okuma işlemini başlatan fonksiyon
 def start_sensor_reading():
     sensor_thread = threading.Thread(target=update_sensor_thread)
     sensor_thread.start()
-
-# def get_sensor_data():
-#     global sensor_data_cache
-#     with smartGas.lock:
-#         sensor_data_cache = {'co': globalVars.CO_Read, 'co2': globalVars.CO2_Read, 'ch4': globalVars.CH4_Read}
-
-#     return sensor_data_cache
-
-# @app.route('/get_sensor_values', methods=['GET'])
-# def get_sensor_values():
-#     with lock:
-#         sensor_data = get_sensor_data()
-#     return jsonify(sensor_data)
 
 @app.route('/update_conc_cal', methods=['POST'])
 def update_conc_cal():
     data = request.get_json()
     conc_cal = data.get('conc_cal')
-    
     smartGas.update_conc_cal(conc_cal)
-
     return jsonify({'message': 'Conc_cal updated successfully'})
 
 @app.route('/update_button_status', methods=['POST'])
@@ -180,9 +158,7 @@ def update_button_status():
     global button_status
     data = request.get_json()
     button_status = data.get('buttonStatus', False)
-    
     smartGas.calibratebuttoninformation(button_status)
-
     return jsonify({'message': 'Button status updated successfully'})
 
 @app.route('/start_calibration', methods=['POST'])
@@ -194,12 +170,7 @@ def start_calibration():
 
 @app.route('/livedata')
 def livedata():
-    # Sensor verilerini al
     all_data = LiveTableDatas.query.all()
-    # all_calibrationdata = CalibrationTableDatas.query.all()
-    # values = [data.VALUE for data in all_calibrationdata]
-    
-    # Veritabanından toggle switch durumunu al
     toggle_status = get_toggle_status()
     return render_template('livedata.html',  all_data=all_data, toggle_status=toggle_status)
 
@@ -211,24 +182,24 @@ def update_data():
         new_value = data.get('new_value')  
         toggle_status = data.get('toggle_status') 
         
-        print("input_id:",input_id)
-        print("new_value:",new_value)
-        
         if input_id == 'input7':
             LiveTableDatas.query.filter_by(id=1).update({'Temperature': new_value})
+            globalVars.temp = float(new_value)
             if toggle_status == 'C':
                 LiveTableDatas.query.filter_by(id=1).update({'TempUnit': toggle_status})
             elif toggle_status == 'F':
                 LiveTableDatas.query.filter_by(id=1).update({'TempUnit': toggle_status})
         elif input_id == 'input8':
             LiveTableDatas.query.filter_by(id=1).update({'CH4Factor': new_value})
+            globalVars.ch4factor = float(new_value)
         elif input_id == 'input9':
             LiveTableDatas.query.filter_by(id=1).update({'AlloyFactor': new_value})
+            globalVars.alloyfactor = float(new_value)
         elif input_id == 'input10':
             LiveTableDatas.query.filter_by(id=1).update({'H2': new_value})
+            globalVars.h2 = float(new_value)
 
         db.session.commit()  
-        
         return jsonify({'status': 'success', 'message': 'Data updated successfully'})
 
 @app.route('/Chart')
@@ -236,20 +207,8 @@ def Chart():
     return render_template('Chart.html')
 
 @app.route('/Calibration')
-def Calibration():
-    # all_calibrationdata = CalibrationTableDatas.query.all()
-    
-    # globalVars.CO_Offset = all_calibrationdata[0].OFFSET
-    # globalVars.CO2_Offset = all_calibrationdata[1].OFFSET
-    # globalVars.CH4_Offset = all_calibrationdata[2].OFFSET
-    
-    CO_Read = globalVars.CO_Read
-    CO2_Read = globalVars.CO2_Read
-    CH4_Read = globalVars.CH4_Read
-    
-    CO_Result = globalVars.CO_Result
-
-    return render_template('Calibration.html', CO_Result=CO_Result,CO_Read=CO_Read,CO2_Read=CO2_Read,CH4_Read=CH4_Read,CO_Offset=globalVars.CO_Offset,CO2_Offset=globalVars.CO2_Offset,CH4_Offset=globalVars.CH4_Offset)
+def Calibration():  
+    return render_template('Calibration.html')
 
 @app.route('/update_calibration_data', methods=['POST'])
 def update_calibration_data():
@@ -257,10 +216,7 @@ def update_calibration_data():
         data = request.get_json()
         input_id = data.get('input_id')  
         new_value = data.get('new_value')   
-        # readingID = data.get('readingID')
-        # readingVAL =data.get('readingVAL')
-        # valueID = data.get('valueID')
-        # valueVAL =data.get('valueVAL')             
+            
         if input_id == 'CO_inputoffset':
             CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
             globalVars.CO_Offset = float(new_value)
@@ -270,22 +226,8 @@ def update_calibration_data():
         elif input_id == 'CH4_inputoffset':
             CalibrationTableDatas.query.filter_by(id=3).update({'OFFSET': new_value})
             globalVars.CH4_Offset = float(new_value)
-        # elif readingID == 'reading_1':
-        #     CalibrationTableDatas.query.filter_by(id=1).update({'READING': readingVAL})
-        # elif readingID == 'reading_2':
-        #     CalibrationTableDatas.query.filter_by(id=2).update({'READING': readingVAL})
-        # elif readingID == 'reading_3':
-        #     CalibrationTableDatas.query.filter_by(id=3).update({'READING': readingVAL})
-        # elif valueID == 'value_1':
-        #     CalibrationTableDatas.query.filter_by(id=1).update({'VALUE': valueVAL})
-        # elif valueID == 'value_2':
-        #     CalibrationTableDatas.query.filter_by(id=2).update({'VALUE': valueVAL})
-        # elif valueID == 'value_3':
-        #     CalibrationTableDatas.query.filter_by(id=3).update({'VALUE': valueVAL})
 
         db.session.commit()  
-        
-        # JSON formatında yanıt döndür
         return jsonify({'status': 'success', 'message': 'Data updated successfully'})
 
 @app.route('/Operation')
@@ -312,7 +254,6 @@ def EthernetWifi():
     return render_template('EthernetWifi.html')
 
 def get_wifi_info():
-    # Burada gerçek Wi-Fi bilgilerini alabilirsiniz
     wifi_info = {
         'SSID': 'MyWiFiNetwork',
         'Password': 'MyPassword',
@@ -335,11 +276,24 @@ def Restart():
 def Shutdown():
     return render_template('Shutdown.html')
 
+def kill_process_on_port(port):
+    command = f"lsof -t -i:{port}"
+    pid = os.popen(command).read().strip()
+    if pid:
+        print(f"Port {port} üzerinde çalışan süreç PID: {pid}, sonlandırılıyor...")
+        os.system(f"kill -9 {pid}")
+    else:
+        print(f"Port {port} boş.")
+        
 if __name__ == '__main__':
+    #port = 5000
+    #kill_process_on_port(port)
     start_sensor_reading()
     thread = Thread(target=background_thread)
     thread.daemon = True
     thread.start()
-    # time.sleep(5)
-    # Flask uygulamasını başlat
-    app.run(debug=False)
+    dataLogger.start()
+    
+    app.run(debug=False, host ='0.0.0.0')
+            
+    

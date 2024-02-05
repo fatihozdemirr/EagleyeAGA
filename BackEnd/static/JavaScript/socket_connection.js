@@ -4,8 +4,21 @@ document.addEventListener('DOMContentLoaded', function () {
     // Elementin value'sunu güncelleyen yardımcı fonksiyon
     function updateElementValueById(id, value, digits = 2) {
         const element = document.getElementById(id);
-        if (element) element.value = value.toFixed(digits);
+        //if (element) element.value = value.toFixed(digits);
+        if (element) {
+            // Eğer element bir input ise value özelliğini, değilse textContent özelliğini kullan
+            if (element.tagName.toLowerCase() === 'input') {
+                element.value = value.toFixed(digits);
+            } else {
+                // span içindeki textContent'i güncelle
+                const spanElement = element.querySelector('span');
+                if (spanElement) {
+                    spanElement.textContent = value.toFixed(digits);
+                }
+            }
+        }
     }
+  
 
     socket.on('sensor_data', function(data) {
         // Her bir input için value güncelleme işlemini tek satırda yap
@@ -20,5 +33,14 @@ document.addEventListener('DOMContentLoaded', function () {
         updateElementValueById('CO_value', data.co_result);
         updateElementValueById('CO2_value', data.co2_result, 3);
         updateElementValueById('CH4_value', data.ch4_result);
+
+        updateElementValueById('input7', data.Temperature,1);
+        updateElementValueById('input8', data.CH4_Factor,1);
+        updateElementValueById('input9', data.Alloy_Factor,1);
+        updateElementValueById('input10', data.H2,1);
+
+        updateElementValueById('CO_reading_popup', data.co_read);
+        updateElementValueById('CO2_reading_popup', data.co2_read, 3);
+        updateElementValueById('CH4_reading_popup', data.ch4_read);
     });
 });

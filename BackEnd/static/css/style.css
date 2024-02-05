@@ -433,7 +433,7 @@ max-width: 135px; /* Maksimum genişlik */
     border: 1px solid #ccc;
     border-radius: 15px;
     background-color: #fff;
-    padding: 20px;
+    padding: 21px;
     z-index: 1000;
     width: 400px;
     height: 200px;
@@ -466,14 +466,16 @@ max-width: 135px; /* Maksimum genişlik */
 }
 
 .spanpopup-input {
+    font-family: Calibri, sans-serif;
+    font-weight: bold;
+    font-size: 21px;
     padding: 8px;
-    width: calc(100% - 16px); /* Yeni eklenen stil */
-    box-sizing: border-box;
-    display: block; /* Yeni eklenen stil */
-    margin-left: 5px;
-    margin-top: 5px;
+    width: calc(100% - 32px); 
+    display: block; 
     height: 40px;
     text-align: left;
+    border: 2px solid #4caf50;
+    border-radius: 10px;
 }
 
 #calibratePopupButton {

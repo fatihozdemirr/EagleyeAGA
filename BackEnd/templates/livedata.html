@@ -74,19 +74,19 @@
                             <input type="checkbox" id="myToggle">
                             <span class="labels" data-on="°F" data-off="°C"></span>
                         </label>
-                        <input class="input-livedata" type="text" id="input7" class="common-input" name="input7" required value="{{ data.Temperature }}" onclick="openKeyboard('input7')">
+                        <input class="input-livedata" type="text" id="input7" class="common-input" name="input7" required value="0" onclick="openKeyboard('input7')">
                     </label>
                     
                     <label class="label-livedata-unforbidden" for="input8">CH4 Factor(%)
-                        <input class="input-livedata" type="text" id="input8" class="common-input" name="input8" required value="{{ data.CH4Factor }}" onclick="openKeyboard('input8')">
+                        <input class="input-livedata" type="text" id="input8" class="common-input" name="input8" required value="0" onclick="openKeyboard('input8')">
                     </label>
 
                     <label class="label-livedata-unforbidden" for="input9">Alloy Factor(%)
-                        <input class="input-livedata" type="text" id="input9" class="common-input" name="input9" required value="{{ data.AlloyFactor }}" onclick="openKeyboard('input9')">
+                        <input class="input-livedata" type="text" id="input9" class="common-input" name="input9" required value="0" onclick="openKeyboard('input9')">
                     </label>
 
                     <label class="label-livedata-unforbidden" for="input10"> %H2
-                        <input class="input-livedata" type="text" id="input10" class="common-input" name="input10" required value="{{ data.H2 }}" onclick="openKeyboard('input10')">
+                        <input class="input-livedata" type="text" id="input10" class="common-input" name="input10" required value="0" onclick="openKeyboard('input10')">
                     </label>
                     {% endfor %}
                     <hr class="custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
@@ -175,7 +175,6 @@
                                 input1Value = document.getElementById("CO_value").value;
                                 input2Value = document.getElementById("CO2_value").value;
                                 input3Value = document.getElementById("CH4_value").value;
-                                console.log('dskjgksdng')
                                 if (togglememory.checked === false || toggle.checked === false) {
                                     //
                                     const e = 2.718281828;
@@ -257,7 +256,6 @@
                                     let CarbonAF = ((XcAF / (1 + 19.6 * XcAF))*100).toFixed(2);
                                     // Carbon //
                                     let Carbon = ((Xc1 / (1 + 19.6 * Xc1))*100).toFixed(2);
-                                    console.log('Carbon:', Carbon);
                                     const input5Element = document.getElementById("input5");
                                     if (isNaN(Carbon) || Carbon === '-Infinity' || Carbon === 'Infinity') {
                                         input5Element.value = '***';
