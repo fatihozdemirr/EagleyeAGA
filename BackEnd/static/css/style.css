@@ -632,6 +632,7 @@ th {
     line-height: 2; 
     min-width: 55px;
 }
+
 .reset-content {
     display: flex; /* İçerikleri yan yana hizalar */
 }

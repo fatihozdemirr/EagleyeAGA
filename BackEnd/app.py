@@ -146,28 +146,6 @@ def start_sensor_reading():
     sensor_thread = threading.Thread(target=update_sensor_thread)
     sensor_thread.start()
 
-@app.route('/update_conc_cal', methods=['POST'])
-def update_conc_cal():
-    data = request.get_json()
-    conc_cal = data.get('conc_cal')
-    smartGas.update_conc_cal(conc_cal)
-    return jsonify({'message': 'Conc_cal updated successfully'})
-
-@app.route('/update_button_status', methods=['POST'])
-def update_button_status():
-    global button_status
-    data = request.get_json()
-    button_status = data.get('buttonStatus', False)
-    smartGas.calibratebuttoninformation(button_status)
-    return jsonify({'message': 'Button status updated successfully'})
-
-@app.route('/start_calibration', methods=['POST'])
-def start_calibration():    
-    button_id = request.json.get('buttonId', None)
-    action = request.json.get('action', None)     
-    smartGas.span_calibration_queries(button_id, True, action)   
-    return {'status': 'success', 'message': f'Calibration started successfully for {button_id} with action: {action}'}
-
 @app.route('/livedata')
 def livedata():
     all_data = LiveTableDatas.query.all()
@@ -210,13 +188,17 @@ def Chart():
 def Calibration():  
     return render_template('Calibration.html')
 
+last_conc_cal = None
 @app.route('/update_calibration_data', methods=['POST'])
 def update_calibration_data():
+    global last_conc_cal
     if request.method == 'POST':
         data = request.get_json()
         input_id = data.get('input_id')  
-        new_value = data.get('new_value')   
-            
+        new_value = data.get('new_value')  
+        button_id = request.json.get('buttonId', None)
+        
+        conc_cal = last_conc_cal    
         if input_id == 'CO_inputoffset':
             CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
             globalVars.CO_Offset = float(new_value)
@@ -226,7 +208,14 @@ def update_calibration_data():
         elif input_id == 'CH4_inputoffset':
             CalibrationTableDatas.query.filter_by(id=3).update({'OFFSET': new_value})
             globalVars.CH4_Offset = float(new_value)
-
+        elif input_id == 'spannewvalue':
+            conc_cal = data.get('new_value') 
+            # smartGas.update_conc_cal(conc_cal)
+        last_conc_cal = conc_cal
+        
+        if button_id in ['CObuttonspan', 'CO2buttonspan', 'CH4buttonspan']:
+            smartGas.span_calibration_queries(button_id, True, float(conc_cal))
+       
         db.session.commit()  
         return jsonify({'status': 'success', 'message': 'Data updated successfully'})
 
