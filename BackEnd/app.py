@@ -197,7 +197,8 @@ def update_calibration_data():
         input_id = data.get('input_id')  
         new_value = data.get('new_value')  
         button_id = request.json.get('buttonId', None)
-        
+        zero_start = request.json.get('zerostart', None)
+         
         conc_cal = last_conc_cal    
         if input_id == 'CO_inputoffset':
             CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
@@ -215,6 +216,8 @@ def update_calibration_data():
         
         if button_id in ['CObuttonspan', 'CO2buttonspan', 'CH4buttonspan']:
             smartGas.span_calibration_queries(button_id, True, float(conc_cal))
+        if zero_start is not None and zero_start is True:
+            smartGas.zero_calibration_queries(True)
        
         db.session.commit()  
         return jsonify({'status': 'success', 'message': 'Data updated successfully'})

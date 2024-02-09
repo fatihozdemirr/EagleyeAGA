@@ -27,7 +27,7 @@
         </div>
         <div class="mainbottom-container">
             <h1 class="title-text">Calibration</h1>
-            <div style = "margin-top: -35px;">
+            <div style = "margin-top: -15px;">
                 <div style="display: flex; align-items: center; justify-content: space-evenly;">
                     <label class="gas-label">GAS</label>
                     <label class="gas-label" style="width: 100%">OFFSET</label>
@@ -60,30 +60,44 @@
                     <button class="span-button" id="CH4buttonspan" onclick="openPopuplabelView('CH4_reading_popup')">SPAN</button>
                 </div>
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
+                <div style="display: flex; align-items: center; ">
+                    
+                    <label class="reset-label">Last Factory Calibration</label>
+
+                    <button class="span-button" type="button" id="factoryresetbutton">RESET</button>
+                    <button class="span-button" type="button" id="zerocalibratebutton" onclick="openPopupZero('zerocalibratebutton')">ZERO</button>
+                    
+                    <button class="log-button" type="button">Show Calibration Logs</button>
+                </div>
             </div>
             <div id="keyboardContainer" class="popup"></div>
             <div id="spanpopup" class="spanpopup">
                 <div class="spanpopup-content">
                     <h2 id="popUpTitle">Span Calibration</h2>
 
-                    <label class="spanpopup-label" id="CO_reading_popup" style="display: none;" data-title="%CO Span Calibration">Live Span Value: <span id="CO_reading_popup">0.00</span></label>
-                    <label class="spanpopup-label" id="CO2_reading_popup" style="display: none;" data-title="%CO2 Span Calibration">Live Span Value: <span id="CO2_reading_popup">0.000</span></label>
-                    <label class="spanpopup-label" id="CH4_reading_popup" style="display: none;" data-title="%CH4 Span Calibration">Live Span Value: <span id="CH4_reading_popup">0.00</span></label>
+                    <label class="spanpopup-label" id="CO_reading_popup" style="display: none;" data-title="%CO Span Calibration">%CO Live Span Value: <span id="CO_reading_popup">0.00</span></label>
+                    <label class="spanpopup-label" id="CO2_reading_popup" style="display: none;" data-title="%CO2 Span Calibration">%CO2 Live Span Value: <span id="CO2_reading_popup">0.000</span></label>
+                    <label class="spanpopup-label" id="CH4_reading_popup" style="display: none;" data-title="%CH4 Span Calibration">%CH4 Live Span Value: <span id="CH4_reading_popup">0.00</span></label>
                     
                     <input class="spanpopup-input" type="text" id="spannewvalue" placeholder="Enter new value!" onclick="openNumpad('spannewvalue')">
 
                     <button id="calibratePopupButton" onclick="startspanCalibration()">Calibrate</button>
+
+                    <!-- Zero Uyarı Metni Sayfası-->
+                    <div id ="pageWarning" class="popup-page">
+                        <p id ="pageWarningP">Before starting the process, check the nitrogen gas installation.</p>
+                        <button id="nextButton" onclick="showNextPage()">Next</button>
+                    </div>
+
+                    <!-- Zero Gaz Değerleri Kalibrasyon Sayfası-->
+                    <div id="pageValues" class="popup-page" style="display: none;">
+                        <button id="calibrateButton" onclick="startCalibration()">Calibrate</button>
+                    </div>
+
                     <button id="closePopupButton">Close</button>
                 </div>
             </div>
-            <div>
-                <div class="reset-content">
-                    <label class="reset-label">Last Factory Calibration</label>
-                    <button class="reset-button" type="button">RESET</button>
-                    <button class="reset-zero" type="button">ZERO</button>
-                </div>
-                <button class="log-button" type="button">Show Calibration Logs</button>
-            </div>
+            
             <script>
                 // var programStarted = false;
                 var numpadInputCompleted = false;
@@ -133,6 +147,72 @@
                     });
                 });
 
+                function openPopupZero(labelId){
+                    const pageWarning = document.getElementById('pageWarning');
+                    const pageValues = document.getElementById('pageValues');
+                    if (labelId === 'zerocalibratebutton') {
+                        spannewvalue.style.display = 'none';
+                        calibratePopupButton.style.display = 'none';
+                        const allLabels = document.querySelectorAll('.spanpopup-label');
+                        allLabels.forEach(function (otherLabel) {
+                            otherLabel.style.display = 'none';
+                        });
+                        const popUpTitle = document.getElementById('popUpTitle');
+                        if (popUpTitle) {
+                            popUpTitle.innerHTML = 'Connection Check'; // Sayfa başlığını güncelle
+                        }
+                        if (closePopupButton) {
+                            closePopupButton.style.display = 'none'; // Kapat butonunu gizle
+                        }
+                        if (pageWarning) {
+                            pageWarning.style.display = 'block'; // Uyarı sayfasını göster
+                        }
+                        if (pageValues) {
+                            pageValues.style.display = 'none'; // Değer sayfasını gizle
+                        }
+                    } 
+                }
+
+                function showNextPage() {
+                    const pageWarning = document.getElementById('pageWarning');
+                    const pageValues = document.getElementById('pageValues');
+                    const popUpTitle = document.getElementById('popUpTitle');
+                    const allLabels = document.querySelectorAll('.spanpopup-label');
+                    allLabels.forEach(function (otherLabel) {
+                        otherLabel.style.display = 'block';
+                    });
+                    if (popUpTitle) {
+                        popUpTitle.innerHTML = 'Zero Calibrate with Nitrogen Gas'; // Sayfa başlığını güncelle
+                    }
+                    if (closePopupButton) {
+                        closePopupButton.style.display = 'block'; // Kapat butonunu gizle
+                    }
+                    if (pageWarning && pageValues) {
+                        pageWarning.style.display = 'none';
+                        pageValues.style.display = 'block';
+                    }
+                }
+
+                function startCalibration() {
+                    zero_in_progress = true
+                    fetch('/update_calibration_data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            zerostart: zero_in_progress,
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+
                 function openPopuplabelView(labelId) {
                     document.querySelectorAll('spanpopup').forEach(function(label) {
                         label.style.display = 'none';
@@ -141,11 +221,16 @@
                     const popUpTitle = document.getElementById('popUpTitle');
                     if (labelToShow) {
                         labelToShow.style.display = 'block';
-
+                        calibratePopupButton.style.display = 'block';
+                        spannewvalue.style.display = 'block';
+                        closePopupButton.style.display = 'block';
                         const allLabels = document.querySelectorAll('.spanpopup-label');
                         allLabels.forEach(function (otherLabel) {
                             if (otherLabel !== labelToShow) {
                                 otherLabel.style.display = 'none';
+                                pageWarning.style.display = 'none';
+                                pageWarning.style.display = 'none';
+                                pageValues.style.display = 'none';
                             }
                         });
                         const buttonTitle = labelToShow.getAttribute('data-title');

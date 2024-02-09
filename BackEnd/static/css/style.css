@@ -129,7 +129,7 @@ body {
 .title-text {
     font-family: Calibri, sans-serif;
     font-size: 30px;
-    margin-top: 0px;
+    margin-top: 5px;
     padding: 5px;
     text-align: left;
 }
@@ -451,7 +451,7 @@ max-width: 135px; /* Maksimum genişlik */
     font-family: Calibri, sans-serif;
     font-weight: bold;
     font-size: 26px;
-    margin-top: -10px; /* Veya ihtiyaca göre bir boşluk */
+    margin-top: 0px; /* Veya ihtiyaca göre bir boşluk */
 }
 
 .spanpopup-label {
@@ -459,7 +459,7 @@ max-width: 135px; /* Maksimum genişlik */
     color: #333;
     display: block; /* Yeni eklenen stil */
     margin-left: 5px;
-    height: 40px;
+    height: 32px;
     width: 380px;
     border: none;
     align-items: center;
@@ -476,6 +476,35 @@ max-width: 135px; /* Maksimum genişlik */
     text-align: left;
     border: 2px solid #4caf50;
     border-radius: 10px;
+}
+
+#pageWarningP {
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 40px;
+}
+
+#nextButton {
+    position: absolute;
+    bottom: 10px; /* İstenilen alt boşluk miktarı */
+    right: 30px; /* İstenilen sağ boşluk miktarı */
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#calibrateButton {
+    position: absolute;
+    bottom: 10px; /* İstenilen alt boşluk miktarı */
+    right: 30px; /* İstenilen sağ boşluk miktarı */
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
 }
 
 #calibratePopupButton {
@@ -580,33 +609,7 @@ max-width: 135px; /* Maksimum genişlik */
 .key.clicked {
     background-color: rgb(255, 150, 64) /* Basıldığında arka plan rengi */
 }
-/* Calibration CSS */
-table {
-    border-collapse: collapse;
-    margin: 20px;
-    margin-top: -30px;
-}
 
-th, td {
-    font-family: Calibri, sans-serif;
-    font-size: 18px;
-    border-bottom: 1px solid #dddddd;
-    text-align: center;
-    padding: 5px;
-    border-radius: 0.5rem;
-    font-weight: bold;
-    text-align: center;
-    height: 35px;
-    max-width: 135px; /* Maksimum genişlik */
-}
-tbody input {
-    width: 100%; /* input'ların hücre genişliğini tam doldurması için */
-    margin-top: 0px;
-    margin-left: 0px;
-}
-th {
-    background-color: #ffffff;
-}
 /* Butonun genel stil özellikleri */
 .span-button {
     background-color: #4CAF50; /* Arka plan rengi */
@@ -616,7 +619,15 @@ th {
     font-size: 18px; /* Metin boyutu */
     font-family: Calibri, sans-serif;
 }
-
+#zerocalibratebutton {
+    background-color: #0077c7; /* Özel arka plan rengi (örnek: kırmızı) */
+    &:hover {
+        background-color: rgb(255, 150, 64);
+    }
+    &:active {
+        background-color: #45a049; /* Basıldığında arka plan rengi */
+    }
+}
 .gas-label {
     font-family: Calibri, sans-serif;
     font-size: 18px;
@@ -628,14 +639,11 @@ th {
     justify-content: center;
     height: 35px;
     max-width: 135px; /* Maksimum genişlik */
-    margin-left: 0px;
+    margin-left: -10px;
     line-height: 2; 
     min-width: 55px;
 }
 
-.reset-content {
-    display: flex; /* İçerikleri yan yana hizalar */
-}
 
 .reset-label {
     display: flex;
@@ -649,7 +657,7 @@ th {
     font-weight: bold;
     color: #333;
     justify-content: center; 
-    align-items: flex-end
+    align-items: center;
 }
 .reset-button {
     background-color: #ff9419; /* Arka plan rengi */
@@ -671,7 +679,7 @@ th {
 }
 .log-button {
     background-color: #3ab0ff; /* Arka plan rengi */
-    width: 780px;
+    width: 163px;
     color: white; /* Metin rengi */
     padding: 5px 20px; /* Dış boşluk (padding) */
     border-radius: 10px; /* Kenar yuvarlaklığı */
