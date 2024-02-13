@@ -1,0 +1,23 @@
+{% include 'header.html' %}
+    <title>Chart</title>
+            <h1 class="title-text">Chart</h1>
+
+            <!-- Detayları tek satırda ve "-" ile ayırarak göster -->
+            <div class="details-container">
+                <span class="detail-item">Operation Name: {{ operation.name }}</span>-
+                <span class="detail-item">Company: {{ operation.company }}</span>-
+                <span class="detail-item">Furnace: {{ operation.furnace }}</span>-
+                <span class="detail-item">Operator: {{ operation.operator }}</span>-
+                <span class="detail-item">Date Range: {{ operation.start_date.strftime('%Y-%m-%d') }} to {{ operation.stop_date.strftime('%Y-%m-%d') }}</span>
+            </div>
+
+            <!-- Chart -->
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var chartData = JSON.parse('{{ chartData|tojson|safe }}');
+    </script>
+    <script src="{{ url_for('static', filename='JavaScript/historyChartScript.js') }}"></script>
+</body>
+</html>

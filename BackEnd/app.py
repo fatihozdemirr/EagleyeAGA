@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from flask import Flask, jsonify
-from smartGas import app, db
+# from smartGas import app, db
 import smartGas
 import threading 
 from threading import Thread
@@ -13,6 +13,9 @@ from flask_socketio import SocketIO
 from GlobalVars import globalVars
 from Datalogger import dataLogger
 import os
+from datetime import datetime
+from excel_operations import create_excel_file
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -24,6 +27,9 @@ app.app_context().push()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + globalVars.DatabasePath 
 db = SQLAlchemy(app)
 db.create_all()
+
+with app.app_context():
+    db.create_all()
 
 lock = threading.Lock()
 
@@ -60,6 +66,15 @@ class CalibrationTableDatas(db.Model):
     OFFSET = db.Column(db.Float, nullable=False)
     READING = db.Column(db.Float, nullable=False)
     VALUE = db.Column(db.Float,  nullable=False)
+    
+class Operations(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    company = db.Column(db.String(50), nullable=False)
+    furnace = db.Column(db.String(20), nullable=False)
+    operator = db.Column(db.String(50), nullable=False)
+    start_date = db.Column(db.DateTime, nullable=True)
+    stop_date = db.Column(db.DateTime, nullable=True)
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -71,7 +86,6 @@ class registrationform(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Admin')
     
-
 logged_in = False
 
 @app.route('/')
@@ -185,7 +199,7 @@ def Chart():
     return render_template('Chart.html')
 
 @app.route('/Calibration')
-def Calibration():  
+def Calibration():
     return render_template('Calibration.html')
 
 last_conc_cal = None
@@ -211,20 +225,169 @@ def update_calibration_data():
             globalVars.CH4_Offset = float(new_value)
         elif input_id == 'spannewvalue':
             conc_cal = data.get('new_value') 
-            # smartGas.update_conc_cal(conc_cal)
+            
         last_conc_cal = conc_cal
+        db.session.commit() 
         
         if button_id in ['CObuttonspan', 'CO2buttonspan', 'CH4buttonspan']:
             smartGas.span_calibration_queries(button_id, True, float(conc_cal))
+            
         if zero_start is not None and zero_start is True:
             smartGas.zero_calibration_queries(True)
-       
-        db.session.commit()  
-        return jsonify({'status': 'success', 'message': 'Data updated successfully'})
+            zero_alert = True
+            print('zero_alert:',zero_alert)
+            return redirect('/Calibration')
+        else:
+            return jsonify({'status': 'error', 'message': 'Invalid data'})
+        
+    else:
+        return jsonify({'status': 'error', 'message': 'Invalid method'})
+
+##Operation 
+
+@app.route('/start_stop_recording', methods=['POST'])
+def start_stop_recording():
+    data = request.json
+    globalVars.isRecording = data.get('isRecording', 0)
+    if globalVars.isRecording:
+        dataLogger.start()
+        response = {"message": "Recording started successfully.", "status": "success"}
+        status_code = 200
+    else:
+        dataLogger.stop()
+        response = {"message": "Recording stopped successfully.", "status": "success"}
+        status_code = 200
+    
+    return jsonify(response), status_code
+
+def get_history_chart_data(operationId):
+    operation = get_operation_by_id(operationId)  # Bu fonksiyonun tanımını sağlamanız gerekir
+    start_date = operation.start_date.strftime('%Y-%m-%d %H:%M:%S')
+    stop_date = operation.stop_date.strftime('%Y-%m-%d %H:%M:%S')
+
+    rows = dataLogger.get_data(start_date, stop_date)
+    labels = []
+    co_data = []
+    co2_data = []
+    ch4_data = []
+    
+    for row in rows:
+        labels.append(datetime.strptime(row['Datetime'], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S'))
+        co_data.append(row['CO'])
+        co2_data.append(row['CO2'])
+        ch4_data.append(row['CH4'])
+    
+    chart_data = {
+        'labels': labels,
+        'datasets': [
+            {'label': 'CO', 'data': co_data},
+            {'label': 'CO2', 'data': co2_data},
+            {'label': 'CH4', 'data': ch4_data},
+        ],
+        'name': operation.name,
+        'company': operation.company,
+        'furnace': operation.furnace,
+        'operator': operation.operator,
+        'start_date': operation.start_date,
+        'stop_date': operation.stop_date
+    }
+    
+    return chart_data
+
+@app.route('/export_data/<int:operation_id>')
+def export_data(operation_id):
+    # Veritabanından belirli tarih aralığındaki verileri seçin
+    operation = get_operation_by_id(operation_id)
+    start_date = operation.start_date.strftime('%Y-%m-%d %H:%M:%S')
+    stop_date = operation.stop_date.strftime('%Y-%m-%d %H:%M:%S')
+    rows = dataLogger.get_data(start_date, stop_date)
+
+    # Veriyi Excel dosyasına yazın
+    excel_file = create_excel_file(rows)
+
+    # Excel dosyasını istemciye gönderin
+    return send_file(
+        excel_file,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        download_name='exported_data.xlsx',
+        as_attachment=True
+    )
+
+@app.route('/history_chart/<int:operation_id>')
+def history_chart(operation_id):   
+    chartData = get_history_chart_data(operation_id)       
+    operation = get_operation_by_id(operation_id)    
+    return render_template('history_chart.html',operation=operation, chartData = chartData)
+
+def get_operation_by_id(operation_id):
+    operation = Operations.query.get(operation_id)
+    return operation
+
+@app.route('/update_or_insert_operation', methods=['POST'])
+def update_or_insert_operation():
+    data = request.json
+    operation_id = data.get('id')
+    status = 'success'  # Başlangıç durumu başarılı olarak ayarla
+
+    try:
+        if operation_id:
+            operation = Operations.query.get(operation_id)
+            if operation:
+                # Operasyon güncelleme
+                operation.name = data.get('name', operation.name)
+                operation.company = data.get('company', operation.company)
+                operation.furnace = data.get('furnace', operation.furnace)
+                operation.operator = data.get('operator', operation.operator)
+                if data.get('start_date'):
+                    operation.start_date = datetime.strptime(data['start_date'], '%Y-%m-%dT%H:%M:%S')
+                if data.get('stop_date'):
+                    operation.stop_date = datetime.strptime(data['stop_date'], '%Y-%m-%dT%H:%M:%S')
+                message = 'Operation updated successfully'
+            else:
+                # ID var ama operasyon bulunamadı, hata döndür
+                return jsonify({'status': 'error', 'message': 'Operation not found'}), 404
+        else:
+            # Yeni operasyon ekleme
+            new_operation = Operations(
+                name=data['name'],
+                company=data.get('company', ''),
+                furnace=data.get('furnace', ''),
+                operator=data.get('operator', ''),
+                start_date=datetime.strptime(data['start_date'], '%Y-%m-%dT%H:%M:%S') if data.get('start_date') else None,
+                stop_date=datetime.strptime(data['stop_date'], '%Y-%m-%dT%H:%M:%S') if data.get('stop_date') else None
+            )
+            db.session.add(new_operation)
+            db.session.flush()  # ID'yi alabilmek için flush kullanılır
+            operation_id = new_operation.id  # Yeni eklenen operasyonun ID'sini al
+            message = 'Operation added successfully'
+        
+        db.session.commit()
+        return jsonify({'status': status, 'message': message, 'operation_id': operation_id})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/delete_operation/<int:operation_id>', methods=['POST'])
+def delete_operation(operation_id):
+    operation = Operations.query.get_or_404(operation_id)
+    db.session.delete(operation)
+    db.session.commit()
+    return jsonify({'status': 'success', 'message': 'Operation deleted successfully'})
+
 
 @app.route('/Operation')
-def Operation():
-    return render_template('Operation.html')
+def Operation():       
+    page = request.args.get('page', 1, type=int)
+    per_page = 6
+    pagination = Operations.query.order_by(Operations.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    operations = pagination.items
+    return render_template('Operation.html', operations=operations, pagination=pagination)
+
+
+@app.route('/operation/<int:operation_id>')
+def operation_detail(operation_id):
+    operation = get_operation_by_id(operation_id)
+    return render_template('operation_detail.html', operation=operation)
 
 @app.route('/Setting')
 def Setting():
@@ -278,13 +441,13 @@ def kill_process_on_port(port):
         print(f"Port {port} boş.")
         
 if __name__ == '__main__':
-    #port = 5000
-    #kill_process_on_port(port)
+    port = 5000
+    kill_process_on_port(port)
     start_sensor_reading()
-    thread = Thread(target=background_thread)
-    thread.daemon = True
-    thread.start()
-    dataLogger.start()
+    # thread = Thread(target=background_thread)
+    # thread.daemon = True
+    # thread.start()
+    # dataLogger.start()
     
     app.run(debug=False, host ='0.0.0.0')
             

@@ -1,31 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% include 'header.html' %}
     <title>Calibration</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"> -->
-    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <!-- <script src="{{ url_for('static', filename='JavaScript/sensor.js') }}"></script> -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='JavaScript/socket_connection.js') }}"></script> 
-</head>
-<body>
-    
-    <div class="container">
-        <div class="mainabove-container">
-            <!-- <a href="/logout">çıkış yap</a> -->
-            <form method="get" action="/logout">
-                <button type="submit" class="custom-button">
-                    Eagleye AGA
-                </button>
-                <a href="#" class="custom-back-button" onclick="history.go(-1); return false;">
-                    <img src="/static/images/back.svg">
-                </a>
-            </form>
-        </div>
-        <div class="mainbottom-container">
             <h1 class="title-text">Calibration</h1>
             <div style = "margin-top: -15px;">
                 <div style="display: flex; align-items: center; justify-content: space-evenly;">
@@ -64,7 +38,7 @@
                     
                     <label class="reset-label">Last Factory Calibration</label>
 
-                    <button class="span-button" type="button" id="factoryresetbutton">RESET</button>
+                    <button class="span-button" type="button" id="factoryresetbutton" onclick="openPopupReset('factoryresetbutton')">RESET</button>
                     <button class="span-button" type="button" id="zerocalibratebutton" onclick="openPopupZero('zerocalibratebutton')">ZERO</button>
                     
                     <button class="log-button" type="button">Show Calibration Logs</button>
@@ -103,6 +77,7 @@
                 var numpadInputCompleted = false;
                 var isButtonClicked = false;
                 var lastClickedButtonId = null;
+
                 document.addEventListener('DOMContentLoaded', function() {
 
                     var spanButtons = document.querySelectorAll('.span-button');
@@ -166,6 +141,32 @@
                         }
                         if (pageWarning) {
                             pageWarning.style.display = 'block'; // Uyarı sayfasını göster
+                        }
+                        if (pageValues) {
+                            pageValues.style.display = 'none'; // Değer sayfasını gizle
+                        }
+                    } 
+                }
+                
+                function openPopupReset(labelId){
+                    const pageWarning = document.getElementById('pageWarning');
+                    const pageValues = document.getElementById('pageValues');
+                    if (labelId === 'factoryresetbutton') {
+                        spannewvalue.style.display = 'none';
+                        calibratePopupButton.style.display = 'none';
+                        const allLabels = document.querySelectorAll('.spanpopup-label');
+                        allLabels.forEach(function (otherLabel) {
+                            otherLabel.style.display = 'none';
+                        });
+                        const popUpTitle = document.getElementById('popUpTitle');
+                        if (popUpTitle) {
+                            popUpTitle.innerHTML = 'Factory Calibration'; // Sayfa başlığını güncelle
+                        }
+                        if (closePopupButton) {
+                            closePopupButton.style.display = 'block'; // Kapat butonunu gizle
+                        }
+                        if (pageWarning) {
+                            pageWarning.style.display = 'none'; // Uyarı sayfasını göster
                         }
                         if (pageValues) {
                             pageValues.style.display = 'none'; // Değer sayfasını gizle

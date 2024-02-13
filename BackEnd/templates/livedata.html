@@ -1,44 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script>
-        function enterFullscreen() {
-            var elem = document.documentElement;
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.mozRequestFullScreen) {  /* Firefox */
-                elem.mozRequestFullScreen();
-            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE/Edge */
-                elem.msRequestFullscreen();
-            }
-        }
-    </script>
+{% include 'header.html' %}
     <title>Live Data</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toogle.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script> 
-    <script src="{{ url_for('static', filename='JavaScript/socket_connection.js') }}"></script> 
 
-</head>
-<body>
-    
-    <div class="container">
-        <div class="mainabove-container">
-            <!-- <a href="/logout">çıkış yap</a> -->
-            <form method="get" action="/logout">
-                <button type="submit" class="custom-button">
-                    Eagleye AGA
-                </button>
-                <a href="#" class="custom-back-button" onclick="history.go(-1); return false;">
-                    <img src="/static/images/back.svg">
-                </a>
-            </form>
-        </div>
-      
-        <div class="mainbottom-container">
             <h1 class="title-text">Live Data</h1>
             <div class="label-container">
                 <label class=" label-livedata" for="CO_value">%CO

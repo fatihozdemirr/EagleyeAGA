@@ -1,9 +1,9 @@
 import serial
 import time
 import threading
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask import app
+# from flask import Flask
+# from flask_sqlalchemy import SQLAlchemy
+# from flask import app
 from GlobalVars import globalVars
 
 span_old_1 = 0
@@ -15,9 +15,9 @@ conc_cal = 0.0
 calibration_in_progress = False
 zero_in_progress = False
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + globalVars.DatabasePath 
-db = SQLAlchemy(app)
+# app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + globalVars.DatabasePath 
+# db = SQLAlchemy(app)
 
 # Lock for thread safety
 lock = threading.Lock()

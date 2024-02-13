@@ -1,28 +1,7 @@
-<!doctype html>
-<html>
-<head>
-    <title>Setting</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/board.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
-</head>
-<body>
-    <div class="container">
-        <div class="mainabove-container">
-            <!-- <a href="/logout">çıkış yap</a> -->
-            <form method="get" action="/logout">
-                <button type="submit" class="custom-button">
-                    Eagleye AGA
-                </button>
-                <a href="#" class="custom-back-button" onclick="history.go(-1); return false;">
-                    <img src="/static/images/back.svg">
-                </a>
-            </form>
-        </div>
-        <div class="mainbottom-container">
+{% include 'header.html' %}
             <h1 class="title-text">Setting</h1>
-            <!-- <div class="button-container">
-            </div> -->
-            <div class="flex-container">
+
+            <div class="setting-flex-container">
                 <div class="grid-container">
                     <div class="mainbottomadd-container">
                         <div class="button-center">
@@ -50,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex-container">
+            <div class="setting-flex-container">
                 <div class="grid-container">
                     <div class="mainbottomadd-container">
                         <div class="button-center">

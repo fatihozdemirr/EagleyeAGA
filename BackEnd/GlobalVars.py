@@ -25,11 +25,12 @@ class GlobalVars :
         self.alloyfactor = 0.0
         self.h2 = 0.0
        
+        self.isRecording = 0
         self.RecordInterval = 1.0
         self.Port = 'COM3' if os.name == 'nt' else '/dev/ttyUSB0'
         self.load_offsets()
         self.load_live_constant()
-    
+            
     #Get Offset From DB
     def load_offsets(self):
         # Veritabanı bağlantısını aç

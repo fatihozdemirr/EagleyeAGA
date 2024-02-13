@@ -1,32 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% include 'header.html' %}
     <title>Chart</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Hammer.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-    <!-- Chartjs Plugin Zoom -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <div class="mainabove-container">
-            <!-- <a href="/logout">çıkış yap</a> -->
-            <form method="get" action="/logout">
-                <button type="submit" class="custom-button">
-                    Eagleye AGA
-                </button>
-                <a href="#" class="custom-back-button" onclick="history.go(-1); return false;">
-                    <img src="/static/images/back.svg">
-                </a>
-            </form>
-        </div>
-        <div class="mainbottom-container">
             <h1 class="title-text">Chart</h1>
-            <canvas class="canvas-style" id="myChart"></canvas>
+            <canvas id="myChart"></canvas>
             <script src="{{ url_for('static', filename='JavaScript/chartScript.js') }}"></script>
         </div>
     </div>

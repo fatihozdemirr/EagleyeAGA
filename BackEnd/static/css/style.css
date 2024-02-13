@@ -13,64 +13,66 @@ body {
     padding: 15px;
     max-width: 300px;
     border-radius: 10px 10px 10px 10px; 
-    height: 290px; /* Yükseklik belirleme */
-    width: 400px;  /* Genişlik belirleme */
+    height: 290px; 
+    width: 400px; 
 }
-/* Field (input) alanları arasındaki boşluğu ayarlamak için */
+
 .login-container-input {
-    /*margin: 3px;  Yukarıdan ve alttan 3 piksel boşluk bırakır */
     margin-top: -14px;
-    margin-left: 20px;
-    padding: 5px;   /* Alanın içeriğinden etrafındaki boşluğu ayarlar */
-    height: 25px; /* Yükseklik belirleme */
-    width: 250px;  /* Genişlik belirleme */
+    padding: 5px;   
+    height: 25px; 
+    width: 240px; 
     text-align: left;
     border-bottom: 2px solid #000;
     border-radius: 10px; 
     background-color: rgb(255, 255, 255);
 }
+
 .login-container-button {
     margin: 20px;
     margin-top: 10px;
-    background-color: #007bff; /* Arka plan rengi */
-    color: white;              /* Yazı rengi */
-    border: none;              /* Kenarlık yok */
-    padding: 10px 50px;         /* Buton boyutu */
-    border-radius: 2rem 0.5rem 2rem 0.5rem ;        /* Köşeleri yuvarlama */
-    cursor: pointer;           /* Fare imleci el işareti */
+    background-color: #007bff;
+    color: white;              
+    border: none;             
+    padding: 10px 50px;       
+    border-radius: 2rem;       
+    cursor: pointer;         
 }
+
 .login-container button:hover {
-    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+    background-color: #f0af38;
 }
+
 .custom-text {
     font-family: Calibri, sans-serif;
     font-size: 30px;
 }
+
 .label1 {
-    font-family: Calibri, sans-serif; /* Etiketin yazı tipi */
-    font-size: 18px; /* Yazı boyutu */
+    font-family: Calibri, sans-serif; 
+    font-size: 18px; 
     font-weight: bold;
-    color: #333; /* Yazı rengi */
-    margin-bottom: 10px; /* Alt boşluk */
+    color: #333; 
+    margin-bottom: 10px;
     margin-left: 15px;
-    display: block; /* Her label bir satırda görüntülensin */
+    display: block; 
     width: 250px;
     height: 30px;
     line-height: 30px;
     text-align: left;
     border: none;
-    /* Diğer özelleştirmeler buraya eklenebilir */
 }
+
 .submit-button {
-    background-color: #007bff; /* Arka plan rengi */
-    color: white; /* Yazı rengi */
-    border: none; /* Kenarlık yok */
-    padding: 10px 20px; /* Buton boyutu */
-    border-radius: 5px; /* Köşeleri yuvarlama */
-    cursor: pointer; /* Fare imleci el işareti */
+    background-color: #007bff; 
+    color: white;
+    border: none;
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    cursor: pointer; 
   }
   
-.alert {  /*loginde başarılı veya hatalı giriş yapılınca kullanılıyor */
+.alert { 
     margin: 1px;
     margin-top: -23px;
     padding: 5px;
@@ -85,12 +87,14 @@ body {
     background-color: #dc3545;
     color: #fff;
 }
+
 .container {
     width: 800px;
     height: 450px;
     border: 1px solid #ccc;
     border-radius: 10px;
 }
+
 @media screen and  (max-width:800px){
     .container {
         width: 800px;
@@ -105,25 +109,17 @@ body {
     height: 50px;
     border-bottom: 2px solid #ccc;
     border-radius: 10px
-    /* .mainabove-container'a ait stil özellikleri */
 }
 
 .container > .mainabove-container + .mainbottom-container {
-    margin: none; /* .mainabove-container ile .mainbottom-container arasına 20 piksellik bir boşluk ekler */
+    margin: none; 
 }
 
 .container > .mainbottom-container {
-    /* height: 380px;
-    border: 2px solid #ccc;
-    border-radius: 10px */
-    /* .mainbottom-container'a ait stil özellikleri */
     display: grid;
-    grid-template-columns: 1fr; /* Tek sütun */
-    grid-template-rows: repeat(3, 1fr); /* İki satır */
-    height: 396px; /* Ekran yüksekliği kadar yer kaplar */
-    /* border: 2px solid #ccc;
-    border-radius: 10px */
-    /* min-height: 50vh; */
+    grid-template-columns: 1fr; 
+    grid-template-rows: repeat(3, 1fr); 
+    height: 396px;
 }
 
 .title-text {
@@ -133,107 +129,112 @@ body {
     padding: 5px;
     text-align: left;
 }
-/* CSS dosyasında butonun görünümünü özelleştirme */
+
 button {
-    background-color: #007bff; /* Arka plan rengi */
-    color: white; /* Yazı rengi */
-    border: none; /* Kenarlık yok */
-    padding: 10px 20px; /* Buton boyutu */
-    border-radius: 5px; /* Köşeleri yuvarlama */
-    cursor: pointer; /* Fare imleci el işareti */
+    background-color: #007bff;
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 5px;
+    cursor: pointer; 
     margin: 7px;
     padding: 10px;
 }
 
-.canvas-style{
-    margin-top : -45px;
-    margin-left :3px;
-}
-
 .custom-button {
     background-image: url("/static/images/3EHome.png");
-    background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
-    background-repeat: no-repeat; /* Tekrarlamayı engeller */
-    width: 145px; /* Düğme genişliği */
-    height: 40px; /* Düğme yüksekliği */
-    padding-left: 50px; /* Resmi düğme içinde hizalamak için sol boşluk ekler */
-    border: none; /* Kenarlık yok */
-    text-align: left; /* Yazıyı sola hizalar */
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    width: 145px; 
+    height: 40px; 
+    padding-left: 50px; 
+    border: none;
+    text-align: left; 
     background-color: #ffffff;
     color: #000000;
     font-weight: bolder;
 }
+
 a.custom-back-button {
     display: inline-block;
-    background-color: #ffffff; /* Arka plan rengi */
-    color: white; /* Yazı rengi */
-    padding: 10px 20px; /* Buton boyutu */
-    border-radius: 5px; /* Köşeleri yuvarlama */
-    text-decoration: none; /* Altçizgiyi kaldırır */
-    font-weight: bold; /* Yazıyı kalınlaştırır */
-    float: right; /* butonu sağa kaydırır */
-    margin-right: 10px; /* Sağdan 10 piksel boşluk bırakır (isteğe bağlı) */
+    background-color: #ffffff; 
+    color: white; 
+    padding: 10px 20px;
+    border-radius: 5px; 
+    text-decoration: none; 
+    font-weight: bold; 
+    float: right;
+    margin-right: 10px; 
     margin-top: 3px;
 }
 
 a.custom-back-button img {
-    width: 20px; /* Resmin genişliğini ayarlayın */
-    height: 20px; /* Resmin yüksekliğini ayarlayın */
-    margin-right: 5px; /* Metin ile resim arasındaki boşluğu ayarlayın */
+    width: 20px; 
+    height: 20px; 
+    margin-right: 5px; 
 }
 
 a.custom-back-button:hover {
-    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+    background-color: #f0af38; 
 }
 
 button:hover {
-    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+    background-color: #f0af38; 
 }
 
 .submit-button:hover {
-    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+    background-color: #f0af38; 
 }
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Üç sütun */
-    grid-template-rows: repeat(2, auto);/* Tek satır */
-    gap: 3px; /* Sütunlar arası boşluk */
-    row-gap: 25px; /* Satır arası boşluk */
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 3px; 
+    row-gap: 25px; 
     flex: 1;
-    min-height: 1px; /* minimum yükseklik değeri */
-    max-height: 100px; /* maksimum yükseklik değeri */
+    min-height: 1px; 
+    max-height: 100px; 
 }
 .grid-container .mainbottomadd-container {
-    grid-row: 1; /* İkinci satıra yerleştir */
-    /* Diğer stil özellikleri */
+    grid-row: 1;
 }
+
 .mainbottomadd-container {
     display: flex;
     margin-top: -55px; 
-    justify-content: center; /* Yatayda merkezleme */
-    align-items: center; /* Dikeyde merkezleme */
-    height: 216%; /* İçeriği dikeyde ortalamak için */
-    border: 1px solid #ccc; /* Sadece sınırları göstermek için, isteğe bağlı */
-    border-radius: 10px; /* Köşeleri yuvarlama */
+    justify-content: center; 
+    align-items: center;
+    height: 216%; 
+    border: 1px solid #ccc; 
+    border-radius: 10px;
 }
+
 .flex-container {
     display: flex;
-    justify-content: space-between; /* Öğeler arasında eşit boşluk bırakır */
+    justify-content: space-between; 
     margin-top: 84px;
     height: 100px;
 }
 
+.setting-flex-container {
+    display: flex;
+    justify-content: space-between; 
+    margin-top: 57px;
+    height: 110px;
+}
+
 .button-container {
     display: flex;
-    justify-content: center; /* Öğeleri yatayda ortalar */
-    align-items: center; /* Öğeleri dikeyde ortalar */
-    background-color: #f0f0f0; /* Arka plan rengi */
-    padding: 10px; /* i̇stenilen iç boşluk */
+    justify-content: center; 
+    align-items: center; 
+    background-color: #f0f0f0; 
+    padding: 10px; 
     height: 30px;
 }
+
 .button-center {
-    text-align: center; /* İçeriği yatayda ortalamak için */
+    text-align: center; 
 }
 
 .button-center a {
@@ -243,14 +244,14 @@ button:hover {
 }
 
 .button-center img {
-    max-width: 100px; /* Buton resminin maksimum genişliği, isteğe bağlı */
+    max-width: 100px;
 }
+
 .custom-button-classes {
-    /* background-image: url("/static/images/3ehome.png");  */
-    background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
-    background-repeat: no-repeat; /* Tekrarlamayı engeller */
-    justify-content: center; /* Öğeleri yatayda ortalar */
-    align-items: center; /* Öğeleri dikeyde ortalar */
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    justify-content: center; 
+    align-items: center; 
     background-color: #ffffff;
     color: #000000;
     font-weight: bolder;
@@ -261,13 +262,13 @@ button:hover {
 }
 
 .label-container {
-    margin-top: 17px; /* İhtiyacınıza göre ayarlayabilirsiniz */
-    margin-left: -190px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+    margin-top: 17px; 
+    margin-left: -190px; 
 }
 
 .labelright-container {
-    margin-top: -340px; /* İhtiyacınıza göre ayarlayabilirsiniz */
-    margin-left: 195px; /* İhtiyacınıza göre ayarlayabilirsiniz */
+    margin-top: -340px; 
+    margin-left: 195px; 
 }
 
  
@@ -336,7 +337,7 @@ font-weight: bold;
 border: 1px solid #ccc;
 background-color: #d1d1d1;
 border-radius: 10px;
-width: 100%; /* input'ların hücre genişliğini tam doldurması için */
+width: 100%; 
 line-height: 50px;
 font-family: Calibri, sans-serif;
 font-size: 18px;
@@ -344,8 +345,7 @@ border-bottom: 1px solid #dddddd;
 text-align: center;
 padding: 5px;
 height: 35px;
-max-width: 135px; /* Maksimum genişlik */
-
+max-width: 135px; 
 }
 
 .lvedta-label {
@@ -371,19 +371,19 @@ max-width: 135px; /* Maksimum genişlik */
 } 
 
 .custom-hr {
-    border: none; /* Mevcut sınırı kaldır */
-    height: 1px; /* Çizgi kalınlığı */
+    border: none;
+    height: 1px;
     width: 360px;
-    background-color: #ccc; /* Çizgi rengi */
+    background-color: #ccc; 
     margin: 14px;
     margin-left: 220px;
 }
 
 .calibration-custom-hr {
-    border: none; /* Mevcut sınırı kaldır */
-    height: 1px; /* Çizgi kalınlığı */
+    border: none;
+    height: 1px; 
     width: 724px;
-    background-color: #ccc; /* Çizgi rengi */
+    background-color: #ccc;
     margin: 3px;
     margin-left: 40px;
 }
@@ -391,9 +391,8 @@ max-width: 135px; /* Maksimum genişlik */
 .info-image {
     display: flex;
     justify-content: space-around;
-    text-align: left; /* Resmi ortala */
-    /*border: 1px solid #fc0000;  Kenarlık ekleyerek resmi belirginleştir */
-    padding: 1px; /* Kenarlık içinde bir boşluk bırak */
+    text-align: left; 
+    padding: 1px; 
     margin-left: 20px;
     width: 755px;
     font-family: Calibri, sans-serif;
@@ -451,13 +450,13 @@ max-width: 135px; /* Maksimum genişlik */
     font-family: Calibri, sans-serif;
     font-weight: bold;
     font-size: 26px;
-    margin-top: 0px; /* Veya ihtiyaca göre bir boşluk */
+    margin-top: 0px; 
 }
 
 .spanpopup-label {
     font-size: 18px;
     color: #333;
-    display: block; /* Yeni eklenen stil */
+    display: block; 
     margin-left: 5px;
     height: 32px;
     width: 380px;
@@ -487,8 +486,8 @@ max-width: 135px; /* Maksimum genişlik */
 
 #nextButton {
     position: absolute;
-    bottom: 10px; /* İstenilen alt boşluk miktarı */
-    right: 30px; /* İstenilen sağ boşluk miktarı */
+    bottom: 10px;
+    right: 30px;
     padding: 8px 16px;
     background-color: #007BFF;
     color: #fff;
@@ -498,8 +497,8 @@ max-width: 135px; /* Maksimum genişlik */
 
 #calibrateButton {
     position: absolute;
-    bottom: 10px; /* İstenilen alt boşluk miktarı */
-    right: 30px; /* İstenilen sağ boşluk miktarı */
+    bottom: 10px; 
+    right: 30px; 
     padding: 8px 16px;
     background-color: #007BFF;
     color: #fff;
@@ -509,8 +508,8 @@ max-width: 135px; /* Maksimum genişlik */
 
 #calibratePopupButton {
     position: absolute;
-    bottom: 10px; /* İstenilen alt boşluk miktarı */
-    right: 30px; /* İstenilen sağ boşluk miktarı */
+    bottom: 10px;
+    right: 30px; 
     padding: 8px 16px;
     background-color: #007BFF;
     color: #fff;
@@ -524,8 +523,8 @@ max-width: 135px; /* Maksimum genişlik */
 
 #closePopupButton {
     position: absolute;
-    bottom: 10px; /* İstenilen alt boşluk miktarı */
-    right: 125px; /* İstenilen sağ boşluk miktarı */
+    bottom: 10px; 
+    right: 125px; 
     padding: 8px 16px;
     background-color: #bebebe;
     color: #fff;
@@ -574,7 +573,7 @@ max-width: 135px; /* Maksimum genişlik */
     font-family: Calibri, sans-serif;
     font-size: 18px;
     color: #ffffff;
-    background-color: #333; /* Çizgi rengi */
+    background-color: #333; 
     width: 60px;
     height: 35px;
     border: 1px solid #ccc;
@@ -586,48 +585,54 @@ max-width: 135px; /* Maksimum genişlik */
 .key.space {
     width: 120px;
 }
+
 .key.enter {
     width: 130px;
     background-color: rgb(158, 135, 201);
     color: #000000;
     font-weight: bold;
 }
+
 .key.zero {
     width: 130px;
 }
+
 .key.clear {
     width: 60px;
 }
+
 .key.close {
     width: 20px;
     height: 20px;
     background-color: #ff0000;
-    text-align: center; /* Ortalamak için */
-    margin-left: auto;  /* Sağa yanaştırmak için */
+    text-align: center;
+    margin-left: auto;  
     cursor: pointer;
 }
+
 .key.clicked {
-    background-color: rgb(255, 150, 64) /* Basıldığında arka plan rengi */
+    background-color: rgb(255, 150, 64) 
 }
 
-/* Butonun genel stil özellikleri */
 .span-button {
-    background-color: #4CAF50; /* Arka plan rengi */
-    color: white; /* Metin rengi */
-    padding: 10px 20px; /* Dış boşluk (padding) */
-    border-radius: 20px; /* Kenar yuvarlaklığı */
-    font-size: 18px; /* Metin boyutu */
+    background-color: #4CAF50; 
+    color: white; 
+    padding: 10px 20px; 
+    border-radius: 20px;
+    font-size: 18px; 
     font-family: Calibri, sans-serif;
 }
+
 #zerocalibratebutton {
-    background-color: #0077c7; /* Özel arka plan rengi (örnek: kırmızı) */
+    background-color: #0077c7; 
     &:hover {
         background-color: rgb(255, 150, 64);
     }
     &:active {
-        background-color: #45a049; /* Basıldığında arka plan rengi */
+        background-color: #45a049;
     }
 }
+
 .gas-label {
     font-family: Calibri, sans-serif;
     font-size: 18px;
@@ -638,12 +643,11 @@ max-width: 135px; /* Maksimum genişlik */
     font-weight: bold;
     justify-content: center;
     height: 35px;
-    max-width: 135px; /* Maksimum genişlik */
+    max-width: 135px; 
     margin-left: -10px;
     line-height: 2; 
     min-width: 55px;
 }
-
 
 .reset-label {
     display: flex;
@@ -659,31 +663,227 @@ max-width: 135px; /* Maksimum genişlik */
     justify-content: center; 
     align-items: center;
 }
+
 .reset-button {
-    background-color: #ff9419; /* Arka plan rengi */
+    background-color: #ff9419; 
     width: 90px;
-    color: white; /* Metin rengi */
-    padding: 10px 20px; /* Dış boşluk (padding) */
-    border-radius: 20px; /* Kenar yuvarlaklığı */
-    font-size: 18px; /* Metin boyutu */
+    color: white; 
+    padding: 10px 20px; 
+    border-radius: 20px; 
+    font-size: 18px; 
     font-family: Calibri, sans-serif;
 }
+
 .reset-zero {
-    background-color: #ff9419; /* Arka plan rengi */
+    background-color: #ff9419;
     width: 90px;
-    color: white; /* Metin rengi */
-    padding: 10px 20px; /* Dış boşluk (padding) */
-    border-radius: 20px; /* Kenar yuvarlaklığı */
-    font-size: 18px; /* Metin boyutu */
+    color: white; 
+    padding: 10px 20px;
+    border-radius: 20px; 
+    font-size: 18px; 
     font-family: Calibri, sans-serif;
 }
+
 .log-button {
-    background-color: #3ab0ff; /* Arka plan rengi */
+    background-color: #3ab0ff; 
     width: 163px;
-    color: white; /* Metin rengi */
-    padding: 5px 20px; /* Dış boşluk (padding) */
-    border-radius: 10px; /* Kenar yuvarlaklığı */
-    font-size: 19px; /* Metin boyutu */
+    color: white;
+    padding: 5px 20px; 
+    border-radius: 10px; 
+    font-size: 19px;
     font-family: Calibri, sans-serif;
     margin-left: 10px;
+}
+
+/* Calibration CSS */
+.table-calibration {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 17px;
+    font-family: Calibri, sans-serif;
+    min-width: 400px;
+
+}
+
+.table-calibration thead tr {
+    background-color: #f2f2f2; 
+    color: #333; 
+    text-align: left;
+    font-weight: bold;
+}
+
+.table-calibration th,
+.table-calibration td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd; 
+}
+
+.table-calibration tbody tr {
+    transition: background-color 0.2s ease; 
+}
+
+.table-calibration tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* İkon Stilleri */
+.table-calibration .fa-pen,
+.table-calibration .fa-trash {
+    color: #333; 
+    margin-right: 5px; 
+    cursor: pointer;
+}
+
+.table-calibration .fa-pen:hover,
+.table-calibration .fa-trash:hover {
+    color: #007bff; 
+}
+
+/* Sayfalama Stilleri */
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 35px;
+}
+
+.pagination a {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.pagination a.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination a:hover {
+    border-color: #007bff;
+}
+
+.add-operation-button {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.add-operation-icon {
+    display: inline-block;
+    background: url('/static/images/add.svg') no-repeat center center;
+    background-size: contain;                  
+    width: 35px;
+    height: 35px; 
+    cursor: pointer;
+    margin-right: 390px;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hidden-id {
+    display: none;
+}
+
+.record-label-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.record-labelright-container {
+    margin-top: -300px; 
+    margin-left: 410px; 
+}
+
+.record-label-livedata {
+    display: flex;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    margin-left: 10px;
+    margin-bottom: 11px;
+    width: 360px;
+    height: 23px;
+} 
+
+.record-container-input {
+    margin-top: -14px;
+    margin-left: 20px;
+    padding: 5px;   
+    height: 35px;
+    width: 350px;  
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 10px; 
+    background-color: rgb(235, 238, 240);
+}
+
+.details-container {
+    margin-bottom: 10px;
+    margin-left: 15px;
+    font-size: 0.8em;
+}
+
+.detail-item {
+    display: inline; 
+    font-family: Calibri, sans-serif;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+#myChart {
+    max-width: 100%;
+    max-height: 92%;
+}
+
+.save-button {
+    display: block;
+    margin-left: 285px;
+    margin-top: 40px;
+    background-color: #007bff;
+    color: white; 
+    border: none; 
+    padding: 14px 24px; 
+    border-radius: 5px;
+    cursor: pointer; 
+}
+
+.fas.fa-file-export {
+    background-color: #129c00;
+    margin-top: 8px;
+    color: white; 
+    border: none; 
+    padding: 13px 24px; 
+    border-radius: 5px;
+    cursor: pointer; 
+}
+
+.fas.fa-chart-line {
+    background-color: #9122f8;
+    margin-top: 8px;
+    color: white; 
+    border: none; 
+    padding: 13px 24px; 
+    border-radius: 5px;
+    cursor: pointer; 
+}
+
+.play-stop-button{
+    display: block;
+    margin-left: 10px;
+    background-color: #007bff;
+    color: white; 
+    border: none; 
+    padding: 13px 24px; 
+    border-radius: 5px;
+    cursor: pointer; 
 }
