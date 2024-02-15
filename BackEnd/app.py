@@ -1,10 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, send_file
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired
 from flask import Flask, jsonify
-# from smartGas import app, db
 import smartGas
 import threading 
 from threading import Thread
@@ -15,78 +10,32 @@ from Datalogger import dataLogger
 import os
 from datetime import datetime
 from excel_operations import create_excel_file
-from io import BytesIO
+from Models import db, User, LiveTableDatas, CalibrationTableDatas, Operations
+from FlaskForms import LoginForm, registrationform
 
 app = Flask(__name__)
-
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
 app.secret_key = 'mysecretkey'
 app.app_context().push()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + globalVars.DatabasePath 
-db = SQLAlchemy(app)
-db.create_all()
+db.init_app(app)
 
 with app.app_context():
     db.create_all()
 
 lock = threading.Lock()
+logged_in = False
 
 def background_thread():
     while True:
-        time.sleep(0.5)
+        time.sleep(1)
         socketio.emit('chart_sensor_data', {
             'time': time.strftime('%H:%M:%S'),
-            'valueCO': globalVars.CO_Result,
-            'valueCO2': globalVars.CO2_Result,
-            'valueCH4': globalVars.CH4_Result,
+            'valueCO': globalVars.CO_Read + globalVars.CO_Offset,
+            'valueCO2': globalVars.CO2_Read + globalVars.CO2_Offset,
+            'valueCH4': globalVars.CH4_Read + globalVars.CH4_Offset,
         })
-
-        
-class User(db.Model):
-    __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)   
-    password = db.Column(db.String(120), nullable=False)
-    
-class LiveTableDatas(db.Model):
-    __tablename__ = 'livetabledatas'
-    id = db.Column(db.Integer, primary_key=True)
-    TempUnit = db.Column(db.String(80), nullable=False)
-    Temperature = db.Column(db.Integer, nullable=False)
-    CH4Factor = db.Column(db.Integer, nullable=False)
-    AlloyFactor = db.Column(db.Integer,  nullable=False)
-    H2 = db.Column(db.Integer,  nullable=False)
-    
-class CalibrationTableDatas(db.Model):
-    __tablename__ = 'calibration'
-    id = db.Column(db.Integer, primary_key=True)
-    GAS = db.Column(db.String, nullable=False)
-    OFFSET = db.Column(db.Float, nullable=False)
-    READING = db.Column(db.Float, nullable=False)
-    VALUE = db.Column(db.Float,  nullable=False)
-    
-class Operations(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    company = db.Column(db.String(50), nullable=False)
-    furnace = db.Column(db.String(20), nullable=False)
-    operator = db.Column(db.String(50), nullable=False)
-    start_date = db.Column(db.DateTime, nullable=True)
-    stop_date = db.Column(db.DateTime, nullable=True)
-
-class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')
-
-class registrationform(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Admin')
-    
-logged_in = False
 
 @app.route('/')
 def ana_sayfa():
@@ -309,7 +258,7 @@ def export_data(operation_id):
     return send_file(
         excel_file,
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        download_name='exported_data.xlsx',
+        download_name='ExportedData.xlsx',
         as_attachment=True
     )
 
@@ -444,11 +393,10 @@ if __name__ == '__main__':
     port = 5000
     kill_process_on_port(port)
     start_sensor_reading()
-    # thread = Thread(target=background_thread)
-    # thread.daemon = True
-    # thread.start()
+    thread = Thread(target=background_thread)
+    thread.daemon = True
+    thread.start()
     # dataLogger.start()
-    
     app.run(debug=False, host ='0.0.0.0')
             
     
