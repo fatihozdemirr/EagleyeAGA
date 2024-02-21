@@ -43,10 +43,17 @@ body {
 }
 
 .custom-text {
-    margin-top: -30px;
+    margin-top: -44px;
     font-family: Calibri, sans-serif;
     font-size: 30px;
 }
+
+.custom-versiontext {
+    margin-top: -20px;
+    font-family: Calibri, sans-serif;
+    font-size: 20px;
+}
+
 
 .label1 {
     font-family: Calibri, sans-serif; 
@@ -145,7 +152,7 @@ button {
     background-image: url("/static/images/3EHome.png");
     background-size: contain; 
     background-repeat: no-repeat; 
-    width: 220px; 
+    width: 250px; 
     height: 40px; 
     padding-left: 50px; 
     border: none;
@@ -267,7 +274,7 @@ button:hover {
 
 .select-login {
     width: 75%;
-    margin-top: 15px;
+    margin-top: 0px;
     padding: 10px;
     border: 2px solid #000;
     text-align: left;
@@ -563,6 +570,19 @@ max-width: 135px;
     gap: 5px;
 }
 
+.keyboardlabel2 {
+    width: 649px;
+    height: 35px;
+    margin-left: 5px;
+    font-family: Calibri, sans-serif;
+    font-weight: bold;
+    font-size: 28px;
+    color: #333;
+    padding: 1px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 .numpad {
     display: flex;
     flex-direction: column;
@@ -588,6 +608,10 @@ max-width: 135px;
     gap: 5px;
 }
 
+.keyboardrow {
+    display: flex;
+}
+
 .key {
     display: flex;
     align-items: center;
@@ -605,7 +629,7 @@ max-width: 135px;
 }
 
 .key.space {
-    width: 120px;
+    width: 655px;
 }
 
 .key.enter {
@@ -621,6 +645,13 @@ max-width: 135px;
 
 .key.clear {
     width: 60px;
+}
+
+.key.keyboardclear {
+    width: 125px;
+    background-color: #47a74c;
+    color: #000000;
+    font-weight: bold;
 }
 
 .key.close {
@@ -644,6 +675,11 @@ max-width: 135px;
     font-size: 18px; 
     font-family: Calibri, sans-serif;
 }
+
+/* .span-button-img{
+    width: 50px;
+    height: 30px;
+} */
 
 #zerocalibratebutton {
     background-color: #0077c7; 

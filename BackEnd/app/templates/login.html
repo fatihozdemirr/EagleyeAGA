@@ -8,6 +8,7 @@
     <div class ="login-container">
         <img class="login-imgfile" src="{{ url_for('static', filename='images/3EHome.png') }}">
         <h1 class="custom-text">Eagleye®AGA</h1>
+        <p class="custom-versiontext">V1.0</p>
         <form method="post" action="{{ url_for('main.login') }}">
             {{ form.hidden_tag() }}
             <div>
