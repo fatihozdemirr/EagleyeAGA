@@ -1,0 +1,408 @@
+{% include 'header.html' %}
+    <title>Calibration</title>
+            <h1 class="title-text">Calibration</h1>
+            <div style = "margin-top: -15px;">
+                <div style="display: flex; align-items: center; justify-content: space-evenly;">
+                    <label class="gas-label">GAS</label>
+                    <label class="gas-label" style="width: 100%">OFFSET</label>
+                    <label class="gas-label" style="width: 100%">READING</label>
+                    <label class="gas-label" style="width: 100%">VALUE</label>
+                    <label class="gas-label">ACTIONS</label>
+                </div>
+                <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
+                <div style="display: flex; align-items: center; justify-content: space-evenly;">
+                    <label class="gas-label">%CO </label>
+                    <input class="input-calibration" id="CO_inputoffset" type="text" value="0" onclick="openNumpad('CO_inputoffset')">
+                    <input class="input-calibration" id="CO_reading"type="text" value="0">
+                    <input class="input-calibration" id="CO_value" type="text" value="0">
+                    <button class="span-button" id="CObuttonspan" onclick="openPopuplabelView('CO_reading_popup')">SPAN</button>
+                </div>
+                <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
+                <div style="display: flex; align-items: center; justify-content: space-evenly;">
+                    <label class="gas-label">%CO2</label>
+                    <input class="input-calibration" id="CO2_inputoffset" type="text" value="0" onclick="openNumpad('CO2_inputoffset')"> 
+                    <input class="input-calibration" id="CO2_reading" type="text" value="0">
+                    <input class="input-calibration" id="CO2_value" type="text" value="0">
+                    <button class="span-button" id="CO2buttonspan" onclick="openPopuplabelView('CO2_reading_popup')">SPAN</button>
+                </div>  
+                <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
+                <div style="display: flex; align-items: center; justify-content: space-evenly;">
+                    <label class="gas-label">%CH4</label>
+                    <input class="input-calibration" id="CH4_inputoffset" type="text" value="0" onclick="openNumpad('CH4_inputoffset')"> 
+                    <input class="input-calibration" id="CH4_reading" type="text" value="0">
+                    <input class="input-calibration" id="CH4_value" type="text" value="0">
+                    <button class="span-button" id="CH4buttonspan" onclick="openPopuplabelView('CH4_reading_popup')">SPAN</button>
+                </div>
+                <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
+                <div style="display: flex; align-items: center; ">
+                    
+                    <label class="reset-label">Last Factory Calibration</label>
+
+                    <button class="span-button" type="button" id="factoryresetbutton" onclick="openPopupReset('factoryresetbutton')">RESET</button>
+                    <button class="span-button" type="button" id="zerocalibratebutton" onclick="openPopupZero('zerocalibratebutton')">ZERO</button>
+                    
+                    <button class="log-button" onclick="location.href='/show_calibration_logs'" type="button">Show Calibration Logs</button>
+                </div>
+            </div>
+            <div id="keyboardContainer" class="popup"></div>
+            <!-- <div id="message-container"></div> -->
+            <div id="spanpopup" class="spanpopup">
+                <div class="spanpopup-content">
+                    <h2 id="popUpTitle">Span Calibration</h2>
+
+                    <label class="spanpopup-label" id="CO_reading_popup" style="display: none;" data-title="%CO Span Calibration">%CO Live Span Value: <span id="CO_reading_popup">0.00</span></label>
+                    <label class="spanpopup-label" id="CO2_reading_popup" style="display: none;" data-title="%CO2 Span Calibration">%CO2 Live Span Value: <span id="CO2_reading_popup">0.000</span></label>
+                    <label class="spanpopup-label" id="CH4_reading_popup" style="display: none;" data-title="%CH4 Span Calibration">%CH4 Live Span Value: <span id="CH4_reading_popup">0.00</span></label>
+                    
+                    <input class="spanpopup-input" type="text" id="spannewvalue" placeholder="Enter new value!" onclick="openNumpad('spannewvalue')">
+
+                    <button id="calibratePopupButton" onclick="startspanCalibration()">Calibrate</button>
+
+                    <!-- Zero Uyarı Metni Sayfası-->
+                    <div id ="pageWarning" class="popup-page">
+                        <p id ="pageWarningP">Before starting the process, check the nitrogen gas installation.</p>
+                        <button id="nextButton" onclick="showNextPage()">Next</button>
+                    </div>
+
+                    <!-- Zero Gaz Değerleri Kalibrasyon Sayfası-->
+                    <div id="pageValues" class="popup-page" style="display: none;">
+                        <button id="calibrateButton" onclick="startCalibration()">Calibrate</button>
+                    </div>
+
+                    <button id="closePopupButton">Close</button>
+                </div>
+            </div>
+            
+            <script>
+                // var programStarted = false;
+                var numpadInputCompleted = false;
+                var isButtonClicked = false;
+                var lastClickedButtonId = null;
+
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    var spanButtons = document.querySelectorAll('.span-button');
+                    spanButtons.forEach(function (button) {
+                        button.addEventListener('click', function () {
+                            var buttonId = button.id;
+                            openSpanPopup(buttonId);
+                            lastClickedButtonId = buttonId;
+                        });
+                    });
+
+                    function openSpanPopup() {
+                        var popup = document.getElementById("spanpopup");
+                        if (popup) {
+                            popup.style.display = "block";
+                        } else {
+                            console.error("Popup element not found.");
+                        }
+                    }
+
+                    function closePopup() {
+                        var closeBt = document.getElementById("spanpopup");
+                        if (closeBt) {
+                            const clearspanvalue = document.getElementById("spannewvalue"); 
+                            clearspanvalue.value = '';
+                            closeBt.style.display = "none";
+                        } else {
+                            console.error("Popup element not found.");
+                        }
+                    }
+
+                    closePopupButton.addEventListener('click', function () {
+                        closePopup();
+                    });
+
+                    /// numpad açılıyor, inputId problemi
+                       document.querySelectorAll('#CO_inputoffset, #CO2_inputoffset, #CH4_inputoffset').forEach(function(element) {
+                        element.addEventListener('click', function() {
+                            openNumpad(inputId);
+                            document.getElementById("keyboardContainer").style.display = "none";
+                        });
+                    });
+                });
+
+                function openPopupZero(labelId){
+                    const pageWarning = document.getElementById('pageWarning');
+                    const pageValues = document.getElementById('pageValues');
+                    if (labelId === 'zerocalibratebutton') {
+                        spannewvalue.style.display = 'none';
+                        calibratePopupButton.style.display = 'none';
+                        const allLabels = document.querySelectorAll('.spanpopup-label');
+                        allLabels.forEach(function (otherLabel) {
+                            otherLabel.style.display = 'none';
+                        });
+                        const popUpTitle = document.getElementById('popUpTitle');
+                        if (popUpTitle) {
+                            popUpTitle.innerHTML = 'Connection Check'; // Sayfa başlığını güncelle
+                        }
+                        if (closePopupButton) {
+                            closePopupButton.style.display = 'none'; // Kapat butonunu gizle
+                        }
+                        if (pageWarning) {
+                            pageWarning.style.display = 'block'; // Uyarı sayfasını göster
+                        }
+                        if (pageValues) {
+                            pageValues.style.display = 'none'; // Değer sayfasını gizle
+                        }
+                    } 
+                }
+                
+                function openPopupReset(labelId){
+                    const pageWarning = document.getElementById('pageWarning');
+                    const pageValues = document.getElementById('pageValues');
+                    if (labelId === 'factoryresetbutton') {
+                        spannewvalue.style.display = 'none';
+                        calibratePopupButton.style.display = 'none';
+                        const allLabels = document.querySelectorAll('.spanpopup-label');
+                        allLabels.forEach(function (otherLabel) {
+                            otherLabel.style.display = 'none';
+                        });
+                        const popUpTitle = document.getElementById('popUpTitle');
+                        if (popUpTitle) {
+                            popUpTitle.innerHTML = 'Factory Calibration'; // Sayfa başlığını güncelle
+                        }
+                        if (closePopupButton) {
+                            closePopupButton.style.display = 'block'; // Kapat butonunu gizle
+                        }
+                        if (pageWarning) {
+                            pageWarning.style.display = 'none'; // Uyarı sayfasını göster
+                        }
+                        if (pageValues) {
+                            pageValues.style.display = 'none'; // Değer sayfasını gizle
+                        }
+                    } 
+                }
+
+                function showNextPage() {
+                    const pageWarning = document.getElementById('pageWarning');
+                    const pageValues = document.getElementById('pageValues');
+                    const popUpTitle = document.getElementById('popUpTitle');
+                    const allLabels = document.querySelectorAll('.spanpopup-label');
+                    allLabels.forEach(function (otherLabel) {
+                        otherLabel.style.display = 'block';
+                    });
+                    if (popUpTitle) {
+                        popUpTitle.innerHTML = 'Zero Calibrate with Nitrogen Gas'; // Sayfa başlığını güncelle
+                    }
+                    if (closePopupButton) {
+                        closePopupButton.style.display = 'block'; // Kapat butonunu gizle
+                    }
+                    if (pageWarning && pageValues) {
+                        pageWarning.style.display = 'none';
+                        pageValues.style.display = 'block';
+                    }
+                }
+
+                function startCalibration() {
+                    zero_in_progress = true
+                    fetch('/update_calibration_data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            zerostart: zero_in_progress,
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            // document.getElementById('message-container').innerHTML = data.message;
+                        } else {
+                            console.error('Calibration failed:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+
+                function openPopuplabelView(labelId) {
+                    document.querySelectorAll('spanpopup').forEach(function(label) {
+                        label.style.display = 'none';
+                    });
+                    const labelToShow = document.getElementById(labelId);
+                    const popUpTitle = document.getElementById('popUpTitle');
+                    if (labelToShow) {
+                        labelToShow.style.display = 'block';
+                        calibratePopupButton.style.display = 'block';
+                        spannewvalue.style.display = 'block';
+                        closePopupButton.style.display = 'block';
+                        const allLabels = document.querySelectorAll('.spanpopup-label');
+                        allLabels.forEach(function (otherLabel) {
+                            if (otherLabel !== labelToShow) {
+                                otherLabel.style.display = 'none';
+                                pageWarning.style.display = 'none';
+                                pageWarning.style.display = 'none';
+                                pageValues.style.display = 'none';
+                            }
+                        });
+                        const buttonTitle = labelToShow.getAttribute('data-title');
+                        if (popUpTitle) {
+                            popUpTitle.innerHTML = buttonTitle;
+                        }
+                    }
+                }
+
+                function startspanCalibration() {
+                    CalibrateButtonId = lastClickedButtonId;
+                    fetch('/update_calibration_data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            buttonId: CalibrateButtonId,  
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            // document.getElementById('message-container').innerHTML = data.message;
+                        } else {
+                            console.error('Calibration failed:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+
+                function openNumpad(inputId) {
+                    document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
+                    const inputField = document.getElementById(inputId);
+                    const labelField = document.getElementById("numpadLabel"); 
+                    labelField.textContent = inputField.value;
+                    let isLabelCleared = true;
+                    
+                    document.querySelectorAll('.numpad .key').forEach(key => {
+                        key.addEventListener('click', function () {
+                            const value = key.textContent;
+                            key.classList.add("clicked");
+
+                            if (inputField.value.charAt(0) === '0') {
+                                // Başında "0" varsa, "0" karakterini kaldır
+                                inputField.value = inputField.value.slice(1);3
+                            }
+
+                            if(!(value =="Enter" || value =="Space"|| value =="Clear" || value =="X")){
+                                if (isLabelCleared) {
+                                    // inputField.value = '';
+                                    labelField.textContent = ''; // Numpad label'ını temizle
+                                    isLabelCleared = false; // Bayrağı sıfırla
+                                }
+                                // inputField.value += value;  
+                                labelField.textContent += value;
+                            }
+                            setTimeout(function () {
+                                key.classList.remove("clicked");
+                            }, 50);
+                                                    
+                        });
+                    });
+
+                    document.querySelector('.numpad .close').addEventListener('click', function () {
+                        document.getElementById("keyboardContainer").style.display = "none";
+                    });
+
+                    // Enter tuşuna basıldığında
+                    document.querySelector('.numpad .enter').addEventListener('click', function () {
+                        numpadInputCompleted = true;
+                        const labelField = document.getElementById("numpadLabel"); 
+                        const new_value = labelField.textContent;
+                        const inputField = document.getElementById(inputId);
+                        const input_id = inputField.id;
+
+                        // inputField.value = labelField.textContent;
+                        if(input_id === 'CO_inputoffset' || input_id === 'CH4_inputoffset'){
+                            inputField.value = parseFloat(labelField.textContent).toFixed(2);
+                        }else if(input_id === 'CO2_inputoffset'){
+                            inputField.value = parseFloat(labelField.textContent).toFixed(3);
+                        }else if(input_id === 'spannewvalue'){
+                            inputField.value = labelField.textContent;
+                        }
+                        if (new_value === '0' || input_id.value === '0') {
+                            inputField.value ='0';
+                        }
+
+                        // if (input_id && new_value) {
+                            // AJAX isteği ile Flask endpoint'ını çağır
+                        fetch('/update_calibration_data', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
+                                new_value: new_value,
+                            }),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // İsteğin başarılı olması durumunda yapılacak işlemler
+                            // console.log(data);
+                        })
+                        .catch(error => {
+                            // İstekte hata olması durumunda yapılacak işlemler
+                            console.error('Error:', error);
+                        });
+                        // } 
+                        // else {
+                        //     console.error('Invalid inputIdchange.');
+                        // }
+
+                        document.getElementById("keyboardContainer").style.display = "none";
+                        isLabelCleared = false;
+                    });
+                    // "Clear" tuşuna basıldığında yapılacak işlemler
+                    document.querySelector('.numpad .clear').addEventListener('click', function () {
+                        //const inputId = "input-field"; // Buradaki inputId değerini kendi kullanımınıza göre değiştirin
+                        // inputField.value = '0'; // Input alanını temizle
+                        // labelField.textContent = '0';
+                        labelField.textContent = '0';
+                        const new_value = labelField.textContent;
+                        const input_id = inputField.value;
+
+                        if (input_id && new_value) {
+                            // AJAX isteği ile Flask endpoint'ını çağır
+                            fetch('/update_calibration_data', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
+                                    new_value: new_value,
+                                }),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                // İsteğin başarılı olması durumunda yapılacak işlemler
+                                // console.log(data);
+                            })
+                            .catch(error => {
+                                // İstekte hata olması durumunda yapılacak işlemler
+                                console.error('Error:', error);
+                            });
+                        } else {
+                            console.error('Invalid inputIdchange.');
+                        }
+                    });
+                    // Pop-up'ı görünür yap
+                    document.getElementById("keyboardContainer").style.display = "block";
+                }
+                function closeKeyboard() {
+                    // Pop-up'ı gizle
+                    document.getElementById("keyboardContainer").style.display = "none";
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>

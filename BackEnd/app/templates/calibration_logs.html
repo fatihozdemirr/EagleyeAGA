@@ -1,0 +1,30 @@
+{% include 'header.html' %}
+    <title>Calibration Logs</title>
+<body>
+    <h1 class="title-text">Calibration Logs</h1>
+    <div style ="height: 265px">   
+        <table class="table-calibration" style="padding: -10px 0px 0px 0px">
+            <thead>
+                <tr class="bg-gray-200 text-left">
+                    <th class="px-4 py-2">Username</th>
+                    <th class="px-4 py-2">Calibration Type</th>
+                    <th class="px-4 py-2">Calibration Value</th>
+                    <th class="px-4 py-2">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td>{{ log.username }}</td>
+                        <td>{{ log.calibration_type }}</td>
+                        <td>{{ log.calibration_value }}</td>
+                        <td>{{ log.timestamp }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  
+    
+</body>
+</html>

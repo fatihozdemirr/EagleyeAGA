@@ -106,14 +106,14 @@ def write_to_sensor(sensor_id, register_address, ser, value_to_write):
         print(f"Error writing to sensor: {e}")
         
 # SERIAL PORT SETTING
-port = globalVars.Port
+port = 'COM6'
 baudrate = 57600
 parity = serial.PARITY_EVEN
 stopbits = serial.STOPBITS_ONE
 
 # CREATE SERIAL PORT OBJECT
 ser = serial.Serial(port=port, baudrate=baudrate, parity=parity, stopbits=stopbits, timeout=1)
-    
+   
 def read_and_span_calibrate_sensor(sensor_id, sensor_name, button_id, calibration_in_progress, conc_cal):
     global ser
     try:

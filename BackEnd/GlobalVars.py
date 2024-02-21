@@ -71,7 +71,7 @@ class GlobalVars :
 
         # veritabanı bağlantısını kapat
         conn.close()
-            
+        
 globalVars = GlobalVars()
 
 

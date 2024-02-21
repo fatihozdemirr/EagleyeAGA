@@ -1,0 +1,167 @@
+/* Orta hizalama için gerekli CSS kodları */
+/* body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+} */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.container {
+    width: 800px;
+    height: 450px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+.container > .mainabove-container {
+    height: 50px;
+    border-bottom: 2px solid #ccc;
+    border-radius: 10px
+    /* .mainabove-container'a ait stil özellikleri */
+}
+.container > .mainabove-container + .mainbottom-container {
+    margin: none; /* .mainabove-container ile .mainbottom-container arasına 20 piksellik bir boşluk ekler */
+}
+.container > .mainbottom-container {
+    /* height: 380px;
+    border: 2px solid #ccc;
+    border-radius: 10px */
+    /* .mainbottom-container'a ait stil özellikleri */
+    display: grid;
+    grid-template-columns: 1fr; /* Tek sütun */
+    grid-template-rows: repeat(3, 1fr); /* İki satır */
+    height: 396px; /* Ekran yüksekliği kadar yer kaplar */
+    /* border: 2px solid #ccc;
+    border-radius: 10px */
+    /* min-height: 50vh; */
+}
+
+.title-text {
+    font-family: Calibri, sans-serif;
+    font-size: 30px;
+    margin: 5px;
+    padding: 5px;
+    text-align: left;
+}
+/* CSS dosyasında butonun görünümünü özelleştirme */
+button {
+    background-color: #007bff; /* Arka plan rengi */
+    color: white; /* Yazı rengi */
+    border: none; /* Kenarlık yok */
+    padding: 10px 20px; /* Buton boyutu */
+    border-radius: 5px; /* Köşeleri yuvarlama */
+    cursor: pointer; /* Fare imleci el işareti */
+    margin: 7px;
+    padding: 10px;
+}
+
+button:hover {
+    background-color: #f0af38; /* Fare imleci butonun üzerindeyken arka plan rengi */
+}
+.custom-button {
+    background-image: url("/static/images/3ehome.png");
+    background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
+    background-repeat: no-repeat; /* Tekrarlamayı engeller */
+    width: 145px; /* Düğme genişliği */
+    height: 40px; /* Düğme yüksekliği */
+    padding-left: 50px; /* Resmi düğme içinde hizalamak için sol boşluk ekler */
+    border: none; /* Kenarlık yok */
+    text-align: left; /* Yazıyı sola hizalar */
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: bolder;
+}
+a.custom-back-button {
+    display: inline-block;
+    background-color: #ffffff; /* arka plan rengi */
+    color: white; /* yazı rengi */
+    padding: 10px 20px; /* buton boyutu */
+    border-radius: 5px; /* köşeleri yuvarlama */
+    text-decoration: none; /* altçizgiyi kaldırır */
+    font-weight: bold; /* yazıyı kalınlaştırır */
+    float: right; /* butonu sağa kaydırır */
+    margin-right: 10px; /* sağdan 10 piksel boşluk bırakır (isteğe bağlı) */
+    margin-top: 3px;
+}
+
+a.custom-back-button img {
+    width: 20px; /* resmin genişliğini ayarlayın */
+    height: 20px; /* resmin yüksekliğini ayarlayın */
+    margin-right: 5px; /* metin ile resim arasındaki boşluğu ayarlayın */
+}
+
+a.custom-back-button:hover {
+    background-color: #f0af38; /* fare imleci butonun üzerindeyken arka plan rengi */
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Üç sütun */
+    grid-template-rows: repeat(2, auto);/* Tek satır */
+    gap: 3px; /* Sütunlar arası boşluk */
+    row-gap: 10px; /* Satır arası boşluk */
+    flex: 1;
+    min-height: 1px; /* minimum yükseklik değeri */
+    max-height: 100px; /* maksimum yükseklik değeri */
+}
+.grid-container .mainbottomadd-container {
+    grid-row: 1; /* İkinci satıra yerleştir */
+    /* Diğer stil özellikleri */
+}
+.mainbottomadd-container {
+    display: flex;
+    margin-top: -80px; 
+    justify-content: center; /* Yatayda merkezleme */
+    align-items: center; /* Dikeyde merkezleme */
+    height: 235%; /* İçeriği dikeyde ortalamak için */
+    border: 1px solid #ccc; /* Sadece sınırları göstermek için, isteğe bağlı */
+    border-radius: 10px; /* Köşeleri yuvarlama */
+}
+.flex-container {
+    display: flex;
+    justify-content: space-between; /* Öğeler arasında eşit boşluk bırakır */
+    margin-top: 60px;
+    height: 100px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Öğeleri yatayda ortalar */
+    align-items: center; /* Öğeleri dikeyde ortalar */
+    background-color: #f0f0f0; /* Arka plan rengi */
+    padding: 10px; /* i̇stenilen iç boşluk */
+    height: 30px;
+}
+.button-center {
+    text-align: center; /* İçeriği yatayda ortalamak için */
+}
+
+.button-center a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button-center img {
+    max-width: 100px; /* Buton resminin maksimum genişliği, isteğe bağlı */
+}
+.custom-button-classes {
+    /* background-image: url("/static/images/3ehome.png");  */
+    background-size: contain; /* Resmi düğme boyutuna uyacak şekilde ayarlar */
+    background-repeat: no-repeat; /* Tekrarlamayı engeller */
+    justify-content: center; /* Öğeleri yatayda ortalar */
+    align-items: center; /* Öğeleri dikeyde ortalar */
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: bolder;
+    text-align: center;
+    text-decoration: none;
+    font-family: Calibri, sans-serif;
+    font-size: 17px;
+}
