@@ -35,7 +35,7 @@
         <div class="mainabove-container">
             <form method="get" action="{{ url_for('main.mainmenu') }}">
                 <button type="submit" class="custom-button">
-                    Eagleye AGA / V1.0 / {{ get_logged_in_user() }}
+                    Eagleye®AGA / #V1.0 / {{ get_logged_in_user() }}
                 </button>
                 <a href="#" class="custom-back-button" onclick="history.go(-1); return false;">
                     <img src="{{ url_for('static', filename='images/back.svg') }}">

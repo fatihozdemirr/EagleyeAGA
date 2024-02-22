@@ -29,7 +29,6 @@ def login():
             session['username'] = username
             global logged_in
             logged_in = True
-            # flash('Login successful!', 'success')
             return redirect(url_for('main.mainmenu'))
         else:
             flash('Username or password is wrong!', 'danger')
@@ -43,17 +42,53 @@ def Admin():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
+        role = form.role.data
+        
+        # if role == 'admin':
+        #     # Admin işlemleri
+        #     return redirect(url_for('admin_dashboard'))
+        # elif role == 'engineer':
+        #     # Engineer işlemleri
+        #     return redirect(url_for('engineer_dashboard'))
+        # elif role == 'operator':
+        #     # Operator işlemleri
+        #     return redirect(url_for('operator'))
 
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash('Username is already in use!' , 'danger')
         else:
-            new_user = User(username=username, password=password)
+            new_user = User(username=username, password=password, role=role)
             db.session.add(new_user)
             db.session.commit()
-            flash('Registration Successful! You can log in now.', 'success')
+            # flash('Registration Successful! You can log in now.', 'success')
+    users = User.query.all()
+    return render_template('Admin.html', form=form, get_logged_in_user=get_logged_in_user, users=users)
 
-    return render_template('Admin.html', form=form, get_logged_in_user=get_logged_in_user)
+@main_bp.route('/update_user/<int:user_id>', methods=['POST'])
+def update_user(user_id):
+    user = User.query.get(user_id)
+
+    if user:
+        user.username = request.form['username']
+        user.password = request.form['password']
+        user.role = request.form['role']
+        db.session.commit()
+
+    return redirect(url_for('main.Admin'))
+
+@main_bp.route("/delete_user/<int:user_id>", methods=['POST'])
+# @login_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('main.Admin'))
+
+@main_bp.route('/AddNewUser/')
+def AddNewUser():
+    form = registrationform()
+    return render_template('AddNewUser.html',form=form, get_logged_in_user=get_logged_in_user)
 
 @main_bp.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -61,14 +96,12 @@ def logout():
     logged_in = False
     return redirect(url_for('main.login'))
 
-
 ##### MENU PAGE #####
 
 @socketio.on('connect')
 def test_connect():
     socketio.start_background_task(target=smartGas.update_ui, socketio=socketio)
 
-# Veritabanından toggle switch durumunu çeken yardımcı fonksiyon
 def get_toggle_status():
     return LiveTableDatas.query.filter_by(id=1).first().TempUnit
 
@@ -196,21 +229,6 @@ def update_calibration_data():
         
     else:
         return jsonify({'status': 'error', 'message': 'Invalid method'})
-    
-
-# # Show Calibration Logs Chapter
-# def get_logged_in_user():
-#     if 'user' in g:
-#         print('User from g:', g.user)
-#         return g.user.username
-    
-#     if 'username' in session:
-#         user = User.query.filter_by(username=session['username']).first()
-#         g.user = user
-#         print('User from session:', user)
-#         return user.username if user else None
-
-#     return None
 
 def get_calibration_logs(limit=6):
     return CalibrationLogs.query.order_by(desc(CalibrationLogs.timestamp)).limit(limit).all()

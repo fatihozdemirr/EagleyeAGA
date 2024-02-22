@@ -1,0 +1,130 @@
+{% include 'header.html' %}
+    <title>Admin</title>
+<body>  
+    <h1 class="title-text">User Editting</h1>
+    <form method="post" action = "/Admin">
+        {{ form.hidden_tag() }}
+        <!-- <div>
+            {{ form.username.label(class="label-usereditting") }}
+            {{ form.username(class="input-usereditting") }}
+        </div>
+        <div>
+            {{ form.password.label(class="label-usereditting") }}
+            {{ form.password(class="input-usereditting") }}
+        </div> -->
+        <!-- <div>
+            {{ form.role.label(class="label-usereditting") }}
+            {{ form.role(class="input-usereditting") }}
+        </div> -->
+        <div>
+            <label for="username" id="usernameInputLabel" class="label-usereditting">Username</label>
+            <input type="text" id="usernameInput" class="input-usereditting" name="username" autocomplete="off" onclick="openNumpad('usernameInput')">
+        </div>
+        <div>
+            <label for="password" id="passwordInputLabel" class="label-usereditting">Password</label>
+            <input type="text" id="passwordInput" class="input-usereditting" name="password" autocomplete="off" onclick="openNumpad('passwordInput')">
+        </div>
+        <div>
+            <label for="role" id="roleInputLabel" class="label-usereditting">Role</label>
+            <select id="roleInput" class="input-usereditting" name="role">
+                <option value="admin">Admin</option>
+                <option value="engineer">Engineer</option>
+                <option value="operator">Operator</option>
+            </select>
+        </div>
+        <button class="button-usereditting" type="submit">Save</button>
+    </form>
+    <!-- <p>{{ get_flashed_messages()[0] }}</p> -->
+    <div id="keyboardContainer" class="popup"></div>
+    <script>
+        function openNumpad(inputId) {
+            document.getElementById("keyboardContainer").innerHTML = `{% include 'keyboard.html' %}`;
+            const inputField = document.getElementById(inputId);
+            const labelField = document.getElementById("keyboardLabel"); 
+            labelField.textContent = inputField.value;
+            let isLabelCleared = true;
+            
+            document.querySelectorAll('.keyboard .key').forEach(key => {
+                key.addEventListener('click', function () {
+                    const value = key.textContent;
+                    key.classList.add("clicked");
+
+                    if (inputField.value.charAt(0) === '0') {
+                        inputField.value = inputField.value.slice(1);3
+                    }
+
+                    if(!(value =="Enter" || value =="Space"|| value =="Clear" )){ // || value =="X"
+                        if (isLabelCleared) {
+                            labelField.textContent = ''; 
+                            isLabelCleared = false; 
+                        }
+                        labelField.textContent += value;
+                    }
+                    setTimeout(function () {
+                        key.classList.remove("clicked");
+                    }, 50);
+                                            
+                });
+            });
+            document.querySelector('.keyboard .space').addEventListener('click', function () {
+                const labelField = document.getElementById("keyboardLabel"); 
+                const new_value = labelField.textContent;
+                const inputField = document.getElementById(inputId);
+                const input_id = inputField.id;
+                if(input_id === 'usernameInput' ){
+                    labelField.textContent += ' ';
+                }else if(input_id === 'passwordInput'){
+                    labelField.textContent += ' ';
+                }
+            });
+
+            document.querySelector('.keyboard .close').addEventListener('click', function () {
+                document.getElementById("keyboardContainer").style.display = "none";
+            });
+
+            
+            document.querySelector('.keyboard .enter').addEventListener('click', function () {
+                numpadInputCompleted = true;
+                const labelField = document.getElementById("keyboardLabel"); 
+                const new_value = labelField.textContent;
+                const inputField = document.getElementById(inputId);
+                const input_id = inputField.id;
+
+                if(input_id === 'usernameInput' ){
+                    inputField.value = labelField.textContent;
+                }else if(input_id === 'passwordInput'){
+                    inputField.value = labelField.textContent;
+                }
+                if (new_value === '0' || input_id.value === '0') {
+                    inputField.value ='0';
+                }
+
+                document.getElementById("keyboardContainer").style.display = "none";
+                isLabelCleared = false;
+            });
+            
+            document.querySelector('.keyboard .keyboardclear').addEventListener('click', function () {
+                const labelField = document.getElementById("keyboardLabel"); 
+                const new_value = labelField.textContent;
+                const inputField = document.getElementById(inputId);
+                const input_id = inputField.id;
+                if(input_id === 'usernameInput' ){
+                    labelField.textContent = '***';
+                }else if(input_id === 'passwordInput'){
+                    labelField.textContent = '***';
+                }
+            });
+            document.getElementById("keyboardContainer").style.display = "block";
+        }
+        function closeKeyboard() {
+            document.getElementById("keyboardContainer").style.display = "none";
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+

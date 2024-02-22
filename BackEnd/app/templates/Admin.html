@@ -1,21 +1,164 @@
 {% include 'header.html' %}
     <title>Admin</title>
-            <h1 class="title-text">User Editting</h1>
-            <form method="post" action = "/Admin">
-                {{ form.hidden_tag() }}
-                <div>
-                    {{ form.username.label }}
-                    {{ form.username }}
-                </div>
-                <div>
-                    {{ form.password.label }}
-                    {{ form.password }}
-                </div>
-                <button type="submit">Save</button>
-            </form>
-            <p>{{ get_flashed_messages()[0] }}</p>
-        </div>
+<body>
+    <h1 class="title-text">User List</h1>
+    <!-- <button class="admin-button" action="{{ url_for('main.AddNewUser') }}">Add New User</button> -->
+    <a href="{{ url_for('main.AddNewUser') }}" class="admin-button">Add New User
+    </a>
+    <div style ="height: 325px">   
+        <table class="table-calibration" style="padding: -10px 0px 0px 0px">
+            <thead>
+                <tr class="bg-gray-200 text-left">
+                    <th class="px-4 py-2">#</th>
+                    <th class="px-4 py-2">Username</th>
+                    <th class="px-4 py-2">Role</th>
+                    <th class="px-4 py-2">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                            <a href="#" class="edit-button" data-user-id="{{ user.id }}">Edit</a>
+                        </td>
+                    </tr>
+                    <tr id="edit-form-{{ user.id }}" style="display: none;">
+                        <td colspan="4">
+                            <form action="{{ url_for('main.update_user', user_id=user.id) }}" method="post" class="user-form">
+                                <label for="username-{{ user.id }}">Username:</label>
+                                <input class="useredit-input" type="text" id="username-{{ user.id }}" name="username" value="{{ user.username }}" autocomplete="off" required onclick="openNumpad('username-{{ user.id }}')">
+                                
+                                <label for="password-{{ user.id }}">Password:</label>
+                                <input class="useredit-input" type="password" id="password-{{ user.id }}"name="password" value="{{ user.password }}" onclick="openNumpad('password-{{ user.id }}')">
+
+                                <label for="role-{{ user.id }}">Role:</label>
+                                <select class="useredit-input" id="role-{{ user.id }}" name="role" required>
+                                    <option value="Admin" {% if user.role == "Admin" %} selected {% endif %}>Admin</option>
+                                    <option value="Engineer" {% if user.role == "Engineer" %} selected {% endif %}>Engineer</option>
+                                    <option value="Operator" {% if user.role == "Operator" %} selected {% endif %}>Operator</option>
+                                </select>
+                
+                                <button type="submit">Update</button>
+                            </form>
+                            <form action="{{ url_for('main.delete_user', user_id=user.id) }}" method="post" class="delete-form">
+                                <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this user?')" class="delete-button">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+    <div id="keyboardContainer" class="popup"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editButtons = document.querySelectorAll('.edit-button');
+            
+            editButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const userId = this.getAttribute('data-user-id');
+                    const editForm = document.getElementById(`edit-form-${userId}`);
+                    
+                    // Diğer düzenleme formlarını gizle
+                    document.querySelectorAll('[id^="edit-form-"]').forEach(form => {
+                        if (form !== editForm) {
+                            form.style.display = 'none';
+                        }
+                    });
+    
+                    // Seçili düzenleme formunu göster
+                    editForm.style.display = (editForm.style.display === 'none' || editForm.style.display === '') ? 'table-row' : 'none';
+                });
+            });
+        });
+        function openNumpad(inputId) {
+            document.getElementById("keyboardContainer").innerHTML = `{% include 'keyboard.html' %}`;
+            const inputField = document.getElementById(inputId);
+            const labelField = document.getElementById("keyboardLabel"); 
+            labelField.textContent = inputField.value;
+            let isLabelCleared = true;
+            
+            document.querySelectorAll('.keyboard .key').forEach(key => {
+                key.addEventListener('click', function () {
+                    const value = key.textContent;
+                    key.classList.add("clicked");
+
+                    if (inputField.value.charAt(0) === '0') {
+                        inputField.value = inputField.value.slice(1);3
+                    }
+
+                    if(!(value =="Enter" || value =="Space"|| value =="Clear" )){ // || value =="X"
+                        if (isLabelCleared) {
+                            labelField.textContent = ''; 
+                            isLabelCleared = false; 
+                        }
+                        labelField.textContent += value;
+                    }
+                    setTimeout(function () {
+                        key.classList.remove("clicked");
+                    }, 50);
+                                            
+                });
+            });
+            document.querySelector('.keyboard .space').addEventListener('click', function () {
+                const labelField = document.getElementById("keyboardLabel"); 
+                const new_value = labelField.textContent;
+                const inputField = document.getElementById(inputId);
+                const input_id = inputField.id;
+                if(input_id.includes('username')){
+                    labelField.textContent += ' ';
+                }else if(input_id.includes('password')){
+                    labelField.textContent += ' ';
+                }
+            });
+
+            document.querySelector('.keyboard .close').addEventListener('click', function () {
+                document.getElementById("keyboardContainer").style.display = "none";
+            });
+
+            
+            document.querySelector('.keyboard .enter').addEventListener('click', function () {
+                numpadInputCompleted = true;
+                const labelField = document.getElementById("keyboardLabel"); 
+                const new_value = labelField.textContent;
+                const inputField = document.getElementById(inputId);
+                const input_id = inputField.id;
+
+                if(input_id.includes('username')){
+                    inputField.value = labelField.textContent;
+                }else if(input_id.includes('password')){
+                    inputField.value = labelField.textContent;
+                }
+                if (new_value === '0' || input_id.value === '0') {
+                    inputField.value ='0';
+                }
+
+                document.getElementById("keyboardContainer").style.display = "none";
+                isLabelCleared = false;
+            });
+            
+            document.querySelector('.keyboard .keyboardclear').addEventListener('click', function () {
+                const labelField = document.getElementById("keyboardLabel"); 
+                const new_value = labelField.textContent;
+                const inputField = document.getElementById(inputId);
+                const input_id = inputField.id;
+                if(input_id.includes('username')){
+                    labelField.textContent = '***';
+                }else if(input_id.includes('password')){
+                    labelField.textContent = '***';
+                }
+            });
+            document.getElementById("keyboardContainer").style.display = "block";
+        }
+        function closeKeyboard() {
+            document.getElementById("keyboardContainer").style.display = "none";
+        }
+    </script>
+
 </body>
 </html>
 

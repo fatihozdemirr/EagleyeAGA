@@ -106,6 +106,7 @@ def write_to_sensor(sensor_id, register_address, ser, value_to_write):
         print(f"Error writing to sensor: {e}")
         
 # SERIAL PORT SETTING
+# port = globalVars.Port
 port = 'COM6'
 baudrate = 57600
 parity = serial.PARITY_EVEN
