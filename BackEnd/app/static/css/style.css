@@ -235,7 +235,7 @@ a.custom-back-button {
     border-radius: 5px; 
     text-decoration: none; 
     font-weight: bold; 
-    float: right;
+    /* float: right; */
     margin-right: 10px; 
     margin-top: 3px;
 }
@@ -598,6 +598,17 @@ max-width: 135px;
     align-items: center;
 }
 
+.resetpopup-label {
+    font-size: 18px;
+    color: #333;
+    display: block; 
+    margin-left: 5px;
+    height: 32px;
+    width: 380px;
+    border: none;
+    align-items: center;
+}
+
 .spanpopup-input {
     font-family: Calibri, sans-serif;
     font-weight: bold;
@@ -612,6 +623,13 @@ max-width: 135px;
 }
 
 #pageWarningP {
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 40px;
+}
+
+#pageWarningReset {
     font-family: Calibri, sans-serif;
     font-size: 18px;
     font-weight: normal;
@@ -649,6 +667,21 @@ max-width: 135px;
     color: #fff;
     border: none;
     cursor: pointer;
+}
+
+#calibratePopupButtonReset {
+    position: absolute;
+    bottom: 10px;
+    right: 30px; 
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#calibratePopupButtonReset:hover {
+    background-color: #f0af38;
 }
 
 #calibratePopupButton:hover {
@@ -774,27 +807,28 @@ max-width: 135px;
 }
 
 .span-button {
-    background-color: #4CAF50; 
+    background-color: rgba(76, 175, 80, 0);
     color: white; 
-    padding: 10px 20px; 
+    padding: 2px 20px; 
     border-radius: 20px;
     font-size: 18px; 
     font-family: Calibri, sans-serif;
 }
 
-/* .span-button-img{
-    width: 50px;
-    height: 30px;
-} */
 
 #zerocalibratebutton {
-    background-color: #0077c7; 
+    margin-top: 22px;
     &:hover {
-        background-color: rgb(255, 150, 64);
+        background-color: #f0af38;
     }
     &:active {
-        background-color: #45a049;
+        background-color: #f0af38;
     }
+}
+
+#factoryresetbutton {
+    margin-top: 22px;
+    margin-left: 250px;
 }
 
 .gas-label {
@@ -815,13 +849,15 @@ max-width: 135px;
 
 .reset-label {
     display: flex;
-    width: 200px;
+    width: 180px;
     border: none;
     height: 40px;
     border-bottom: 2px solid #ff0000;
     border-radius: 10px; 
     font-family: Calibri, sans-serif;
     font-size: 18px;
+    margin-left: 35px;
+    margin-top: 10px;
     font-weight: bold;
     color: #333;
     justify-content: center; 
@@ -849,14 +885,14 @@ max-width: 135px;
 }
 
 .log-button {
-    background-color: #3ab0ff; 
-    width: 163px;
+    background-color: rgba(76, 175, 80, 0);
     color: white;
-    padding: 5px 20px; 
-    border-radius: 10px; 
-    font-size: 19px;
+    padding: 2px 20px; 
+    border-radius: 20px; 
+    font-size: 18px;
     font-family: Calibri, sans-serif;
     margin-left: 10px;
+    margin-top: 16px;
 }
 
 /* Calibration CSS */
@@ -991,6 +1027,18 @@ max-width: 135px;
     background-color: rgb(235, 238, 240);
 }
 
+.wifi-container-input {
+    margin-top: -14px;
+    margin-left: 20px;
+    padding: 5px;   
+    height: 50px;
+    width: 360px;  
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 10px; 
+    background-color: rgb(235, 238, 240);
+}
+
 .details-container {
     margin-bottom: 10px;
     margin-left: 15px;
@@ -1051,3 +1099,89 @@ max-width: 135px;
     border-radius: 5px;
     cursor: pointer; 
 }
+
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    height: 65px;
+    border-radius: 20px;
+    border: none;
+    margin-top: -65px;
+  }
+  
+  .tab button {
+    background-color: inherit;
+    color: black;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+  }
+  
+  .tab button:hover {
+    background-color: #ddd;
+  }
+  
+  .tab button.active {
+    background-color: #ccc;
+  }
+  
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border-top: none;
+    margin-top: -130px;
+  }
+
+.settime-form {
+    margin-top: 10px;
+}
+
+.setethernet-form {
+    margin-top: 35px;
+}
+
+.wifi-signal-container {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-top: -39px;
+}
+
+#wifi-icon {
+    width: 100%;
+    margin-left: 690px;
+    height: 100%;
+    border-radius: 170px;
+}
+
+.generallytime-screen {
+    margin-left: 338px;
+    margin-top: -19px;
+    width: 150px;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: Calibri, sans-serif;
+}
+
+.wifiinformation {
+    width: 302px;
+    margin-left: 450px;
+    margin-top: -180px;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: Calibri, sans-serif;
+}
+
+.ethernetinformation {
+    width: 302px;
+    margin-left: 280px;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: Calibri, sans-serif;
+}
+

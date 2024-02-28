@@ -43,6 +43,10 @@ document.addEventListener('DOMContentLoaded', function () {
             updateElementValueById('CO_reading_popup', data.co_read);
             updateElementValueById('CO2_reading_popup', data.co2_read, 3);
             updateElementValueById('CH4_reading_popup', data.ch4_read);
+
+            updateElementValueById('CO_Referance_Value', data.co_referance,0);
+            updateElementValueById('CO2_Referance_Value', data.co2_referance,0);
+            updateElementValueById('CH4_Referance_Value', data.ch4_referance,0);
         } catch (error) {
             console.error('WebSocket veri işleme hatası:', error);
         }

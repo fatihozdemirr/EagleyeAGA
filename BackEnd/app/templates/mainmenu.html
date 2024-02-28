@@ -19,26 +19,32 @@
                             </a>
                         </div>
                     </div>
-                    <div class="mainbottomadd-container">
-                        <div class="button-center">
-                            <a href="{{ url_for('main.Calibration') }}" class="custom-button-classes ">
-                                <img src="/static/images/calibration.svg" >
-                                <span>Calibration</span>
-                            </a>
+                    {% set username, role = get_logged_in_user() %}
+                    {% if role != 'Operator' %}
+                        <div class="mainbottomadd-container">
+                            <div class="button-center">
+                                <a href="{{ url_for('main.Calibration') }}" class="custom-button-classes ">
+                                    <img src="/static/images/calibration.svg" >
+                                    <span>Calibration</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="flex-container">
                 <div class="grid-container">
-                    <div class="mainbottomadd-container">
-                        <div class="button-center">
-                            <a href="{{ url_for('main.Operation') }}" class="custom-button-classes ">
-                                <img src="/static/images/record.svg" >
-                                <span>Record</span>
-                            </a>
+                    {% set username, role = get_logged_in_user() %}
+                    {% if role != 'Operator' %}
+                        <div class="mainbottomadd-container">
+                            <div class="button-center">
+                                <a href="{{ url_for('main.Operation') }}" class="custom-button-classes ">
+                                    <img src="/static/images/record.svg" >
+                                    <span>Record</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                     <div class="mainbottomadd-container">
                         <div class="button-center">
                             <a href="{{ url_for('main.Setting') }}" class="custom-button-classes ">

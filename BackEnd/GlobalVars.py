@@ -24,12 +24,17 @@ class GlobalVars :
         self.ch4factor = 0.0
         self.alloyfactor = 0.0
         self.h2 = 0.0
+        
+        self.CO_Referance = 0
+        self.CO2_Referance = 0
+        self.CH4_Referance = 0
        
         self.isRecording = 0
         self.RecordInterval = 1.0
         self.Port = 'COM3' if os.name == 'nt' else '/dev/ttyUSB0'
         self.load_offsets()
         self.load_live_constant()
+        self.referance_reset_values()
             
     #Get Offset From DB
     def load_offsets(self):
@@ -68,6 +73,24 @@ class GlobalVars :
             self.ch4factor = CH4Factor
             self.alloyfactor = AlloyFactor
             self.h2 = H2
+
+        # veritabanı bağlantısını kapat
+        conn.close()
+        
+    def referance_reset_values(self):
+        # veritabanı bağlantısını aç
+        conn = sqlite3.connect(self.DatabasePath)
+        cursor = conn.cursor()
+
+        # değerleri sorgula
+        cursor.execute("SELECT COReferance, CO2Referance,CH4Referance from sensorreferance")
+        rows = cursor.fetchall()
+
+        # değerleri sınıf özelliklerine ata
+        for COReferance, CO2Referance, CH4Referance in rows:
+            self.CO_Referance = COReferance
+            self.CO2_Referance = CO2Referance
+            self.CH4_Referance = CH4Referance
 
         # veritabanı bağlantısını kapat
         conn.close()

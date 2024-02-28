@@ -1,19 +1,107 @@
 {% include 'header.html' %}
-    <title>Wi-Fi</title>
-            <h1 class="title-text">Wi-Fi</h1>
-            {% if wifi_info %}
-                <p>SSID: {{ wifi_info['SSID'] }}</p>
-                <p>Password: {{ wifi_info['Password'] }}</p>
-                <p>Signal Strength: {{ wifi_info['SignalStrength'] }}</p>
-            {% else %}
-                <p>Press the button to get Wi-Fi information.</p>
-            {% endif %}
-
-            <form method="POST" action="{{ url_for('main.wifi_info') }}">
-                {{ csrf_token }}
-                <button type="submit">Get Wi-Fi Info</button>
-            </form>
-        </div>
+<title>Wi-Fi</title>
+<h1 class="title-text">Connection Type</h1>
+<body>
+    <div class="tab">
+    <button class="tablinks" onclick="openCity(event, 'manualTab')" id="defaultOpen">Wi-Fi</button>
+    <button class="tablinks" onclick="openCity(event, 'autoTab')">Ethernet</button>
     </div>
+
+    <div id="manualTab" class="tabcontent">
+        <form class="settime-form" action="{{ url_for('main.connect_wifi') }}" method="post">
+            <label class=" record-label-livedata" for="wifi_list">Wi-Fi Network:</label>
+            <select class=" wifi-container-input" id="wifi_list" name="selected_wifi">
+                <option value="" selected disabled>Select a Wi-Fi network</option>
+                {% for wifi in available_wifis %}
+                    <option value="{{ wifi }}">{{ wifi }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <label class=" record-label-livedata" for="wifi_password">Password:</label>
+            <input class=" record-container-input" type="password" id="wifi_password" name="wifi_password">
+            <br>
+            {% if connecting_wifi %}
+                <button type="button" disabled>Connecting...</button>
+            {% else %}
+                <button type="submit">Connect</button>
+            {% endif %}
+        </form>
+        <div class="wifiinformation">
+            {% if wifi_info and wifi_info.ip %}
+                <p>IP Address : {{ wifi_info.ip }}</p>
+                <p>Subnet Mask: {{ wifi_info.mask }}</p>
+                <p>Gateway    : {{ wifi_info.gateway }}</p>
+            {% else %}
+                <p>No Wi-Fi connection detected.</p>
+            {% endif %}
+        </div>
+         <!-- {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div>
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %} -->
+    </div>
+
+    <div id="autoTab" class="tabcontent">
+        <form class="setethernet-form" action="{{ url_for('main.wifi_info') }}" method="post">
+            <div class="ethernetinformation">
+            {% if wifi_info and wifi_info.ip %}
+                <p>IP Address : {{ wifi_info.ip }}</p>
+                <p>Subnet Mask: {{ wifi_info.mask }}</p>
+                <p>Gateway    : {{ wifi_info.gateway }}</p>
+            {% else %}
+                <p>No Wi-Fi connection detected.</p>
+            {% endif %}
+        </div>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var wifiList = document.getElementById('wifi_list');
+            fetch('/get_available_wifis')
+                .then(response => response.json())
+                .then(data => {
+                    // Optionları doldur
+                    wifiList.innerHTML = ''; // Önceki optionları temizle
+                    var defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.text = 'Select a Wi-Fi network';
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+                    wifiList.appendChild(defaultOption);
+
+                    data.wifis.forEach(wifi => {
+                        var option = document.createElement('option');
+                        option.value = wifi;
+                        option.textContent = wifi;
+                        wifiList.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching available WiFis:', error));
+        });
+
+        function openCity(evt, cityName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+            }
+
+        document.getElementById("defaultOpen").click();
+    </script>
+   
 </body>
-</html>
+</html> 

@@ -15,8 +15,8 @@
                     <input class="input-calibration" id="CO_inputoffset" type="text" value="0" onclick="openNumpad('CO_inputoffset')">
                     <input class="input-calibration" id="CO_reading"type="text" value="0" readonly="True">
                     <input class="input-calibration" id="CO_value" type="text" value="0" readonly="True">
-                    <button class="span-button" id="CObuttonspan" onclick="openPopuplabelView('CO_reading_popup')">SPAN
-                        <!-- <img class="span-button-img" src="{{ url_for('static', filename='images/target.png') }}" alt="SPAN"> -->
+                    <button class="span-button" id="CObuttonspan" onclick="openPopuplabelView('CO_reading_popup')">
+                        <img style="width: 40px; height: 40px;", src="/static/images/target.png" >
                     </button>
                 </div>
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
@@ -25,7 +25,9 @@
                     <input class="input-calibration" id="CO2_inputoffset" type="text" value="0" onclick="openNumpad('CO2_inputoffset')"> 
                     <input class="input-calibration" id="CO2_reading" type="text" value="0" readonly="True">
                     <input class="input-calibration" id="CO2_value" type="text" value="0" readonly="True">
-                    <button class="span-button" id="CO2buttonspan" onclick="openPopuplabelView('CO2_reading_popup')">SPAN</button>
+                    <button class="span-button" id="CO2buttonspan" onclick="openPopuplabelView('CO2_reading_popup')">
+                        <img style="width: 40px; height: 40px;", src="/static/images/target.png" >
+                    </button>
                 </div>  
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
                 <div style="display: flex; align-items: center; justify-content: space-evenly;">
@@ -33,17 +35,25 @@
                     <input class="input-calibration" id="CH4_inputoffset" type="text" value="0" onclick="openNumpad('CH4_inputoffset')"> 
                     <input class="input-calibration" id="CH4_reading" type="text" value="0" readonly="True">
                     <input class="input-calibration" id="CH4_value" type="text" value="0" readonly="True">
-                    <button class="span-button" id="CH4buttonspan" onclick="openPopuplabelView('CH4_reading_popup')">SPAN</button>
+                    <button class="span-button" id="CH4buttonspan" onclick="openPopuplabelView('CH4_reading_popup')">
+                        <img style="width: 40px; height: 40px;", src="/static/images/target.png" >
+                    </button>
                 </div>
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
                 <div style="display: flex; align-items: center; ">
                     
-                    <label class="reset-label">Last Factory Calibration</label>
+                    <!-- <label class="reset-label">Factory Calibration</label> -->
 
-                    <button class="span-button" type="button" id="factoryresetbutton" onclick="openPopupReset('factoryresetbutton')">RESET</button>
-                    <button class="span-button" type="button" id="zerocalibratebutton" onclick="openPopupZero('zerocalibratebutton')">ZERO</button>
+                    <button class="span-button" type="button" id="factoryresetbutton" onclick="openPopupReset('factoryresetbutton')">
+                        <img style="width: 40px; height: 40px;", src="/static/images/reset.png" >
+                    </button>
+                    <button class="span-button" type="button" id="zerocalibratebutton" onclick="openPopupZero('zerocalibratebutton')">
+                        <img style="width: 40px; height: 40px;", src="/static/images/zero.png" >
+                    </button>
                     
-                    <button class="log-button" onclick="location.href='/show_calibration_logs'" type="button">Show Calibration Logs</button>
+                    <button class="log-button" onclick="location.href='/show_calibration_logs'" type="button">
+                        <img style="width: 40px; height: 40px;", src="/static/images/calibrationlogs.png" >
+                    </button>
                 </div>
             </div>
             <div id="keyboardContainer" class="popup"></div>
@@ -52,18 +62,29 @@
                 <div class="spanpopup-content">
                     <h2 id="popUpTitle">Span Calibration</h2>
 
-                    <label class="spanpopup-label" id="CO_reading_popup" style="display: none;" data-title="%CO Span Calibration">%CO Live Span Value: <span id="CO_reading_popup">0.00</span></label>
-                    <label class="spanpopup-label" id="CO2_reading_popup" style="display: none;" data-title="%CO2 Span Calibration">%CO2 Live Span Value: <span id="CO2_reading_popup">0.000</span></label>
-                    <label class="spanpopup-label" id="CH4_reading_popup" style="display: none;" data-title="%CH4 Span Calibration">%CH4 Live Span Value: <span id="CH4_reading_popup">0.00</span></label>
+                    <label class="spanpopup-label" id="CO_reading_popup" style="display: none;" data-title="%CO Span Calibration">%CO Live Value: <span id="CO_reading_popup">0.00</span></label>
+                    <label class="spanpopup-label" id="CO2_reading_popup" style="display: none;" data-title="%CO2 Span Calibration">%CO2 Live Value: <span id="CO2_reading_popup">0.000</span></label>
+                    <label class="spanpopup-label" id="CH4_reading_popup" style="display: none;" data-title="%CH4 Span Calibration">%CH4 Live Value: <span id="CH4_reading_popup">0.00</span></label>
                     
+                    <label class="resetpopup-label" id="CO_Referance_Value" style="display: none;" data-title="%CO Calibration">%CO Referance Value: <span id="CO_Referance_Value">0</span></label>
+                    <label class="resetpopup-label" id="CO2_Referance_Value" style="display: none;" data-title="%CO2 Calibration">%CO2 Referance Value: <span id="CO2_Referance_Value">0</span></label>
+                    <label class="resetpopup-label" id="CH4_Referance_Value" style="display: none;" data-title="%CH4 Calibration">%CH4 Referance Value: <span id="CH4_Referance_Value">0</span></label>
+
                     <input class="spanpopup-input" type="text" id="spannewvalue" placeholder="Enter new value!" onclick="openNumpad('spannewvalue')">
 
                     <button id="calibratePopupButton" onclick="startspanCalibration()">Calibrate</button>
+
+                    <button id="calibratePopupButtonReset" onclick="startresetCalibration()">Calibrate</button>
 
                     <!-- Zero Uyarı Metni Sayfası-->
                     <div id ="pageWarning" class="popup-page">
                         <p id ="pageWarningP">Before starting the process, check the nitrogen gas installation.</p>
                         <button id="nextButton" onclick="showNextPage()">Next</button>
+                    </div>
+                    <!-- Reset Uyarı Metni Sayfası-->
+                    <div id ="pageWarningReset" class="popup-page">
+                        <p id ="pageWarningReset">To reset, the value must be between 5000 and 15000. Only values outside the range are calibrated.</p>
+                        <button id="nextButton" onclick="showNextPageReset()">Next</button>
                     </div>
 
                     <!-- Zero Gaz Değerleri Kalibrasyon Sayfası-->
@@ -128,11 +149,17 @@
                 function openPopupZero(labelId){
                     const pageWarning = document.getElementById('pageWarning');
                     const pageValues = document.getElementById('pageValues');
+                    const pageWarningReset = document.getElementById('pageWarningReset');
+                    const calibratePopupButtonReset = document.getElementById('calibratePopupButtonReset');
                     if (labelId === 'zerocalibratebutton') {
                         spannewvalue.style.display = 'none';
                         calibratePopupButton.style.display = 'none';
                         const allLabels = document.querySelectorAll('.spanpopup-label');
                         allLabels.forEach(function (otherLabel) {
+                            otherLabel.style.display = 'none';
+                        });
+                        const allspanLabels = document.querySelectorAll('.resetpopup-label');
+                        allspanLabels.forEach(function (otherLabel) {
                             otherLabel.style.display = 'none';
                         });
                         const popUpTitle = document.getElementById('popUpTitle');
@@ -142,18 +169,26 @@
                         if (closePopupButton) {
                             closePopupButton.style.display = 'none'; // Kapat butonunu gizle
                         }
+                        if (pageWarningReset) {
+                            pageWarningReset.style.display = 'none'; // Uyarı sayfasını göster
+                        }
                         if (pageWarning) {
                             pageWarning.style.display = 'block'; // Uyarı sayfasını göster
                         }
                         if (pageValues) {
                             pageValues.style.display = 'none'; // Değer sayfasını gizle
                         }
+                        if (calibratePopupButtonReset) {
+                            calibratePopupButtonReset.style.display = 'none'; // Değer sayfasını gizle
+                        }
                     } 
                 }
                 
                 function openPopupReset(labelId){
                     const pageWarning = document.getElementById('pageWarning');
+                    const pageWarningReset = document.getElementById('pageWarningReset');
                     const pageValues = document.getElementById('pageValues');
+                    const calibratePopupButtonReset = document.getElementById('calibratePopupButtonReset');
                     if (labelId === 'factoryresetbutton') {
                         spannewvalue.style.display = 'none';
                         calibratePopupButton.style.display = 'none';
@@ -161,18 +196,28 @@
                         allLabels.forEach(function (otherLabel) {
                             otherLabel.style.display = 'none';
                         });
+                        const allspanLabels = document.querySelectorAll('.resetpopup-label');
+                        allspanLabels.forEach(function (otherLabel) {
+                            otherLabel.style.display = 'none';
+                        });
                         const popUpTitle = document.getElementById('popUpTitle');
                         if (popUpTitle) {
-                            popUpTitle.innerHTML = 'Factory Calibration'; // Sayfa başlığını güncelle
+                            popUpTitle.innerHTML = 'Warning';
                         }
                         if (closePopupButton) {
-                            closePopupButton.style.display = 'block'; // Kapat butonunu gizle
+                            closePopupButton.style.display = 'none';
+                        }
+                        if (pageWarningReset) {
+                            pageWarningReset.style.display = 'block'; 
                         }
                         if (pageWarning) {
-                            pageWarning.style.display = 'none'; // Uyarı sayfasını göster
+                            pageWarning.style.display = 'none';
                         }
                         if (pageValues) {
-                            pageValues.style.display = 'none'; // Değer sayfasını gizle
+                            pageValues.style.display = 'none';
+                        }
+                        if (calibratePopupButtonReset) {
+                            calibratePopupButtonReset.style.display = 'none'; 
                         }
                     } 
                 }
@@ -181,9 +226,17 @@
                     const pageWarning = document.getElementById('pageWarning');
                     const pageValues = document.getElementById('pageValues');
                     const popUpTitle = document.getElementById('popUpTitle');
+                    const calibratePopupButtonReset = document.getElementById('calibratePopupButtonReset');
+                    const calibrateButton = document.getElementById('calibrateButton');
+
                     const allLabels = document.querySelectorAll('.spanpopup-label');
                     allLabels.forEach(function (otherLabel) {
                         otherLabel.style.display = 'block';
+                        updateLabelContentZeroLive()
+                    });
+                    const allspanLabels = document.querySelectorAll('.resetpopup-label');
+                    allspanLabels.forEach(function (otherLabel) {
+                        otherLabel.style.display = 'none';
                     });
                     if (popUpTitle) {
                         popUpTitle.innerHTML = 'Zero Calibrate with Nitrogen Gas'; // Sayfa başlığını güncelle
@@ -195,6 +248,68 @@
                         pageWarning.style.display = 'none';
                         pageValues.style.display = 'block';
                     }
+                    if (calibratePopupButtonReset) {
+                        calibratePopupButtonReset.style.display = 'none'; 
+                    }
+                    if (calibrateButton) {
+                        calibrateButton.style.display = 'block'; 
+                    }
+                }
+                
+                function showNextPageReset() {
+                    const pageWarning = document.getElementById('pageWarning');
+                    const pageValues = document.getElementById('pageValues');
+                    const popUpTitle = document.getElementById('popUpTitle');
+                    const pageWarningReset = document.getElementById('pageWarningReset');
+                    const calibratePopupButtonReset = document.getElementById('calibratePopupButtonReset');
+                    const calibrateButton = document.getElementById('calibrateButton');
+
+                    const allLabels = document.querySelectorAll('.spanpopup-label');
+                    allLabels.forEach(function (otherLabel) {
+                        otherLabel.style.display = 'none';
+                    });
+                    const allspanLabels = document.querySelectorAll('.resetpopup-label');
+                    allspanLabels.forEach(function (otherLabel) {
+                        otherLabel.style.display = 'block';
+                        updateLabelContentReferance() 
+                    });
+                    if (popUpTitle) {
+                        popUpTitle.innerHTML = 'Factory Calibration'; // Sayfa başlığını güncelle
+                    }
+                    if (closePopupButton) {
+                        closePopupButton.style.display = 'block'; // Kapat butonunu gizle
+                    }
+                    if (pageWarning && pageValues) {
+                        pageWarning.style.display = 'none';
+                        pageValues.style.display = 'block';
+                    }
+                    if(pageWarningReset){
+                        pageWarningReset.style.display = 'none';
+                    }
+                    if (calibratePopupButtonReset) {
+                        calibratePopupButtonReset.style.display = 'block'; 
+                    }
+                    if (calibrateButton) {
+                        calibrateButton.style.display = 'none'; 
+                    }
+                }
+
+                function updateLabelContentReferance() {
+                    document.getElementById('CO_Referance_Value').innerHTML = '%CO Referance Value: <span id="CO_Referance_Value">0</span>';
+                    document.getElementById('CO2_Referance_Value').innerHTML = '%CO2 Referance Value: <span id="CO2_Referance_Value">0</span>';
+                    document.getElementById('CH4_Referance_Value').innerHTML = '%CH4 Referance Value: <span id="CH4_Referance_Value">0</span>';
+                }
+
+                function updateLabelContentZeroLive() {
+                    document.getElementById('CO_reading_popup').innerHTML = '%CO Zero Live Value: <span id="CO_reading_value">0.00</span>';
+                    document.getElementById('CO2_reading_popup').innerHTML = '%CO2 Zero Live Value: <span id="CO2_reading_value">0.000</span>';
+                    document.getElementById('CH4_reading_popup').innerHTML = '%CH4 Zero Live Value: <span id="CH4_reading_value">0.00</span>';
+                }
+
+                function updateLabelContentSpanLive() {
+                    document.getElementById('CO_reading_popup').innerHTML = '%CO Span Live Value: <span id="CO_reading_value">0.00</span>';
+                    document.getElementById('CO2_reading_popup').innerHTML = '%CO2 Span Live Value: <span id="CO2_reading_value">0.000</span>';
+                    document.getElementById('CH4_reading_popup').innerHTML = '%CH4 Span Live Value: <span id="CH4_reading_value">0.00</span>';
                 }
 
                 function startCalibration() {
@@ -223,12 +338,45 @@
                     });
                 }
 
+                function startresetCalibration() {
+                    reset_in_progress = true
+                    fetch('/update_calibration_data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            resetstart: reset_in_progress,
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            // document.getElementById('message-container').innerHTML = data.message;
+                        } else {
+                            console.error('Calibration failed:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+
                 function openPopuplabelView(labelId) {
                     document.querySelectorAll('spanpopup').forEach(function(label) {
                         label.style.display = 'none';
                     });
                     const labelToShow = document.getElementById(labelId);
                     const popUpTitle = document.getElementById('popUpTitle');
+                    const pageWarningReset = document.getElementById('pageWarningReset');
+                    const calibratePopupButtonReset = document.getElementById('calibratePopupButtonReset');
+                    
+                    const allspanLabels = document.querySelectorAll('.resetpopup-label');
+                    allspanLabels.forEach(function (otherLabel) {
+                        otherLabel.style.display = 'none';
+                    });
                     if (labelToShow) {
                         labelToShow.style.display = 'block';
                         calibratePopupButton.style.display = 'block';
@@ -239,7 +387,6 @@
                             if (otherLabel !== labelToShow) {
                                 otherLabel.style.display = 'none';
                                 pageWarning.style.display = 'none';
-                                pageWarning.style.display = 'none';
                                 pageValues.style.display = 'none';
                             }
                         });
@@ -248,6 +395,13 @@
                             popUpTitle.innerHTML = buttonTitle;
                         }
                     }
+                    if(pageWarningReset){
+                        pageWarningReset.style.display = 'none';
+                    }
+                    if (calibratePopupButtonReset) {
+                        calibratePopupButtonReset.style.display = 'none'; 
+                    }
+                    updateLabelContentSpanLive()
                 }
 
                 function startspanCalibration() {

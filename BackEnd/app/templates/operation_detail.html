@@ -11,12 +11,12 @@
                     <input class=" record-container-input" type="datetime-local" id="startDateTime" value="{{ operation.start_date.strftime('%Y-%m-%d %H:%M:%S') if operation.start_date else '' }}">
                     <div style="margin-bottom: 1rem;"></div>
                     <label class=" record-label-livedata">Company</label>
-                    <input class=" record-container-input" type="text" id="company" value="{{ operation.company }}"  placeholder="Company" onclick="openNumpad('company')">
+                    <input class=" record-container-input" type="text" id="company" value="{{ operation.company }}" autocomplete="off" placeholder="Company" onclick="openNumpad('company')">
                     <div style="margin-bottom: 1rem;"></div>
                     <label class=" record-label-livedata">Operator</label>
                     <input class=" record-container-input" type="text" id="operator" readonly="True" 
                             {% if operation_id == 0 or not operation %}
-                                value="{{ get_logged_in_user() }}"
+                                value="{{ get_logged_in_user()[0] }}"
                             {% else %}
                                 value="{{ operation.operator }}"
                             {% endif %}

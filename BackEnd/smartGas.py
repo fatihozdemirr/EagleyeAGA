@@ -71,14 +71,17 @@ def read_sensor(sensor_id, sensor_name, register_address, quantity, ser, button_
             else:
                 if sensor_id == 43 and button_id == 'CObuttonspan':
                     span_old_1 = sensor_value
+                    globalVars.CO_Referance = span_old_1
                     Span_new_CO = int(conc_cal * span_old_1 / globalVars.CO_Read)
                     write_to_sensor(sensor_id, register_address, ser, Span_new_CO)
                 elif sensor_id == 2 and button_id == 'CO2buttonspan':
                     span_old_2 = sensor_value
+                    globalVars.CO2_Referance = span_old_2
                     Span_new_CO2 = int(conc_cal * span_old_2 / globalVars.CO2_Read)
                     write_to_sensor(sensor_id, register_address, ser, Span_new_CO2)
                 elif sensor_id == 79 and button_id == 'CH4buttonspan':
                     span_old_3 = sensor_value
+                    globalVars.CH4_Referance = span_old_3
                     Span_new_CH4 = int(conc_cal * span_old_3 / globalVars.CH4_Result)
                     write_to_sensor(sensor_id, register_address, ser, Span_new_CH4)
 
@@ -106,14 +109,25 @@ def write_to_sensor(sensor_id, register_address, ser, value_to_write):
         print(f"Error writing to sensor: {e}")
         
 # SERIAL PORT SETTING
-# port = globalVars.Port
-port = 'COM6'
+port = globalVars.Port
+# port = 'COM6'
 baudrate = 57600
 parity = serial.PARITY_EVEN
 stopbits = serial.STOPBITS_ONE
 
 # CREATE SERIAL PORT OBJECT
 ser = serial.Serial(port=port, baudrate=baudrate, parity=parity, stopbits=stopbits, timeout=1)
+
+def Reset_Calibration(value_name):
+    if value_name == 'value1':          ## CO
+        print('value1:',value_name)
+        # write_to_sensor(43, 84, ser, 10000)
+    elif value_name == 'value2':        ## CO2
+        print('value2:',value_name)
+        # write_to_sensor(2, 84, ser, 10000)
+    elif value_name == 'value3':        ## CH4
+        print('value3:',value_name)
+        # write_to_sensor(79, 84, ser, 10000)
    
 def read_and_span_calibrate_sensor(sensor_id, sensor_name, button_id, calibration_in_progress, conc_cal):
     global ser
@@ -193,6 +207,10 @@ def update_ui(socketio):
                                       'CH4_Factor':globalVars.ch4factor,
                                       'Alloy_Factor':globalVars.alloyfactor,
                                       'H2':globalVars.h2,
+                                      
+                                      'co_referance':globalVars.CO_Referance,
+                                      'co2_referance':globalVars.CO2_Referance,
+                                      'ch4_referance':globalVars.CH4_Referance,
                                       })
 
         socketio.sleep(0.5)

@@ -16,12 +16,14 @@
             }
         }
     </script>
+    
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script> 
     <script src="{{ url_for('static', filename='JavaScript/socket_connection.js') }}"></script> 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <script src="{{ url_for('static', filename='JavaScript/actualtime.js') }}"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/board.css') }}">
@@ -35,11 +37,42 @@
         <div class="mainabove-container">
             <form method="get" action="{{ url_for('main.mainmenu') }}">
                 <button type="submit" class="custom-button">
-                    Eagleye®AGA / #V1.0 / {{ get_logged_in_user() }}
+                    Eagleye®AGA / #V1.0 / {{ get_logged_in_user()[0] }}
                 </button>
                 <a href="#" class="custom-back-button" onclick="history.go(-1); return false;">
                     <img src="{{ url_for('static', filename='images/back.svg') }}">
                 </a>
             </form>
+            <div class="wifi-signal-container">
+                <img id="wifi-icon" src="{{ url_for('static', filename='images/icon/wifi/wifi-full.svg') }}">
+            </div>
+            <div class="generallytime-screen">
+                <span id="currentDatetime"></span>
+            </div>
         </div>
         <div class="mainbottom-container">
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                updateWifiSignalStrength()
+            });
+            function updateWifiSignalStrength(signalStrength) {
+                var wifiIcon = document.getElementById('wifi-icon');
+    
+                // Sinyal gücüne göre uygun olan simgeyi seç
+                var iconPath;
+                if (signalStrength >= 75) {
+                    iconPath = 'wifi-full.svg';
+                } else if (signalStrength >= 50) {
+                    iconPath = 'wifi-high.svg';
+                } else if (signalStrength >= 25) {
+                    iconPath = 'wifi-medium.svg';
+                } else if (signalStrength > 0) {
+                    iconPath = 'wifi-low.svg';
+                } else {
+                    iconPath = 'wifi-ultra-low.svg';
+                }
+    
+                // Resmi güncelle
+                wifiIcon.src = "{{ url_for('static', filename='images/icon/wifi/') }}" + iconPath;
+            }
+        </script>
