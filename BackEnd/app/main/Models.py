@@ -50,4 +50,11 @@ class SensorReferanceValues(db.Model):
     COReferance = db.Column(db.Integer, nullable=False)
     CO2Referance = db.Column(db.Integer, nullable=False)
     CH4Referance = db.Column(db.Integer,  nullable=False)
+ 
+   
+class AppParameter(db.Model):
+    __tablename__ = 'app_parameters'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    value = db.Column(db.String(200), nullable=False)
     

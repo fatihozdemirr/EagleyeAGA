@@ -1185,3 +1185,26 @@ max-width: 135px;
     font-family: Calibri, sans-serif;
 }
 
+.recording-indicator {
+    margin-left: 660px;
+    margin-top: -20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px; /* Dairenin çapı */
+    height: 20px; /* Dairenin çapı */
+    background-color: red; /* Dairenin rengi */
+    border-radius: 50%; /* Daire şeklini oluştur */
+    color: white; /* İçindeki "R" harfinin rengi */
+    font-size: 18px; /* "R" harfinin boyutu */
+    animation: blink 1s infinite; /* Opaklık animasyonu */
+    display: none;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+
+

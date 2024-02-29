@@ -23,7 +23,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
-    <script src="{{ url_for('static', filename='JavaScript/actualtime.js') }}"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/board.css') }}">
@@ -45,12 +44,17 @@
             </form>
             <div class="wifi-signal-container">
                 <img id="wifi-icon" src="{{ url_for('static', filename='images/icon/wifi/wifi-full.svg') }}">
+                
             </div>
             <div class="generallytime-screen">
-                <span id="currentDatetime"></span>
+                <span id="currentTimeDisplay"></span>
+            </div>
+            <div id =recordingIndicator class="recording-indicator">
+                <span>R</span>
             </div>
         </div>
-        <div class="mainbottom-container">
+        
+        <div  class="mainbottom-container">
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 updateWifiSignalStrength()
@@ -75,4 +79,28 @@
                 // Resmi güncelle
                 wifiIcon.src = "{{ url_for('static', filename='images/icon/wifi/') }}" + iconPath;
             }
+
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+            socket.on('data', function(data) {
+                var isRecording = data.isRecording;
+                var currentTime = data.currentTime;
+                var indicator = document.getElementById('recordingIndicator');
+                var timeDisplay = document.getElementById('currentTimeDisplay'); // Şu anki zamanı gösterecek bir HTML elementi
+            
+                //console.log('Is recording:', isRecording, 'Current time:', currentTime);
+            
+                if (isRecording) {
+                    indicator.style.display = 'flex';
+                } else {
+                    indicator.style.display = 'none';
+                }
+            
+                // Zamanı güncelle
+                if (timeDisplay) {
+                    timeDisplay.innerText = currentTime;
+                }
+            });
+            
+
         </script>

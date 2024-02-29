@@ -1,6 +1,6 @@
 import sqlite3
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 from GlobalVars import globalVars
 
@@ -24,6 +24,28 @@ def get_data(start_date, end_date):
 
     return rows
 
+def get_last_constant_data(point_count):
+    # Veritabanı bağlantısını aç
+    conn = sqlite3.connect(globalVars.DatabasePath)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor() 
+   
+    # Toplam geriye gidilecek saniye = point sayısı * her bir kayıt arasındaki saniye
+    total_seconds_back = point_count * globalVars.RecordInterval
+    
+    # Minimum tarihi hesapla (şimdiki zamandan 'total_seconds_back' saniye önce)
+    min_datetime = datetime.now() - timedelta(seconds=total_seconds_back)
+    
+    # Minimum tarihten itibaren olan kayıtları al
+    cur.execute('SELECT Datetime, CO, CO2, CH4 FROM datalogger WHERE Datetime > ?', (min_datetime.strftime('%Y-%m-%d %H:%M:%S'),))
+    rows = cur.fetchall()
+
+    # Veritabanı bağlantısını kapat
+    conn.close()
+
+    # Sonuçları döndür
+    return rows
+
 class DataLogger:
     def __init__(self):
         self._running = False
@@ -38,6 +60,7 @@ class DataLogger:
         if not self._running:
             self._running = True
             self._thread = threading.Thread(target=self._run)
+            
             self._thread.start()
 
     def stop(self):
@@ -47,5 +70,10 @@ class DataLogger:
             
     def get_data(self, start_date, end_date):
         return get_data(start_date, end_date)
+    
+    def get_last_constant_data(self, point):
+        return get_last_constant_data(point)
 
 dataLogger = DataLogger()
+if globalVars.OperationWorking or globalVars.DefaultRecording:
+    dataLogger.start()

@@ -1,5 +1,6 @@
 from .helpers import *
 from . import main_bp
+from flask_socketio import emit
 
 lock = threading.Lock()
 logged_in = False
@@ -95,6 +96,8 @@ def logout():
 @socketio.on('connect')
 def test_connect():
     socketio.start_background_task(target=smartGas.update_ui, socketio=socketio)
+    socketio.start_background_task(target=globalVars.update_ui, socketio=socketio)
+
 
 def get_toggle_status():
     return LiveTableDatas.query.filter_by(id=1).first().TempUnit
@@ -142,8 +145,36 @@ def update_data():
         return jsonify({'status': 'success', 'message': 'Data updated successfully'})
 
 @main_bp.route('/Chart')
-def Chart():
-    return render_template('Chart.html', get_logged_in_user=get_logged_in_user)
+def Chart():           
+    labels = []
+    co_data = []
+    co2_data = []
+    ch4_data = []
+        
+    if globalVars.StartedDate != "":          
+        rows = dataLogger.get_data(globalVars.StartedDate, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        for row in rows:
+            labels.append(row['Datetime'])
+            co_data.append(row['CO'])
+            co2_data.append(row['CO2'])
+            ch4_data.append(row['CH4'])
+    else :
+        rows = dataLogger.get_last_constant_data(globalVars.MaxPoint)
+        for row in rows:
+            labels.append(row['Datetime'])
+            co_data.append(row['CO'])
+            co2_data.append(row['CO2'])
+            ch4_data.append(row['CH4'])
+            
+    chartdata = {
+        'labels': labels,
+        'datasets': [
+            {'label': 'CO', 'data': co_data},
+            {'label': 'CO2', 'data': co2_data},
+            {'label': 'CH4', 'data': ch4_data},
+        ]}
+    
+    return render_template('Chart.html',chartData = chartdata, get_logged_in_user=get_logged_in_user)
 
 @main_bp.route('/Calibration')
 def Calibration():
@@ -282,14 +313,23 @@ def show_calibration_logs():
 @main_bp.route('/start_stop_recording', methods=['POST'])
 def start_stop_recording():
     data = request.json
-    globalVars.isRecording = data.get('isRecording', 0)
-    if globalVars.isRecording:
-        dataLogger.start()
+    hasRecorded = data.get('isRecording', 0)
+    
+    if hasRecorded:
+        globalVars.StartedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        globalVars.update_app_parameters('StartedDate', globalVars.StartedDate)         
+        dataLogger.start() 
+        globalVars.OperationWorking = 1
         response = {"message": "Recording started successfully.", "status": "success"}
         status_code = 200
     else:
-        dataLogger.stop()
-        response = {"message": "Recording stopped successfully.", "status": "success"}
+        globalVars.StartedDate = ""
+        if not globalVars.DefaultRecording:
+            dataLogger.stop()
+            globalVars.OperationWorking = 0     
+            response = {"message": "Recording stopped successfully.", "status": "success"}
+            
+        globalVars.update_app_parameters('StartedDate', "")    
         status_code = 200
     
     return jsonify(response), status_code
@@ -421,6 +461,7 @@ def Operation():
 @main_bp.route('/operation/<int:operation_id>')
 def operation_detail(operation_id):
     operation = get_operation_by_id(operation_id)
+    
     return render_template('operation_detail.html', operation=operation, get_logged_in_user=get_logged_in_user)
 
 @main_bp.route('/Setting')
@@ -619,4 +660,5 @@ def Restart():
 @main_bp.route('/Shutdown')
 def Shutdown():
     return render_template('Shutdown.html', get_logged_in_user=get_logged_in_user)
+
 

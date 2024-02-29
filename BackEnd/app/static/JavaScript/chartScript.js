@@ -5,25 +5,25 @@ document.addEventListener('DOMContentLoaded', function() {
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: [],
+            labels: chartData.labels,
             datasets: [{
                 label: 'CO [%]',
                 borderColor: 'rgba(255, 0, 0, 1)',
                 borderWidth: 2,
                 //ubicInterpolationMode: 'monotone',
-                data: []
+                data: chartData.datasets[0].data
             }, {
                 label: 'CO2 [%]',
                 borderColor: 'rgba(0, 255, 0, 1)',
                 borderWidth: 2,
                 //ubicInterpolationMode: 'monotone',
-                data: []
+                data: chartData.datasets[1].data
             }, {
                 label: 'CH4 [%]',
                 borderColor: 'rgba(0, 0, 255, 1)',
                 borderWidth: 2,
                 //ubicInterpolationMode: 'monotone',
-                data: []
+                data: chartData.datasets[2].data
             }]
         },
         options : {
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     socket.on('chart_sensor_data', function(data) {
-        if (myChart.data.labels.length > 5000) {
+        if (myChart.data.labels.length > data.MaxPoint) {
             myChart.data.labels.shift();
             myChart.data.datasets.forEach(dataset => dataset.data.shift());
         }

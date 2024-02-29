@@ -1,13 +1,14 @@
 import os
 import sqlite3
+from datetime import datetime
 
 class GlobalVars :
     def __init__(self) :
         #Working On PC
         self.DatabasePath = os.path.join(os.getcwd(), "BackEnd","users.db")
         # Working On RPI
-        #self.DatabasePath  = "/home/pi/EagleyeAGA/BackEnd/users.db"
-            
+        #self.DatabasePath  = "/home/pi/EagleyeAGA/BackEnd/users.db"        
+         
         self.CO_Read = 00.00
         self.CO2_Read = 0.000
         self.CH4_Read = 00.00
@@ -28,14 +29,21 @@ class GlobalVars :
         self.CO_Referance = 0
         self.CO2_Referance = 0
         self.CH4_Referance = 0
-       
-        self.isRecording = 0
-        self.RecordInterval = 1.0
+        
+        self.DefaultRecording = 0
+        self.StartedDate = ""      
+        self.RecordInterval = 1
+        self.ValueUpdateInterval = 1
+        self.MaxPoint = 5000
+        
+        self.OperationWorking = 0
         self.Port = 'COM3' if os.name == 'nt' else '/dev/ttyUSB0'
         self.load_offsets()
         self.load_live_constant()
         self.referance_reset_values()
-            
+        self.get_app_parameters()
+        self.sync_recording()
+         
     #Get Offset From DB
     def load_offsets(self):
         # Veritabanı bağlantısını aç
@@ -95,8 +103,66 @@ class GlobalVars :
         # veritabanı bağlantısını kapat
         conn.close()
         
-globalVars = GlobalVars()
+        
+    def get_app_parameters(self):
+        # veritabanı bağlantısını aç
+        conn = sqlite3.connect(self.DatabasePath)
+        cursor = conn.cursor()
 
+        # değerleri sorgula
+        cursor.execute("SELECT * from app_parameters")
+        rows = cursor.fetchall()
+
+        # değerleri sınıf özelliklerine ata
+        for row in rows:
+            if row[1] == "DefaultRecording":
+                self.DefaultRecording = int(row[2])
+            if row[1] == "StartedDate":
+                self.StartedDate = row[2]
+            if row[1] == "RecordInterval":
+                self.RecordInterval = int(row[2])
+            if row[1] == "ValueUpdateInterval":
+                self.ValueUpdateInterval = int(row[2])
+            if row[1] == "MaxPoint":
+                self.MaxPoint = int(row[2])
+
+        # veritabanı bağlantısını kapat
+        conn.close()
+        
+    def update_app_parameters(self, parameter_name, parameter_value):
+        conn = sqlite3.connect(self.DatabasePath)
+        cursor = conn.cursor()
+        
+        cursor.execute("UPDATE app_parameters SET value = ? WHERE name = ?",
+                        (str(parameter_value), parameter_name))
+        conn.commit()
+
+        conn.close()
+    
+    def sync_recording(self):
+        # veritabanı bağlantısını aç
+        conn = sqlite3.connect(self.DatabasePath)
+        cursor = conn.cursor()
+
+        # değerleri sorgula
+        cursor.execute("SELECT * from operations Where start_date is not null and stop_date is null ")
+        rows = cursor.fetchall()
+
+        if len(rows) != 0:
+            self.OperationWorking = 1       
+
+        # veritabanı bağlantısını kapat
+        conn.close()    
+        
+    def update_ui(self,socketio):
+        while True:
+            socketio.emit('data', {'isRecording': self.DefaultRecording or self.OperationWorking ,
+                                   'currentTime': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+                                    )
+            socketio.sleep(1)   
+                
+globalVars = GlobalVars()
 
 
 
