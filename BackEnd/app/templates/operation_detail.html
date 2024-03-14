@@ -62,12 +62,15 @@
             const stopDateTimeValue = document.getElementById('stopDateTime').value;
             const playStopButton = document.getElementById('playStopButton');
             const exportButtons = document.getElementById('exportButtons');
-
+            const operationWorking = JSON.parse('{{ operationWorking|safe }}');
+            //const operationWorking = {{ operationWorking }};
+            
            // Start ve End Date boş ise Play butonu gözükecek, export'lar gözükmeyecek
             if (!startDateTimeValue && !stopDateTimeValue) {
                 playStopButton.style.display = 'block';
                 playStopButton.innerHTML = '<i class="fas fa-play"></i>'; // Play ikonu
                 exportButtons.style.display = 'none';
+                
             }
             // Start Date varsa ve End Date varsa, Play-Stop butonu gözükmeyecek, export butonu gözükecek
             else if (startDateTimeValue && stopDateTimeValue) {
@@ -79,6 +82,10 @@
                 playStopButton.style.display = 'block';
                 playStopButton.innerHTML = '<i class="fas fa-stop"></i>'; // Stop ikonu
                 exportButtons.style.display = 'none';
+            }
+
+            if(operationWorking==1 && !(startDateTimeValue && !stopDateTimeValue)){
+                playStopButton.style.display = 'none';
             }
         }
 

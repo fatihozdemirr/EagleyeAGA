@@ -41,8 +41,9 @@ class CalibrationLogs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     calibration_type = db.Column(db.String(50), nullable=False)
+    old_value = db.Column(db.String(80), nullable=False)
     calibration_value = db.Column(db.Float, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
     
 class SensorReferanceValues(db.Model):
     __tablename__ = 'sensorreferance'

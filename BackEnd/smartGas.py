@@ -116,7 +116,8 @@ parity = serial.PARITY_EVEN
 stopbits = serial.STOPBITS_ONE
 
 # CREATE SERIAL PORT OBJECT
-ser = serial.Serial(port=port, baudrate=baudrate, parity=parity, stopbits=stopbits, timeout=1)
+if(not globalVars.IsDebugging): 
+    ser = serial.Serial(port=port, baudrate=baudrate, parity=parity, stopbits=stopbits, timeout=1)
 
 def Reset_Calibration(value_name):
     if value_name == 'value1':          ## CO

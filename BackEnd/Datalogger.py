@@ -31,13 +31,16 @@ def get_last_constant_data(point_count):
     cur = conn.cursor() 
    
     # Toplam geriye gidilecek saniye = point sayısı * her bir kayıt arasındaki saniye
-    total_seconds_back = point_count * globalVars.RecordInterval
+    #total_seconds_back = point_count * globalVars.RecordInterval
     
     # Minimum tarihi hesapla (şimdiki zamandan 'total_seconds_back' saniye önce)
-    min_datetime = datetime.now() - timedelta(seconds=total_seconds_back)
+    #min_datetime = datetime.now() - timedelta(seconds=total_seconds_back)
     
     # Minimum tarihten itibaren olan kayıtları al
-    cur.execute('SELECT Datetime, CO, CO2, CH4 FROM datalogger WHERE Datetime > ?', (min_datetime.strftime('%Y-%m-%d %H:%M:%S'),))
+    #cur.execute('SELECT Datetime, CO, CO2, CH4 FROM datalogger WHERE Datetime > ?', (min_datetime.strftime('%Y-%m-%d %H:%M:%S'),))
+    cur.execute('SELECT Datetime, CO, CO2, CH4 FROM (SELECT Datetime, CO, CO2, CH4 FROM datalogger WHERE Datetime <= ? ORDER BY Datetime DESC LIMIT ?) ORDER BY Datetime ASC', (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), point_count))
+
+
     rows = cur.fetchall()
 
     # Veritabanı bağlantısını kapat

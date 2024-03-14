@@ -3,7 +3,15 @@
             {% set username, role = get_logged_in_user() %}
             {% if role != 'Operator' %}
                 <div class="setting-flex-container">
-                    <div class="grid-container">
+                    <div class="grid-settingcontainer">
+                        <div class="mainbottomadd-container">
+                            <div class="button-center">
+                                <a href="{{ url_for('main.ChartSettingParameter') }}" class="custom-button-classes ">
+                                    <img src="/static/images/chartsettings.png" >
+                                    <span>Chart Parameter</span>
+                                </a>
+                            </div>
+                        </div>
                         <div class="mainbottomadd-container">
                             <div class="button-center">
                                 <a href="{{ url_for('main.SetTime') }}" class="custom-button-classes ">
@@ -32,7 +40,15 @@
                 </div>
             {% endif %}
             <div class="setting-flex-container">
-                <div class="grid-container">
+                <div class="grid-settingcontainer">
+                    <div class="mainbottomadd-container">
+                        <div class="button-center">
+                            <a href="{{ url_for('main.SystemInformatıon') }}" class="custom-button-classes ">
+                                <img src="/static/images/information.png" >
+                                <span>System Informatıon</span>
+                            </a>
+                        </div>
+                    </div>
                     <div class="mainbottomadd-container">
                         <div class="button-center">
                             <a href="{{ url_for('main.Restart') }}" class="custom-button-classes ">

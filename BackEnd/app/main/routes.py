@@ -174,7 +174,7 @@ def Chart():
             {'label': 'CH4', 'data': ch4_data},
         ]}
     
-    return render_template('Chart.html',chartData = chartdata, get_logged_in_user=get_logged_in_user)
+    return render_template('ChartPlotly.html',chartData = chartdata, get_logged_in_user=get_logged_in_user)
 
 @main_bp.route('/Calibration')
 def Calibration():
@@ -194,6 +194,7 @@ def update_calibration_data():
         reset_start = request.json.get('resetstart', None)
          
         conc_cal = last_conc_cal    
+        
         if input_id == 'CO_inputoffset':
             CalibrationTableDatas.query.filter_by(id=1).update({'OFFSET': new_value})
             globalVars.CO_Offset = float(new_value)
@@ -223,27 +224,32 @@ def update_calibration_data():
                     smartGas.Reset_Calibration(value_name)
                     if value_name == 'value1': 
                         calibration_type = 'RESET-%CO'
+                        old_value = globalVars.CO_Referance
                         globalVars.CO_Referance = 10000
                         SensorReferanceValues.query.filter_by(id=1).update({'COReferance': globalVars.CO_Referance})
                     elif value_name == 'value2': 
                         calibration_type = 'RESET-%CO2'
+                        old_value = globalVars.CO2_Referance
                         globalVars.CO2_Referance = 10000
                         SensorReferanceValues.query.filter_by(id=1).update({'CO2Referance': globalVars.CO2_Referance})
                     elif value_name == 'value3':
                         calibration_type = 'RESET-%CH4'
+                        old_value = globalVars.CH4_Referance
                         globalVars.CH4_Referance = 10000
                         SensorReferanceValues.query.filter_by(id=1).update({'CH4Referance': globalVars.CH4_Referance})
+                    
                     db.session.commit() 
                     calibration_value = 10000
                     timestamp = datetime.now()
-                    recent_logs = CalibrationLogs.query.filter_by(username=get_logged_in_user(), calibration_type=calibration_type).order_by(desc(CalibrationLogs.timestamp)).all()
+                    username, _ = get_logged_in_user()
+                    recent_logs = CalibrationLogs.query.filter_by(username=username, calibration_type=calibration_type).order_by(desc(CalibrationLogs.timestamp)).all()
                     
                     if len(recent_logs) >= MAX_LOGS_TO_KEEP:
                         logs_to_delete = recent_logs[MAX_LOGS_TO_KEEP - 1:]
                         for log in logs_to_delete:
                             db.session.delete(log)
                     
-                    log_entry = CalibrationLogs(username=get_logged_in_user(), calibration_type=calibration_type, calibration_value=calibration_value, timestamp=timestamp)
+                    log_entry = CalibrationLogs(username=username, calibration_type=calibration_type, old_value=old_value, calibration_value=calibration_value, timestamp=timestamp)
                     db.session.add(log_entry)
                     db.session.commit()
 
@@ -254,8 +260,18 @@ def update_calibration_data():
             calibration_type = f'SPAN-{button_id.replace("buttonspan", "")}'
             calibration_value = float(conc_cal)
             timestamp = datetime.now()
-            # Veritabanından, bu kullanıcının ve belirli bir kalibrasyon tipinin loglarını tarih sırasına göre al
-            recent_logs = CalibrationLogs.query.filter_by(username=get_logged_in_user(), calibration_type=calibration_type).order_by(desc(CalibrationLogs.timestamp)).all()
+            # formatted_timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            # print(timestamp)
+            username, _ = get_logged_in_user()
+            
+            if button_id == 'CObuttonspan':
+                old_value = globalVars.CO_Read
+            elif button_id == 'CO2buttonspan':
+                old_value = globalVars.CO2_Read
+            elif button_id == 'CH4buttonspan':
+                old_value = globalVars.CH4_Result
+    
+            recent_logs = CalibrationLogs.query.filter_by(username=username, calibration_type=calibration_type).order_by(desc(CalibrationLogs.timestamp)).all()
             
             # Eğer log sayısı MAX_LOGS_TO_KEEP'e ulaştıysa, en eski logları sil
             if len(recent_logs) >= MAX_LOGS_TO_KEEP:
@@ -263,19 +279,26 @@ def update_calibration_data():
                 for log in logs_to_delete:
                     db.session.delete(log)
             
-            log_entry = CalibrationLogs(username=get_logged_in_user(), calibration_type=calibration_type, calibration_value=calibration_value, timestamp=timestamp)
+            log_entry = CalibrationLogs(username=username, calibration_type=calibration_type, old_value=old_value, calibration_value=calibration_value, timestamp=timestamp)
             db.session.add(log_entry)
             db.session.commit()
             return jsonify({'status': 'success', 'message': f'{calibration_type} calibration is done'})
             
         if zero_start is not None and zero_start is True:
             smartGas.zero_calibration_queries(True)
-            calibration_type = 'ZERO CO-CO2-CH4'
-            calibration_value = 0.0  # Bu değeri isteğe bağlı olarak ayarlayabilirsiniz.
+            calibration_type = 'ZERO CO|CO2|CH4'
+            calibration_value = 0.0  
             timestamp = datetime.now()
-
+            username, _ = get_logged_in_user()
+            
+            current_CO_Read = globalVars.CO_Read
+            current_CO2_Read = globalVars.CO2_Read
+            current_CH4_Read = globalVars.CH4_Read
+    
+            old_value = f"CO:{current_CO_Read}-CO2:{current_CO2_Read}-CH4:{current_CH4_Read}"
+            
             # Veritabanından, bu kullanıcının ve belirli bir kalibrasyon tipinin loglarını tarih sırasına göre al
-            recent_logs = CalibrationLogs.query.filter_by(username=get_logged_in_user(), calibration_type=calibration_type).order_by(desc(CalibrationLogs.timestamp)).all()
+            recent_logs = CalibrationLogs.query.filter_by(username=username, calibration_type=calibration_type).order_by(desc(CalibrationLogs.timestamp)).all()
             
             # Eğer log sayısı MAX_LOGS_TO_KEEP'e ulaştıysa, en eski logları sil
             if len(recent_logs) >= MAX_LOGS_TO_KEEP:
@@ -283,7 +306,7 @@ def update_calibration_data():
                 for log in logs_to_delete:
                     db.session.delete(log)
             
-            log_entry = CalibrationLogs(username=get_logged_in_user(), calibration_type=calibration_type, calibration_value=calibration_value, timestamp=timestamp)
+            log_entry = CalibrationLogs(username=username, calibration_type=calibration_type, old_value=old_value, calibration_value=calibration_value, timestamp=timestamp)
             db.session.add(log_entry)
             db.session.commit()
             # zero_alert = True
@@ -391,7 +414,7 @@ def export_data(operation_id):
 def history_chart(operation_id):   
     chartData = get_history_chart_data(operation_id)       
     operation = get_operation_by_id(operation_id)    
-    return render_template('history_chart.html',operation=operation, chartData = chartData, get_logged_in_user=get_logged_in_user)
+    return render_template('history_chart_plotly.html',operation=operation, chartData = chartData, get_logged_in_user=get_logged_in_user)
 
 def get_operation_by_id(operation_id):
     operation = Operations.query.get(operation_id)
@@ -462,8 +485,8 @@ def Operation():
 def operation_detail(operation_id):
     operation = get_operation_by_id(operation_id)
     
-    return render_template('operation_detail.html', operation=operation, get_logged_in_user=get_logged_in_user)
-
+    return render_template('operation_detail.html', operation=operation, operationWorking=globalVars.OperationWorking, get_logged_in_user=get_logged_in_user)
+    
 @main_bp.route('/Setting')
 def Setting():
     return render_template('Setting.html', get_logged_in_user=get_logged_in_user)
@@ -662,3 +685,42 @@ def Shutdown():
     return render_template('Shutdown.html', get_logged_in_user=get_logged_in_user)
 
 
+@main_bp.route('/ChartSettingParameter')
+def ChartSettingParameter():
+    default_recording = globalVars.DefaultRecording
+    started_date = globalVars.StartedDate
+    record_interval = globalVars.RecordInterval
+    value_update_interval = globalVars.ValueUpdateInterval
+    max_point = globalVars.MaxPoint
+    
+    return render_template('ChartSettingParameter.html',
+                            default_recording=default_recording,
+                            started_date=started_date,
+                            record_interval=record_interval,
+                            value_update_interval=value_update_interval,
+                            max_point=max_point,
+                            get_logged_in_user=get_logged_in_user)
+
+@main_bp.route('/savevalues', methods=['POST'])
+def save_values():
+    data = request.get_json()
+    default_recording = data.get('defaultrecording')
+    record_interval = data.get('recordInterval')
+    value_update_interval = data.get('valueupdateInterval')
+    max_point = data.get('maxPoint')
+    
+    globalVars.update_app_parameters('DefaultRecording', default_recording)
+    globalVars.update_app_parameters('RecordInterval', record_interval)
+    globalVars.update_app_parameters('ValueUpdateInterval', value_update_interval)
+    globalVars.update_app_parameters('MaxPoint', max_point)
+    
+    globalVars.DefaultRecording = int(default_recording)
+    globalVars.RecordInterval = int(record_interval)
+    globalVars.ValueUpdateInterval = int(value_update_interval)
+    globalVars.MaxPoint = int(max_point)
+
+    return jsonify({'status': 'success', 'message': 'Reset calibration is done'})
+
+@main_bp.route('/SystemInformatıon')
+def SystemInformatıon():
+    return render_template('SystemInformatıon.html', get_logged_in_user=get_logged_in_user)

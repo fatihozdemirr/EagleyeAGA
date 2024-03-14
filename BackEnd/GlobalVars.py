@@ -8,7 +8,8 @@ class GlobalVars :
         self.DatabasePath = os.path.join(os.getcwd(), "BackEnd","users.db")
         # Working On RPI
         #self.DatabasePath  = "/home/pi/EagleyeAGA/BackEnd/users.db"        
-         
+        
+        self.IsDebugging = True 
         self.CO_Read = 00.00
         self.CO2_Read = 0.000
         self.CH4_Read = 00.00

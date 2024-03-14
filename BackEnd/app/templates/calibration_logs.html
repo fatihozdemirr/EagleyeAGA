@@ -17,8 +17,9 @@
                     <tr>
                         <td>{{ log.username }}</td>
                         <td>{{ log.calibration_type }}</td>
-                        <td>{{ log.calibration_value }}</td>
-                        <td>{{ log.timestamp }}</td>
+                        <td>{{ log.old_value }} → {{ log.calibration_value }}</td>
+                        <!-- <td>{{ log.old_value }} → {{ log.new_value }}</td> -->
+                        <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

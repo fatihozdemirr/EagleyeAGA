@@ -268,6 +268,20 @@ button:hover {
     min-height: 1px; 
     max-height: 100px; 
 }
+
+.grid-settingcontainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 3px; 
+    row-gap: 25px; 
+    flex: 1;
+    min-height: 1px; 
+    max-height: 100px; 
+}
+
+
+
 .grid-container .mainbottomadd-container {
     grid-row: 1;
 }
@@ -449,7 +463,7 @@ button:hover {
 
 .input-livedata {
     display: block;
-    background-color: #d1d1d1;
+    background-color: #ff8922;
     font-family: Calibri, sans-serif;
     font-size: 18px;
     color: #333;
@@ -464,23 +478,41 @@ button:hover {
     text-align: center;
 } 
 
-.input-calibration{
-display: block;
-color: #333;
-font-weight: bold;
-border: 1px solid #ccc;
-background-color: #d1d1d1;
-border-radius: 10px;
-width: 100%; 
-line-height: 50px;
-font-family: Calibri, sans-serif;
-font-size: 18px;
-border-bottom: 1px solid #dddddd;
-text-align: center;
-padding: 5px;
-height: 35px;
-max-width: 135px; 
+.input-calibration-orange{
+    display: block;
+    color: #333;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    background-color: #60A9C9 ;
+    border-radius: 10px;
+    width: 100%; 
+    line-height: 50px;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    border-bottom: 1px solid #dddddd;
+    text-align: center;
+    padding: 5px;
+    height: 35px;
+    max-width: 135px; 
 }
+
+.input-calibration-blue{
+    display: block;
+    color: #333;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    background-color: #ff8922 ;
+    border-radius: 10px;
+    width: 100%; 
+    line-height: 50px;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    border-bottom: 1px solid #dddddd;
+    text-align: center;
+    padding: 5px;
+    height: 35px;
+    max-width: 135px; 
+    }
 
 .lvedta-label {
     position: relative;
@@ -488,7 +520,7 @@ max-width: 135px;
 
 .label-livedata input {
     display: block;
-    background-color: #ffaaaa;
+    background-color: #60A9C9;
     font-family: Calibri, sans-serif;
     font-size: 18px;
     color: #333;
@@ -818,6 +850,7 @@ max-width: 135px;
 
 #zerocalibratebutton {
     margin-top: 22px;
+    margin-left: 90px;
     &:hover {
         background-color: #f0af38;
     }
@@ -828,7 +861,7 @@ max-width: 135px;
 
 #factoryresetbutton {
     margin-top: 22px;
-    margin-left: 250px;
+    margin-left: 165px;
 }
 
 .gas-label {
@@ -891,7 +924,7 @@ max-width: 135px;
     border-radius: 20px; 
     font-size: 18px;
     font-family: Calibri, sans-serif;
-    margin-left: 10px;
+    margin-left: 100px;
     margin-top: 16px;
 }
 
@@ -979,7 +1012,7 @@ max-width: 135px;
     width: 35px;
     height: 35px; 
     cursor: pointer;
-    margin-right: 390px;
+    margin-right: 35px;
 }
 
 .title-container {
@@ -1020,11 +1053,49 @@ max-width: 135px;
     margin-left: 20px;
     padding: 5px;   
     height: 35px;
+    width: 350px; /*  #ff8922 ;60A9C9 */
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 10px; 
+    background-color: rgb(235, 238, 240);
+}
+
+.chartsetting-flex-container {
+    display: flex;
+    margin: auto;
+    margin-top: 45px
+}
+
+.chartsetting-left-container {
+    margin-right: 20px; /* İstediğiniz boşluğa göre ayarlayabilirsiniz */
+}
+
+.chartsetting-right-container {
+    margin-left: auto; /* İstediğiniz boşluğa göre ayarlayabilirsiniz */
+    margin-top: 35px;
+}
+
+.record-label-chartsetting {
+    display: block;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 11px;
+    width: 360px;
+    height: 23px;
+}
+
+.record-input-chartsetting {
+    margin-top: -14px;
+    padding: 5px;   
+    height: 35px;
     width: 350px;  
     text-align: left;
     border: 1px solid #ccc;
     border-radius: 10px; 
     background-color: rgb(235, 238, 240);
+    margin-bottom: 10px;
 }
 
 .wifi-container-input {
@@ -1153,6 +1224,7 @@ max-width: 135px;
 }
 
 #wifi-icon {
+    margin-top: -2px;
     width: 100%;
     margin-left: 690px;
     height: 100%;
@@ -1186,7 +1258,7 @@ max-width: 135px;
 }
 
 .recording-indicator {
-    margin-left: 660px;
+    margin-left: 640px;
     margin-top: -20px;
     display: flex;
     justify-content: center;

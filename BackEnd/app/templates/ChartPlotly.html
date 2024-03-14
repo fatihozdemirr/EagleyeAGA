@@ -1,0 +1,14 @@
+{% include 'header.html' %}
+<title>Chart</title>
+<h1 class="title-text">Chart</h1>
+
+<div id="myChart"></div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script type="text/javascript">
+    var chartData = JSON.parse('{{ chartData|tojson|safe }}');
+</script>
+
+<script src="{{ url_for('static', filename='JavaScript/chartPlotly.js') }}"></script>
+

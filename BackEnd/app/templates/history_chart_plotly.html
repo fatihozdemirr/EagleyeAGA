@@ -1,0 +1,24 @@
+{% include 'header.html' %}
+    <title>Chart</title>
+            <h1 class="title-text">Chart</h1>
+
+            <!-- Detayları tek satırda ve "-" ile ayırarak göster -->
+            <div class="details-container">
+                <span class="detail-item">Operation Name: {{ operation.name }}</span>-
+                <span class="detail-item">Company: {{ operation.company }}</span>-
+                <span class="detail-item">Furnace: {{ operation.furnace }}</span>-
+                <span class="detail-item">Operator: {{ operation.operator }}</span>-
+                <span class="detail-item">Date Range: {{ operation.start_date.strftime('%d.%m.%Y %H:%M:%S') }} to {{ operation.stop_date.strftime('%d.%m.%Y %H:%M:%S') }}</span>
+            </div>
+
+            <!-- Chart -->
+            <div id="myChart"></div>
+        </div>
+    </div>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+        var chartData = JSON.parse('{{ chartData|tojson|safe }}');
+    </script>
+    <script src="{{ url_for('static', filename='JavaScript/historyChartPlotlyScript.js') }}"></script>
+</body>
+</html>
