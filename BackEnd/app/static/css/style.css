@@ -148,6 +148,16 @@ body {
     width: 280px;
 }
 
+.generally-V-footer {
+    grid-column: 1;
+    grid-row: 5;
+    text-align: left;
+    margin-left: 750px;
+    font-family: Calibri, sans-serif;
+    font-weight: bold;
+    margin-top: -20px;
+}
+
 .title-text {
     font-family: Calibri, sans-serif;
     font-size: 30px;
