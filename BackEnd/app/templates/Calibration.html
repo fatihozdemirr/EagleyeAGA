@@ -40,7 +40,7 @@
                     </button>
                 </div>
                 <hr class="calibration-custom-hr"> <!-- Özelleştirilmiş HR etiketi -->
-                <div style="display: flex; align-items: center; ">
+                <div style="display: flex; align-items: center; height: 60px;">
                     
                     <!-- <label class="reset-label">Factory Calibration</label> -->
 
@@ -55,6 +55,12 @@
                         <img style="width: 40px; height: 40px;", src="/static/images/calibrationlogs.png" >
                     </button>
                 </div>
+            </div>
+            <div class="generally-footer">
+                <footer>
+                    <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
+                    <!-- <div>#V1.0</div> -->
+                </footer>
             </div>
             <div id="keyboardContainer" class="popup"></div>
             <!-- <div id="message-container"></div> -->

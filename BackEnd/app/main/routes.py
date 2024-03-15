@@ -318,19 +318,23 @@ def update_calibration_data():
     else:
         return jsonify({'status': 'error', 'message': 'Invalid method'})
 
-def get_calibration_logs(limit=6):
-    return CalibrationLogs.query.order_by(desc(CalibrationLogs.timestamp)).limit(limit).all()
+# def get_calibration_logs(limit=6):
+#     return CalibrationLogs.query.order_by(desc(CalibrationLogs.timestamp)).limit(limit).all()
     
 @main_bp.route('/calibration_logs', methods=['GET'])
 def calibration_logs():
-    logs = get_calibration_logs() 
-    return render_template('calibration_logs.html', logs=logs, get_logged_in_user=get_logged_in_user)
+    # logs = get_calibration_logs() 
+    page = request.args.get('page', 1, type=int)
+    per_page = 6
+    Log_tableform = pagination = CalibrationLogs.query.order_by(CalibrationLogs.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    logs = pagination.items
+
+    return render_template('calibration_logs.html',pagination=pagination, logs=logs, get_logged_in_user=get_logged_in_user, Log_tableform=Log_tableform)
 
 @main_bp.route('/show_calibration_logs', methods=['GET'])
 def show_calibration_logs():
     return redirect(url_for('main.calibration_logs'))
     
-
 ##Operation 
 
 @main_bp.route('/start_stop_recording', methods=['POST'])

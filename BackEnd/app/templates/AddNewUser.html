@@ -36,6 +36,12 @@
     </form>
     <!-- <p>{{ get_flashed_messages()[0] }}</p> -->
     <div id="keyboardContainer" class="popup"></div>
+    <div class="generally-footer">
+        <footer>
+            <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
+            <!-- <div>#V1.0</div> -->
+        </footer>
+    </div>
     <script>
         function openNumpad(inputId) {
             document.getElementById("keyboardContainer").innerHTML = `{% include 'keyboard.html' %}`;

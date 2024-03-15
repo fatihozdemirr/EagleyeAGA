@@ -129,6 +129,25 @@ body {
     height: 396px;
 }
 
+.generally-footer {
+    grid-column: 1;
+    grid-row: 5;
+    text-align: left;
+    margin-left: 10px;
+    font-family: Calibri, sans-serif;
+    font-weight: bold;
+    margin-top: -20px;
+}
+
+.operation-footer {
+    margin-right: 150px;
+    margin-left: 5px;
+    font-family: Calibri, sans-serif;
+    font-weight: bold;
+    margin-top: -20px;
+    width: 280px;
+}
+
 .title-text {
     font-family: Calibri, sans-serif;
     font-size: 30px;
@@ -305,9 +324,11 @@ button:hover {
 
 .setting-flex-container {
     display: flex;
-    justify-content: space-between; 
-    margin-top: 57px;
+    justify-content: space-around;
+    margin-top: 35px;
+    margin-bottom: 10px;
     height: 110px;
+    align-items: flex-start;
 }
 
 .button-container {
@@ -416,7 +437,7 @@ button:hover {
     border-radius: 25px;
     cursor: pointer; 
     margin-left: 334px;
-    margin-top: 17px;
+    margin-top: 8px;
 }
 
  /*  */
@@ -978,7 +999,7 @@ button:hover {
     justify-content: center;
     list-style: none;
     padding: 0;
-    margin-top: 35px;
+    margin-top: 44px;
 }
 
 .pagination a {
@@ -1034,6 +1055,7 @@ button:hover {
 .record-labelright-container {
     margin-top: -300px; 
     margin-left: 410px; 
+    height: 300px;
 }
 
 .record-label-livedata {
@@ -1067,11 +1089,11 @@ button:hover {
 }
 
 .chartsetting-left-container {
-    margin-right: 20px; /* İstediğiniz boşluğa göre ayarlayabilirsiniz */
+    margin-right: 20px; 
 }
 
 .chartsetting-right-container {
-    margin-left: auto; /* İstediğiniz boşluğa göre ayarlayabilirsiniz */
+    margin-left: auto; 
     margin-top: 35px;
 }
 
@@ -1263,13 +1285,13 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 20px; /* Dairenin çapı */
-    height: 20px; /* Dairenin çapı */
-    background-color: red; /* Dairenin rengi */
-    border-radius: 50%; /* Daire şeklini oluştur */
-    color: white; /* İçindeki "R" harfinin rengi */
-    font-size: 18px; /* "R" harfinin boyutu */
-    animation: blink 1s infinite; /* Opaklık animasyonu */
+    width: 20px; 
+    height: 20px; 
+    background-color: red; 
+    border-radius: 50%; 
+    color: white;
+    font-size: 18px; 
+    animation: blink 1s infinite;
     display: none;
 }
 
@@ -1277,6 +1299,3 @@ button:hover {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
 }
-
-
-

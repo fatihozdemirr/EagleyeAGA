@@ -1,6 +1,7 @@
 {% include 'header.html' %}
     <title>Admin</title>
 <body>
+    {% set is_admin_page = True %}
     <h1 class="title-text">User List</h1>
     <!-- <button class="admin-button" action="{{ url_for('main.AddNewUser') }}">Add New User</button> -->
     <a href="{{ url_for('main.AddNewUser') }}" class="admin-button">Add New User
@@ -56,6 +57,12 @@
         </table>
     </div>
     <div id="keyboardContainer" class="popup"></div>
+    <div class="generally-footer">
+        <footer>
+            <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
+            <!-- <div>#V1.0</div> -->
+        </footer>
+    </div>
     <div class="pagination" style="margin-top: -14px;">
         {% if pagination.has_prev %}
             <a href="{{ url_for('main.Admin', page=pagination.prev_num) }}" class="flex items-center">

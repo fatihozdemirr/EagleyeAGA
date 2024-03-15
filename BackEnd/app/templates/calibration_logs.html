@@ -18,13 +18,37 @@
                         <td>{{ log.username }}</td>
                         <td>{{ log.calibration_type }}</td>
                         <td>{{ log.old_value }} → {{ log.calibration_value }}</td>
-                        <!-- <td>{{ log.old_value }} → {{ log.new_value }}</td> -->
                         <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    <div class="generally-footer">
+        <footer>
+            <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
+            <!-- <div>#V1.0</div> -->
+        </footer>
+    </div>
+    <div class="pagination">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('main.calibration_logs', page=pagination.prev_num) }}" class="flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i>
+            </a>
+        {% endif %}
+        <!-- Sayfa numaraları -->
+        {% for page in range(1, pagination.pages + 1) %}
+            <a href="{{ url_for('main.calibration_logs', page=page) }}" class="{{ 'active' if page == pagination.page else '' }}">
+                {{ page }}
+            </a>
+        {% endfor %}
+        {% if pagination.has_next %}
+            <a href="{{ url_for('main.calibration_logs', page=pagination.next_num) }}" class="flex items-center">
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        {% endif %}
+    </div>
+    
   
     
 </body>

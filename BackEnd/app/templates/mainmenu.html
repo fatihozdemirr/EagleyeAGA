@@ -19,23 +19,21 @@
                             </a>
                         </div>
                     </div>
-                    {% set username, role = get_logged_in_user() %}
-                    {% if role != 'Operator' %}
-                        <div class="mainbottomadd-container">
-                            <div class="button-center">
-                                <a href="{{ url_for('main.Calibration') }}" class="custom-button-classes ">
-                                    <img src="/static/images/calibration.svg" >
-                                    <span>Calibration</span>
-                                </a>
-                            </div>
+                    <!-- {% set username, role = get_logged_in_user() %}
+                    {% if role != 'Operator' %} -->
+                    <div class="mainbottomadd-container">
+                        <div class="button-center">
+                            <a href="{{ url_for('main.Calibration') }}" class="custom-button-classes ">
+                                <img src="/static/images/calibration.svg" >
+                                <span>Calibration</span>
+                            </a>
                         </div>
-                    {% endif %}
+                    </div>
+                    <!-- {% endif %} -->
                 </div>
             </div>
             <div class="flex-container">
                 <div class="grid-container">
-                    {% set username, role = get_logged_in_user() %}
-                    {% if role != 'Operator' %}
                         <div class="mainbottomadd-container">
                             <div class="button-center">
                                 <a href="{{ url_for('main.Operation') }}" class="custom-button-classes ">
@@ -44,7 +42,6 @@
                                 </a>
                             </div>
                         </div>
-                    {% endif %}
                     <div class="mainbottomadd-container">
                         <div class="button-center">
                             <a href="{{ url_for('main.Setting') }}" class="custom-button-classes ">
@@ -62,6 +59,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="generally-footer">
+                <footer>
+                    <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
+                    <!-- <div>#V1.0</div> -->
+                </footer>
             </div>
         </div>      
     </div>

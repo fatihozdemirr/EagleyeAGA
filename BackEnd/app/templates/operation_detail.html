@@ -23,6 +23,12 @@
                             placeholder="Operator Information">
                 </div>
             </div>
+            <div class="generally-footer">
+                <footer>
+                    <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
+                    <!-- <div>#V1.0</div> -->
+                </footer>
+            </div>
             <div class="record-labelright-container"> 
                 <button id="playStopButton" class="play-stop-button">
                     <i class="fas fa-play"></i>

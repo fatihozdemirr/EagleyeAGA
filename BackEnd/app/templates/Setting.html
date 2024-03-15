@@ -1,7 +1,7 @@
 {% include 'header.html' %}
             <h1 class="title-text">Setting</h1>
-            {% set username, role = get_logged_in_user() %}
-            {% if role != 'Operator' %}
+            <!-- {% set username, role = get_logged_in_user() %}
+            {% if role != 'Operator' %} -->
                 <div class="setting-flex-container">
                     <div class="grid-settingcontainer">
                         <div class="mainbottomadd-container">
@@ -38,7 +38,7 @@
                         </div>
                     </div>
                 </div>
-            {% endif %}
+            <!-- {% endif %} -->
             <div class="setting-flex-container">
                 <div class="grid-settingcontainer">
                     <div class="mainbottomadd-container">
@@ -74,6 +74,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="generally-footer">
+                <footer>
+                    <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
+                    <!-- <div>#V1.0</div> -->
+                </footer>
             </div>
         </div> 
     </div>
