@@ -2,6 +2,54 @@
     <title>Admin</title>
 <body>
     <h1 class="title-text">System Information</h1>
+    <div id="deleteForm">
+        <label class=" system-info-label">Date/Time</label>
+        <input class=" system-info-container-input" type="datetime-local" id="historyDateTime" name="historyDateTime" required>
+        <button class="system-info-button" type="submit" onclick="deleteHistory()">Delete History</button>
+    </div>
+
+    <div class="system-info-container">
+        <div class="system-info-grid">
+            <div class="system-info-title">Disk Space</div>
+            <div>Grid 1 İçerik</div>
+        </div>
+        <div class="system-info-grid">
+            <div class="system-info-title">Disk Total</div>
+            <div>Grid 2 İçerik</div>
+        </div>
+        <div class="system-info-grid">
+            <div class="system-info-title">Disk Used</div>
+            <div>Grid 3 İçerik</div>
+        </div>
+        <div class="system-info-grid">
+            <div class="system-info-title">Disk Percent</div>
+            <div>Grid 4 İçerik</div>
+        </div>
+        <div class="system-info-grid large">
+            <div class="system-info-title-large">Total Live Data:{{ total_data }}</div>
+            <div>{{ total_data_size_mb }}MB</div>
+        </div>
+        <div class="system-info-grid large">
+            <div class="system-info-title-large">Total Operation Data:{{ total_operation_data }}</div>
+            <div>{{ total_operation_data_size_mb }}MB</div>
+        </div>
+        <div class="system-info-grid medium">
+            <div class="system-info-title">Serial Number</div>
+            <div id="grid7Content">Grid 7 İçerik</div>
+        </div>
+        <div class="system-info-grid large">
+            <div class="system-info-title-large">Model</div>
+            <div>Grid 8 İçerik</div>
+        </div>
+        <div class="system-info-grid medium">
+            <div class="system-info-title">Uptime</div>
+            <div>Grid 9 İçerik</div>
+        </div>
+        <!-- <div class="system-info-grid">
+            <div class="system-info-title">Reserve</div>
+            <div>Grid 10 İçerik</div>
+        </div> -->
+    </div>
     <div class="generally-footer">
         <footer>
             <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
@@ -12,7 +60,62 @@
             <div>#V1.0</div>
         </footer>
     </div>
+    <script>
+        // Metin dosyasından içeriği almak için XMLHttpRequest kullanacağız
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                // Metin dosyasından gelen içeriği al
+                var content = this.responseText;
+                // Grid7 id'li div'in içeriğini metin dosyasından gelen içerikle değiştir
+                document.getElementById("grid7Content").innerHTML = content;
+            }
+        };
+        xhr.open("GET", "static/documents/serialnumber.txt", true); // Metin dosyasının yolunu belirt
+        xhr.send();
 
+        function deleteHistory() {
+            var historyDateTime = document.getElementById("historyDateTime").value;
 
-
-
+            // POST isteği gönder
+            fetch("/deletehistory", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ historyDateTime: historyDateTime })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // İsteğin başarılı olması durumunda yapılacak işlemler
+                console.log(data);
+            })
+            .catch(error => {
+                // İstekte hata olması durumunda yapılacak işlemler
+                console.error('Error:', error);
+            });
+            // .then(response => response.json())
+            // .then(data => {
+            //     // Geri dönüşü işle
+            //     var messageDiv = document.getElementById("message");
+            //     if (data.success) {
+            //         // Başarılı geri dönüş
+            //         messageDiv.textContent = data.message;
+            //         messageDiv.style.color = "green";
+            //     } else {
+            //         // Hatalı geri dönüş
+            //         messageDiv.textContent = data.message;
+            //         messageDiv.style.color = "red";
+            //     }
+            // })
+            // .catch(error => {
+            //     // Hata durumunda
+            //     var messageDiv = document.getElementById("message");
+            //     messageDiv.textContent = "Bir hata oluştu.";
+            //     messageDiv.style.color = "red";
+            //     console.error("Error:", error);
+            // });
+        }
+    </script>
+</body>
+</html>

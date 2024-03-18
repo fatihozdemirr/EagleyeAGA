@@ -1,215 +1,299 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Company-Furnace Relations</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+{% include 'header.html' %}
+<title>Company and Furnace Management</title>
 
-        header {
-            background-color: #007BFF;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-        }
+<style>
+    .add_button{
+        display: inline-block;
+        background: url('/static/images/add.svg') no-repeat center center;
+        background-size: contain;                  
+        width: 25px;
+        height: 25px; 
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    .delete_button{
+        display: inline-block;
+        background: url('/static/images/delete.svg') no-repeat center center;
+        background-size: contain;                  
+        width: 25px;
+        height: 25px; 
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    .modify_button{
+        display: inline-block;
+        background: url('/static/images/pen.svg') no-repeat center center;
+        background-size: contain;                  
+        width: 25px;
+        height: 25px; 
+        cursor: pointer;
+        margin-right: 5px;
+    }
 
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px;
-            background-color: #007BFF;
-            color: #ffffff;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
+   
 
-        .btn:hover {
-            background-color: #0056b3;
-        }
+</style>
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 50%;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .close {
-            color: #aaaaaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        input[type="text"], select {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-        }
-
-        button[type="submit"] {
-            cursor: pointer;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin-top: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #218838;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        li {
-            background-color: #ffffff;
-            margin: 8px 0;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>Company-Furnace Relations</h1>
-</header>
-
-<div style="padding: 20px; text-align: center;">
-    <button id="btnAddCompany" class="btn">Add Company</button>
-    <button id="btnAddFurnace" class="btn">Add Furnace</button>
+<div class="title-container">
+    <h1 class="title-text">Company and Furnace Management</h1>
 </div>
 
-<!-- Add Company Modal -->
-<div id="addCompanyModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Add Company</h2>
-        <form action="/add_company" method="post">
-            <input type="text" id="name" name="name" placeholder="Company Name" required>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-</div>
+<div style="height: 265px">
 
-<!-- Add Furnace Modal -->
-<div id="addFurnaceModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Add Furnace</h2>
-        <form action="/add_furnace" method="post">
-            <select id="company_id" name="company_id" required>
-                <option value="">Select Company</option>
-                {% for company in companies %}
+    <!-- Company -->
+    <div style="display: flex; align-items: center;">
+        <strong style="margin-right: 10px;">Company:</strong>
+        <select id="companySelect" onchange="loadFurnaces()" style="flex-grow: 1; padding: 5px; border: 1px solid #ccc; border-radius: 5px;">
+            <option value="">Select a company</option>
+            {% for company in companies %}
                 <option value="{{ company.id }}">{{ company.name }}</option>
-                {% endfor %}
-            </select>
-            <input type="text" id="name" name="name" placeholder="Furnace Name" required>
-            <button type="submit">Submit</button>
+            {% endfor %}
+        </select>
+        <span style="float: right;">
+            <button onclick="openAddModifyPopup('Company','Add',null,null)" class="add_button" id="addCompanyButton"></button>
+            <button onclick="openAddModifyPopup('Company','Modify',null,null)" class="modify_button" id="modifyCompanyButton"></button>
+            <button onclick="deleteCompany()" class="delete_button" id="deleteCompanyButton"></button>
+        </span>
+    </div>
+
+    <!-- Furnace -->
+    <table id="furnaceTable" class="table-calibration" style="margin-top: 5px; width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="border-bottom: 2px solid #333; padding: 10px;">Furnace Name
+                    
+                </th>
+                <th style="border-bottom: 2px solid #333; padding: 10px;">Actions
+                    <span style="float: right;">
+                        <button onclick="openAddModifyPopup('Furnace','Add',null,null)" class="add_button" id="addFurnaceButton"></button>
+                    </span>
+                </th>
+            </tr>
+        </thead>
+        <tbody id="furnaceList">
+            <!-- Furnaces will be loaded here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Popup for adding/modify company or furnace -->
+<div id="addModifyPopup" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="closeAddModifyPopup()">&times;</span>
+        <h2 id="popupTitle">Add</h2>
+        <form id="addModifyForm">
+            <label for="newName">Name:</label>
+            <input type="text" id="newName" name="newName" required>
+            <button type="submit" id="submitButton">Save</button>
         </form>
     </div>
 </div>
 
-<ul>
-    {% for company in companies %}
-    <li>
-        <strong>{{ company.name }}</strong>
-        <ul>
-            {% for furnace in company.furnaces %}
-            <li>{{ furnace.name }}</li>
-            {% endfor %}
-        </ul>
-    </li>
-    {% endfor %}
-</ul>
 
 <script>
-    // Get modal elements
-    var addCompanyModal = document.getElementById('addCompanyModal');
-    var addFurnaceModal = document.getElementById('addFurnaceModal');
+    
+    window.onload = function() {
+        animationOfActionButtons();
+    };
+    function animationOfActionButtons() {
 
-    // Get the button that opens the modal
-    var btnAddCompany = document.getElementById('btnAddCompany');
-    var btnAddFurnace = document.getElementById('btnAddFurnace');
+        var companyId = document.getElementById("companySelect").value;
+        if (companyId) {
 
-    // Get the <span> element that closes the modal
-    var closeButtons = document.getElementsByClassName('close');
+            // Company seçiliyse Modify ve Delete butonlarını göster
+            document.getElementById('addFurnaceButton').style.display = "inline-block";
+            document.getElementById('modifyCompanyButton').style.display = "inline-block";
+            document.getElementById('deleteCompanyButton').style.display = "inline-block";
+        }
+        else{
+            // Company seçili değilse Modify ve Delete butonlarını gizle
+            document.getElementById('addFurnaceButton').style.display = "none";
+            document.getElementById('modifyCompanyButton').style.display = "none";
+            document.getElementById('deleteCompanyButton').style.display = "none";
+        } 
+    }
+    function loadFurnaces() {
+        animationOfActionButtons();
 
-    // Open the Add Company modal
-    btnAddCompany.onclick = function() {
-        addCompanyModal.style.display = 'block';
+        var companyId = document.getElementById("companySelect").value;
+        var furnaceList = document.getElementById("furnaceList");
+        furnaceList.innerHTML = ""; // Clear the current furnace list
+        
+        if (companyId) {
+            var furnaces = JSON.parse('{{ furnaces|tojson|safe }}');
+            var selectedFurnaces = furnaces.filter(furnace => furnace.company_id == companyId);
+    
+            if (selectedFurnaces.length > 0) {
+                selectedFurnaces.forEach(furnace => {
+                    var row = document.createElement("tr");
+                    var cell = document.createElement("td");
+                    cell.textContent = furnace.name;
+                    cell.style.padding = "10px";
+                    row.appendChild(cell);
+
+
+                    // Create and populate the second column with buttons (Modify and Delete)
+                    var buttonCell = document.createElement("td");
+
+                    var modifyButton = document.createElement("button");
+                    modifyButton.className = "modify_button";
+                    modifyButton.onclick = function() {
+                        openAddModifyPopup('Furnace','Modify',furnace.id, furnace.name);
+                    };       
+
+                    buttonCell.appendChild(modifyButton);
+
+                    var deleteButton = document.createElement("button");
+                    deleteButton.className = "delete_button";
+                    deleteButton.onclick = function() {
+                        deleteFurnace(furnace.id);
+                    };
+                    buttonCell.appendChild(deleteButton);
+                    row.appendChild(buttonCell);
+
+                    furnaceList.appendChild(row);
+                });
+
+            } else {
+                var row = document.createElement("tr");
+                var cell = document.createElement("td");
+                cell.textContent = "No furnaces found for this company";
+                cell.style.padding = "10px";
+                row.appendChild(cell);
+                furnaceList.appendChild(row);
+
+            }
+        }
+
     }
 
-    // Open the Add Furnace modal
-    btnAddFurnace.onclick = function() {
-        addFurnaceModal.style.display = 'block';
+    
+
+    function openAddModifyPopup(entityType, actionType, furnaceId, furnaceName) {
+        var addModifyPopup = document.getElementById("addModifyPopup");
+        var popupTitle = document.getElementById("popupTitle");
+        var newNameInput = document.getElementById("newName");
+        var submitButton = document.getElementById("submitButton");
+    
+        newNameInput.value = "";
+    
+        if (entityType === "Furnace") {
+            popupTitle.textContent = actionType === "Add" ? "Add Furnace" : "Modify Furnace";
+            submitButton.textContent = actionType === "Add" ? "Add" : "Save Changes";
+            newNameInput.value = actionType === "Modify" ? furnaceName : "";
+        } else if (entityType === "Company") {
+            var selectedText = document.getElementById("companySelect").options[document.getElementById("companySelect").selectedIndex].text;
+            popupTitle.textContent = actionType === "Add" ? "Add Company" : "Modify Company";
+            submitButton.textContent = actionType === "Add" ? "Add" : "Save Changes";
+            newNameInput.value = actionType === "Modify" ? selectedText : "";
+        }
+    
+        addModifyPopup.style.display = "block";
+    
+        var addModifyForm = document.getElementById("addModifyForm");
+        addModifyForm.onsubmit = function(event) {
+            event.preventDefault(); // Default form submission'u engelle
+    
+            var formData = {};
+            var endpoint = '';
+    
+            if (entityType === "Furnace") {
+                id = actionType === "Add" ? document.getElementById("companySelect").value : furnaceId ;
+                formData = {
+                    furnaceName: newNameInput.value,
+                    Id: id
+                };
+                endpoint = actionType === "Add" ? '/add_furnace' : '/modify_furnace';
+            } else if (entityType === "Company") {
+                formData = {
+                    companyName: newNameInput.value,
+                    companyId: document.getElementById("companySelect").value
+                };
+                endpoint = actionType === "Add" ? '/add_company' : '/modify_company';
+            }
+    
+            submitFormData(endpoint, formData);
+        };
+    }
+    
+    function submitFormData(endpoint, formData) {
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            if(data.status === 'success') {
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            closeAddModifyPopup();
+        });
+    }
+    
+
+    function closeAddModifyPopup() {
+        var addModifyPopup = document.getElementById("addModifyPopup");
+        addModifyPopup.style.display = "none";
     }
 
-    // Close the modal when the user clicks on <span> (x)
-    for (var i = 0; i < closeButtons.length; i++) {
-        closeButtons[i].onclick = function() {
-            var modal = this.closest('.modal');
-            modal.style.display = 'none';
+    function deleteFurnace(furnaceId) {
+        if(confirm('Are you sure you want to delete this furnace?')) {
+            fetch('/delete_furnace/' + furnaceId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // CSRF token gerekiyorsa burada ekleyin
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                if(data.status === 'success') {
+                    // İşlem başarılıysa, sayfayı yenileyin veya DOM'dan ilgili satırı kaldırın
+                    window.location.reload();                    
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         }
     }
 
-    // Close the modal when the user clicks anywhere outside of the modal
-    window.onclick = function(event) {
-        if (event.target == addCompanyModal) {
-            addCompanyModal.style.display = 'none';
-        } else if (event.target == addFurnaceModal) {
-            addFurnaceModal.style.display = 'none';
+    function deleteCompany() {        
+        var companyId = document.getElementById("companySelect").value;
+        var companyName = document.getElementById("companySelect").options[document.getElementById("companySelect").selectedIndex].text; // Get the name of the selected company
+        if(confirm('Are you sure you want to delete the company "' + companyName + '"?')) {
+            fetch('/delete_company/' + companyId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // CSRF token gerekiyorsa burada ekleyin
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                if(data.status === 'success') {
+                    // İşlem başarılıysa, sayfayı yenileyin veya DOM'dan ilgili satırı kaldırın
+                    window.location.reload();                    
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         }
+    
     }
+
+
 </script>
 
-
-</body>
-</html>

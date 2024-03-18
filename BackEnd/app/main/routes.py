@@ -725,6 +725,159 @@ def save_values():
 
     return jsonify({'status': 'success', 'message': 'Reset calibration is done'})
 
+def get_row_size():
+    id_size_bytes = 4
+    datetime_size_bytes = 25
+    real_size_bytes = 8
+    row_size_bytes = id_size_bytes + datetime_size_bytes + 3 * real_size_bytes
+    return row_size_bytes
+
+def get_total_data_size():
+    row_size_bytes = get_row_size()
+    
+    total_data = Datalogger.query.count()
+    total_operation_data = Operations.query.count()
+    
+    total_data_size_bytes = total_data * row_size_bytes
+    total_data_size_mb = total_data_size_bytes / (1024 * 1024)
+    total_data_size_mb = round(total_data_size_mb, 2)
+    
+    total_operation_data_size_bytes = total_operation_data * row_size_bytes
+    total_operation_data_size_mb = total_operation_data_size_bytes / (1024 * 1024)
+    total_operation_data_size_mb = round(total_operation_data_size_mb, 2)
+    
+    return total_data_size_mb,total_data,total_operation_data,total_operation_data_size_mb
+
 @main_bp.route('/SystemInformatıon')
 def SystemInformatıon():
-    return render_template('SystemInformatıon.html', get_logged_in_user=get_logged_in_user)
+    total_data_size_mb,total_data,total_operation_data_size_mb,total_operation_data = get_total_data_size()
+    return render_template('SystemInformatıon.html',total_operation_data_size_mb=total_operation_data_size_mb,total_operation_data=total_operation_data,total_data=total_data, total_data_size_mb=total_data_size_mb,get_logged_in_user=get_logged_in_user)
+
+@main_bp.route('/deletehistory', methods=['POST'])
+def deletehistory():
+    try:
+        data = request.get_json()
+        historyDateTime_str =  data.get('historyDateTime')
+        history_datetime = datetime.fromisoformat(historyDateTime_str)
+
+        db.session.query(Datalogger).filter(Datalogger.Datetime < history_datetime).delete()
+        db.session.query(CalibrationLogs).filter(CalibrationLogs.timestamp < history_datetime).delete()
+        db.session.query(Operations).filter(Operations.stop_date < history_datetime).delete()
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Geçmiş veriler başarıyla silindi.'}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Veritabanı işlemleri sırasında bir hata oluştu. Lütfen tekrar deneyin.'}), 500
+
+
+
+@main_bp.route('/company-furnace-relations')
+def manage_company_furnace():
+    companies = Company.query.all()
+    selected_company_id = request.args.get('company_id')
+    
+    if selected_company_id:
+        furnaces = Furnace.query.filter_by(company_id=selected_company_id).all()
+    else:
+        furnaces = Furnace.query.all()
+
+    furnaces_serializable = [{'id': furnace.id, 'name': furnace.name, 'company_id': furnace.company_id} for furnace in furnaces]
+
+    return render_template('company-furnace-relations.html', companies=companies, furnaces=furnaces_serializable, selected_company_id=selected_company_id, get_logged_in_user=get_logged_in_user)
+
+
+#Company Add
+@main_bp.route('/add_company', methods=['POST'])
+def add_company():
+    data = request.get_json()  # Gelen JSON verisini al
+    if not data or 'companyName' not in data:
+        return jsonify({'status': 'error', 'message': 'Company name is required'}), 400
+
+    company_name = data['companyName'] 
+    new_company = Company(name=company_name)
+    db.session.add(new_company)
+    db.session.commit()
+    
+    return jsonify({'status': 'success', 'message': 'Company added successfully'}), 201
+
+#Company Modify
+@main_bp.route('/modify_company', methods=['POST'])
+def modify_company():
+    data = request.get_json()  # Gelen JSON verisini al
+
+    if not data or 'companyName' not in data or 'companyId' not in data:
+        return jsonify({'status': 'error', 'message': 'Company name and company ID are required'}), 400
+
+    company_name = data['companyName']
+    company_id = data['companyId']
+    
+    company = Company.query.filter_by(id=company_id).first()  # Örnek bir sorgu ile şirketi alıyoruz
+    
+    if company:  # Şirket varsa
+        company.name = company_name  # Yeni adı atıyoruz
+        db.session.commit()  # Değişiklikleri veritabanına kaydediyoruz
+        return jsonify({'status': 'success', 'message': 'Company name updated successfully'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Company not found'})
+
+#Furnace Add
+@main_bp.route('/add_furnace', methods=['POST'])
+def add_furnace():
+    data = request.get_json()  # Gelen JSON verisini al
+
+    if not data or 'furnaceName' not in data or 'Id' not in data:
+        return jsonify({'status': 'error', 'message': 'Furnace name and company ID are required'}), 400
+
+    furnace_name = data['furnaceName']
+    company_id = data['Id']
+
+    new_furnace = Furnace(name=furnace_name, company_id=company_id)
+
+    db.session.add(new_furnace)
+    db.session.commit()
+
+    return jsonify({'status': 'success', 'message': 'Furnace added successfully'}), 201
+
+#Furnace Modify
+@main_bp.route('/modify_furnace', methods=['POST'])
+def modify_furnace():
+    data = request.get_json()  # Gelen JSON verisini al
+
+    if not data or 'furnaceName' not in data or 'Id' not in data:
+        return jsonify({'status': 'error', 'message': 'Furnace name and furnace ID are required'}), 400
+
+    furnace_name = data['furnaceName']
+    furnace_id = data['Id']
+    
+    furnace = Furnace.query.filter_by(id=furnace_id).first()  # Örnek bir sorgu ile şirketi alıyoruz
+    
+    if furnace:  # Şirket varsa
+        furnace.name = furnace_name  # Yeni adı atıyoruz
+        db.session.commit()  # Değişiklikleri veritabanına kaydediyoruz
+        return jsonify({'status': 'success', 'message': 'Furnace name updated successfully'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Furnace not found'})
+
+
+#Furnace Delete
+@main_bp.route('/delete_furnace/<int:furnaceid>', methods=['POST'])
+def delete_furnace(furnaceid):
+    furnace = Furnace.query.get_or_404(furnaceid)
+    db.session.delete(furnace)
+    db.session.commit()
+    return jsonify({'status': 'success', 'message': 'Furnace deleted successfully'})
+
+
+#Company Delete
+@main_bp.route('/delete_company/<int:companyid>', methods=['POST'])
+def delete_company(companyid):
+      
+    furnaces = Furnace.query.filter_by(company_id=companyid).all()   
+    for furnace in furnaces:
+        db.session.delete(furnace)
+        db.session.commit()
+        
+    company = Company.query.get_or_404(companyid)
+    db.session.delete(company)
+    db.session.commit()
+    return jsonify({'status': 'success', 'message': 'Company deleted successfully'})

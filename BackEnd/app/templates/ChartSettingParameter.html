@@ -5,9 +5,9 @@
     
     <div class="chartsetting-flex-container">
         <div class="chartsetting-left-container">
-            <label class="record-label-chartsetting" for="defaultrecording">Default Recording</label>
-            <input class="record-input-chartsetting" type="text" id="defaultrecording" name="defaultrecording" value="{{ default_recording }}" onclick="openNumpad('defaultrecording')"><br>
-            
+            <label class="record-labelcheckbox-chartsetting" for="defaultrecording">Default Recording</label>
+            <input class="record-checkbox-chartsetting" type="checkbox" id="defaultrecording" name="defaultrecording" {% if default_recording %} checked {% endif %} onclick="toggleCheckbox('defaultrecording')">
+
             <label class="record-label-chartsetting" for="startedDate">Started Date</label>
             <input class="record-input-chartsetting" type="text" id="startedDate" name="startedDate" value="{{ started_date }}" readonly><br>
     
@@ -22,7 +22,7 @@
             <label class="record-label-chartsetting" for="maxPoint">Maximum Point</label>
             <input class="record-input-chartsetting" type="text" id="maxPoint" name="maxPoint" value="{{ max_point }}" onclick="openNumpad('maxPoint')"><br>
             
-            <button id="chartparametersave" onclick="saveparameter()">Save</button>
+            <button class="record-button-chartsetting" id="chartparametersave" onclick="saveparameter()">Save</button>
         </div>
     </div>
     <div id="keyboardContainer" class="popup"></div>
@@ -37,6 +37,16 @@
         </footer>
     </div>
     <script>
+        function toggleCheckbox(inputId) {
+            var checkbox = document.getElementById(inputId);
+            if (checkbox.checked) {
+                checkbox.value = 1; 
+            } else {
+                checkbox.value = 0; 
+            }
+            var defaultRecordingValue = checkbox.value;
+            console.log(defaultRecordingValue);
+        }
         function saveparameter(){
             console.log(defaultrecording.value)
             var defaultRecordingValue = document.getElementById('defaultrecording').value;

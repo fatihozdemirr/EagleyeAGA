@@ -221,7 +221,7 @@ button {
     background-image: url("/static/images/3EHome.png");
     background-size: contain; 
     background-repeat: no-repeat; 
-    width: 265px; 
+    width: 150px; 
     height: 40px; 
     padding-left: 50px; 
     border: none;
@@ -1085,7 +1085,7 @@ button:hover {
     margin-left: 20px;
     padding: 5px;   
     height: 35px;
-    width: 350px; /*  #ff8922 ;60A9C9 */
+    width: 300px; /*  #ff8922 ;60A9C9 */
     text-align: left;
     border: 1px solid #ccc;
     border-radius: 10px; 
@@ -1113,7 +1113,7 @@ button:hover {
     font-size: 18px;
     color: #333;
     font-weight: bold;
-    margin-bottom: 11px;
+    margin-bottom: 15px;
     width: 360px;
     height: 23px;
 }
@@ -1128,6 +1128,31 @@ button:hover {
     border-radius: 10px; 
     background-color: rgb(235, 238, 240);
     margin-bottom: 10px;
+}
+
+.record-labelcheckbox-chartsetting {
+    display: flex;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    margin-left: 45px;
+}
+
+.record-checkbox-chartsetting {
+    display: flex;
+    height: 35px;
+    width: 35px;  
+    background-color: rgb(235, 238, 240);
+    margin-top: -28px ;
+    margin-bottom: 5px ;
+}
+
+.record-button-chartsetting {
+    height: 45px;
+    width: 113px;  
+    margin-left: -70px;
+    background-color: rgb(0, 153, 255);
 }
 
 .wifi-container-input {
@@ -1309,3 +1334,99 @@ button:hover {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
 }
+
+.system-info-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2px;
+    margin-bottom: 22px;
+}
+
+.system-info-grid {
+    font-size: 16px;
+    font-family: Calibri, sans-serif;
+    background-color: #ffffff;
+    height: 90px;
+    text-align: left;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid #b8b3b3;
+    width: 196px;
+}
+
+.system-info-grid.large {
+    grid-column: span 2;
+    width: 397px;
+}
+
+.system-info-grid.medium {
+    grid-column: span 1;
+}
+
+.system-info-title {
+    background-color: #f0f0f0;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: Calibri, sans-serif;
+    margin-bottom: 10px;
+    font-weight: bold;
+    border: 1px solid #b0abab;
+    margin-top: -32px;
+    border-radius: 7px;
+    height: 30px;
+    width: 195px;
+    line-height: 30px;
+}
+
+.system-info-title-large {
+    background-color: #f0f0f0;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: Calibri, sans-serif;
+    margin-bottom: 10px;
+    font-weight: bold;
+    border: 1px solid #b0abab;
+    margin-top: -32px;
+    border-radius: 7px;
+    height: 30px;
+    width: 396px;
+    line-height: 30px;
+}
+
+.system-info-label {
+    display: flex;
+    font-family: Calibri, sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    margin-left: 113px;
+    margin-bottom: -28px;
+    width: 100px;
+    height: 23px;
+} 
+
+.system-info-container-input {
+    margin-top: -1px;
+    margin-left: 203px;
+    /* padding: 5px; */
+    height: 35px;
+    width: 390px;
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: rgb(235, 238, 240);
+}
+
+.system-info-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    /* padding: 10px 20px; */
+    border-radius: 5px;
+    cursor: pointer;
+    width: 130px;
+    height: 35px;
+    margin-top: -62px;
+  }

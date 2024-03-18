@@ -23,16 +23,6 @@
                             placeholder="Operator Information">
                 </div>
             </div>
-            <div class="generally-footer">
-                <footer>
-                    <div>User: {{ get_logged_in_user()[0] }} Role: {{ get_logged_in_user()[1] }} </div>
-                </footer>
-            </div>
-            <div class="generally-V-footer">
-                <footer>
-                    <div>#V1.0</div>
-                </footer>
-            </div>
             <div class="record-labelright-container"> 
                 <button id="playStopButton" class="play-stop-button">
                     <i class="fas fa-play"></i>
@@ -52,7 +42,11 @@
                 <input class=" record-container-input" type="datetime-local" id="stopDateTime" value="{{ operation.stop_date.strftime('%Y-%m-%d %H:%M:%S') if operation.stop_date else '' }}">
                 <div style="margin-bottom: 1rem;"></div>
                 <label class=" record-label-livedata">Furnace</label>
-                <input class=" record-container-input" type="text" id="furnace" value="{{ operation.furnace }}" placeholder="Furnace" onclick="openNumpad('furnace')">
+                <div style="display: flex;">
+                    <input class="record-container-input" type="text" id="furnace" value="{{ operation.furnace }}" placeholder="Furnace" onclick="openNumpad('furnace')">
+                    <button style="margin-top: -8px;" onclick="window.location.href='/manage_company_furnace'">...</button>
+                    <!-- <button style="margin-top: -8px;" onclick='window.location.href="{{ url_for("main.manage_company_furnace") }}"'>...</button> -->
+                </div>
                 <div style="margin-bottom: 1rem;"></div>
                 <button class= 'save-button' id="saveButton">
                     <i class="fas fa-save" ></i>
@@ -73,7 +67,6 @@
             const playStopButton = document.getElementById('playStopButton');
             const exportButtons = document.getElementById('exportButtons');
             const operationWorking = JSON.parse('{{ operationWorking|safe }}');
-            //const operationWorking = {{ operationWorking }};
             
            // Start ve End Date boş ise Play butonu gözükecek, export'lar gözükmeyecek
             if (!startDateTimeValue && !stopDateTimeValue) {
@@ -97,6 +90,7 @@
             if(operationWorking==1 && !(startDateTimeValue && !stopDateTimeValue)){
                 playStopButton.style.display = 'none';
             }
+            
         }
 
         function toggleRecording(isRecording) {

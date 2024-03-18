@@ -59,3 +59,21 @@ class AppParameter(db.Model):
     name = db.Column(db.String(50), nullable=False)
     value = db.Column(db.String(200), nullable=False)
     
+class Datalogger(db.Model):
+    __tablename__ = 'datalogger'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    Datetime = db.Column(db.String(150))
+    CO = db.Column(db.Float)
+    CO2 = db.Column(db.Float)
+    CH4 = db.Column(db.Float)
+
+    
+class Company(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    furnaces = db.relationship('Furnace', backref='company', lazy=True)
+
+class Furnace(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
