@@ -121,14 +121,12 @@ if(not globalVars.IsDebugging):
 
 def Reset_Calibration(value_name):
     if value_name == 'value1':          ## CO
-        print('value1:',value_name)
-        # write_to_sensor(43, 84, ser, 10000)
+        write_to_sensor(43, 84, ser, 10000)
     elif value_name == 'value2':        ## CO2
-        print('value2:',value_name)
-        # write_to_sensor(2, 84, ser, 10000)
+        write_to_sensor(2, 84, ser, 10000)
     elif value_name == 'value3':        ## CH4
-        print('value3:',value_name)
-        # write_to_sensor(79, 84, ser, 10000)
+        write_to_sensor(79, 84, ser, 10000)
+        
    
 def read_and_span_calibrate_sensor(sensor_id, sensor_name, button_id, calibration_in_progress, conc_cal):
     global ser

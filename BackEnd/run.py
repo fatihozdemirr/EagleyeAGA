@@ -1,6 +1,7 @@
 from app import create_app, socketio
 from threading import Thread
 from app.utils.background_thread import background_thread
+from app.main.routes import start_sensor_reading
 import os
 
 app = create_app()
@@ -22,4 +23,5 @@ if __name__ == '__main__':
     thread.daemon = True
     thread.start()
     
+    start_sensor_reading()
     socketio.run(app, debug=False, host='0.0.0.0', port=port,use_reloader=False, allow_unsafe_werkzeug=True)

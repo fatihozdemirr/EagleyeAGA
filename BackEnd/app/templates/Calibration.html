@@ -15,7 +15,7 @@
                     <input class="input-calibration-blue" id="CO_inputoffset" type="text" value="0" onclick="openNumpad('CO_inputoffset')">
                     <input class="input-calibration-orange" id="CO_reading"type="text" value="0" readonly="True">
                     <input class="input-calibration-orange" id="CO_value" type="text" value="0" readonly="True">
-                    <button class="span-button" id="CObuttonspan" onclick="openPopuplabelView('CO_reading_popup')">
+                    <button class="span-button" id="CObuttonspan" onclick="openPopuplabelViewAndNumpad('CO_reading_popup', 'CObuttonspan')">
                         <img style="width: 40px; height: 40px;", src="/static/images/target.png" >
                     </button>
                 </div>
@@ -374,6 +374,11 @@
                     });
                 }
 
+                function openPopuplabelViewAndNumpad(labelId, inputId) {
+                    openPopuplabelView(labelId);
+                    openNumpad(inputId);
+                }
+
                 function openPopuplabelView(labelId) {
                     document.querySelectorAll('spanpopup').forEach(function(label) {
                         label.style.display = 'none';
@@ -441,6 +446,16 @@
                 }
 
                 function openNumpad(inputId) {
+                    console.log('inputId:',inputId)
+
+                    let savedInputId = ''; 
+
+                    if (inputId === "CObuttonspan") {
+                        savedInputId = inputId;
+                        return; 
+                    }
+                    console.log('savedInputId:',savedInputId)
+
                     document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
                     const inputField = document.getElementById(inputId);
                     const labelField = document.getElementById("numpadLabel"); 

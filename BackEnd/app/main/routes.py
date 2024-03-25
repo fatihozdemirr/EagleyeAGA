@@ -269,7 +269,7 @@ def update_calibration_data():
             elif button_id == 'CO2buttonspan':
                 old_value = globalVars.CO2_Read
             elif button_id == 'CH4buttonspan':
-                old_value = globalVars.CH4_Result
+                old_value = globalVars.CH4_Read
     
             recent_logs = CalibrationLogs.query.filter_by(username=username, calibration_type=calibration_type).order_by(desc(CalibrationLogs.timestamp)).all()
             
