@@ -15,7 +15,7 @@
                     <input class="input-calibration-blue" id="CO_inputoffset" type="text" value="0" onclick="openNumpad('CO_inputoffset')">
                     <input class="input-calibration-orange" id="CO_reading"type="text" value="0" readonly="True">
                     <input class="input-calibration-orange" id="CO_value" type="text" value="0" readonly="True">
-                    <button class="span-button" id="CObuttonspan" onclick="openPopuplabelViewAndNumpad('CO_reading_popup', 'CObuttonspan')">
+                    <button class="span-button" id="CObuttonspan" onclick="openPopuplabelView('CO_reading_popup')">
                         <img style="width: 40px; height: 40px;", src="/static/images/target.png" >
                     </button>
                 </div>
@@ -80,7 +80,9 @@
                     <label class="resetpopup-label" id="CO2_Referance_Value" style="display: none;" data-title="%CO2 Calibration">%CO2 Referance Value: <span id="CO2_Referance_Value">0</span></label>
                     <label class="resetpopup-label" id="CH4_Referance_Value" style="display: none;" data-title="%CH4 Calibration">%CH4 Referance Value: <span id="CH4_Referance_Value">0</span></label>
 
-                    <input class="spanpopup-input" type="text" id="spannewvalue" placeholder="Enter new value!" onclick="openNumpad('spannewvalue')">
+                    <input class="spanpopup-input" type="text" id="spannewvalue1" placeholder="Enter new value!" onclick="openNumpad('spannewvalue1')">
+                    <input class="spanpopup-input" type="text" id="spannewvalue2" placeholder="Enter new value!" onclick="openNumpad('spannewvalue2')">
+                    <input class="spanpopup-input" type="text" id="spannewvalue3" placeholder="Enter new value!" onclick="openNumpad('spannewvalue3')">
 
                     <button id="calibratePopupButton" onclick="startspanCalibration()">Calibrate</button>
 
@@ -135,8 +137,12 @@
                     function closePopup() {
                         var closeBt = document.getElementById("spanpopup");
                         if (closeBt) {
-                            const clearspanvalue = document.getElementById("spannewvalue"); 
-                            clearspanvalue.value = '';
+                            const clearspanvalue1 = document.getElementById("spannewvalue1"); 
+                            const clearspanvalue2 = document.getElementById("spannewvalue2"); 
+                            const clearspanvalue3 = document.getElementById("spannewvalue3"); 
+                            clearspanvalue1.value = '';
+                            clearspanvalue2.value = '';
+                            clearspanvalue3.value = '';
                             closeBt.style.display = "none";
                         } else {
                             console.error("Popup element not found.");
@@ -162,7 +168,9 @@
                     const pageWarningReset = document.getElementById('pageWarningReset');
                     const calibratePopupButtonReset = document.getElementById('calibratePopupButtonReset');
                     if (labelId === 'zerocalibratebutton') {
-                        spannewvalue.style.display = 'none';
+                        spannewvalue1.style.display = 'none';
+                        spannewvalue2.style.display = 'none';
+                        spannewvalue3.style.display = 'none';
                         calibratePopupButton.style.display = 'none';
                         const allLabels = document.querySelectorAll('.spanpopup-label');
                         allLabels.forEach(function (otherLabel) {
@@ -200,7 +208,9 @@
                     const pageValues = document.getElementById('pageValues');
                     const calibratePopupButtonReset = document.getElementById('calibratePopupButtonReset');
                     if (labelId === 'factoryresetbutton') {
-                        spannewvalue.style.display = 'none';
+                        spannewvalue1.style.display = 'none';
+                        spannewvalue2.style.display = 'none';
+                        spannewvalue3.style.display = 'none';
                         calibratePopupButton.style.display = 'none';
                         const allLabels = document.querySelectorAll('.spanpopup-label');
                         allLabels.forEach(function (otherLabel) {
@@ -374,12 +384,8 @@
                     });
                 }
 
-                function openPopuplabelViewAndNumpad(labelId, inputId) {
-                    openPopuplabelView(labelId);
-                    openNumpad(inputId);
-                }
-
                 function openPopuplabelView(labelId) {
+                    console.log(labelId)
                     document.querySelectorAll('spanpopup').forEach(function(label) {
                         label.style.display = 'none';
                     });
@@ -392,10 +398,24 @@
                     allspanLabels.forEach(function (otherLabel) {
                         otherLabel.style.display = 'none';
                     });
+
+                    if (labelId === 'CO_reading_popup') {
+                        spannewvalue1.style.display = 'block';
+                        spannewvalue2.style.display = 'none';
+                        spannewvalue3.style.display = 'none';
+                    } else if (labelId === 'CO2_reading_popup') {
+                        spannewvalue2.style.display = 'block';
+                        spannewvalue1.style.display = 'none';
+                        spannewvalue3.style.display = 'none';
+                    } else if (labelId === 'CH4_reading_popup') { 
+                        spannewvalue3.style.display = 'block';
+                        spannewvalue2.style.display = 'none';
+                        spannewvalue1.style.display = 'none';
+                    }
+                    
                     if (labelToShow) {
                         labelToShow.style.display = 'block';
                         calibratePopupButton.style.display = 'block';
-                        spannewvalue.style.display = 'block';
                         closePopupButton.style.display = 'block';
                         const allLabels = document.querySelectorAll('.spanpopup-label');
                         allLabels.forEach(function (otherLabel) {
@@ -447,15 +467,6 @@
 
                 function openNumpad(inputId) {
                     console.log('inputId:',inputId)
-
-                    let savedInputId = ''; 
-
-                    if (inputId === "CObuttonspan") {
-                        savedInputId = inputId;
-                        return; 
-                    }
-                    console.log('savedInputId:',savedInputId)
-
                     document.getElementById("keyboardContainer").innerHTML = `{% include 'numpad.html' %}`;
                     const inputField = document.getElementById(inputId);
                     const labelField = document.getElementById("numpadLabel"); 
@@ -543,6 +554,42 @@
                                 alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
                                 UpdateDatabase = false;
                             }
+                        }else if (input_id == 'spannewvalue1') {
+                            let SpanCOVal = parseFloat(new_value);
+                            let min8 = 0;
+                            let max8 = 50;
+                            if (isNaN(SpanCOVal) || SpanCOVal < min8 || SpanCOVal > max8) {
+                                inputField.value = '';
+                                alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
+                                UpdateDatabase = false;
+                            }else{
+                                inputField.value = labelField.textContent;
+                                UpdateDatabase = true;
+                            }
+                        }else if (input_id == 'spannewvalue2') {
+                            let SpanCO2Val = parseFloat(new_value);
+                            let min8 = 0;
+                            let max8 = 5;
+                            if (isNaN(SpanCO2Val) || SpanCO2Val < min8 || SpanCO2Val > max8) {
+                                inputField.value = '';
+                                alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
+                                UpdateDatabase = false;
+                            }else{
+                                inputField.value = labelField.textContent;
+                                UpdateDatabase = true;
+                            }
+                        }else if (input_id == 'spannewvalue3') {
+                            let SpanCH4Val = parseFloat(new_value);
+                            let min8 = 0;
+                            let max8 = 10;
+                            if (isNaN(SpanCH4Val) || SpanCH4Val < min8 || SpanCH4Val > max8) {
+                                inputField.value = '';
+                                alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
+                                UpdateDatabase = false;
+                            }else{
+                                inputField.value = labelField.textContent;
+                                UpdateDatabase = true;
+                            }
                         }
 
                         // inputField.value = labelField.textContent;
@@ -550,9 +597,8 @@
                             inputField.value = parseFloat(labelField.textContent).toFixed(2);
                         }else if(input_id === 'CO2_inputoffset'){
                             inputField.value = parseFloat(labelField.textContent).toFixed(3);
-                        }else if(input_id === 'spannewvalue'){
-                            inputField.value = labelField.textContent;
                         }
+
                         if (new_value === '0' || input_id.value === '0') {
                             inputField.value ='0';
                         }

@@ -204,7 +204,7 @@ def update_calibration_data():
         elif input_id == 'CH4_inputoffset':
             CalibrationTableDatas.query.filter_by(id=3).update({'OFFSET': new_value})
             globalVars.CH4_Offset = float(new_value)
-        elif input_id == 'spannewvalue':
+        elif input_id in ['spannewvalue1', 'spannewvalue2', 'spannewvalue3']:
             conc_cal = data.get('new_value') 
             
         last_conc_cal = conc_cal
