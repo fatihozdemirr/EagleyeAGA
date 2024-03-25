@@ -24,6 +24,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
+    <!-- <script src="{{ url_for('static', filename='JavaScript/keyboard.js') }}"></script>  -->
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/board.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toogle.css') }}">
@@ -43,10 +44,11 @@
                     <img src="{{ url_for('static', filename='images/back.svg') }}">
                 </a>
             </form>
+
             <div class="wifi-signal-container">
-                <img id="wifi-icon" src="{{ url_for('static', filename='images/icon/wifi/wifi-full.svg') }}">
-                
+                <img id="wifi-icon" src="{{ url_for('static', filename='images/icon/wifi/wifi-ultra-low.svg') }}">
             </div>
+
             <div class="generallytime-screen">
                 <span id="currentTimeDisplay"></span>
             </div>
@@ -61,25 +63,29 @@
             document.addEventListener('DOMContentLoaded', function () {
                 updateWifiSignalStrength()
             });
-            function updateWifiSignalStrength(signalStrength) {
-                var wifiIcon = document.getElementById('wifi-icon');
-    
-                // Sinyal gücüne göre uygun olan simgeyi seç
-                var iconPath;
-                if (signalStrength >= 75) {
-                    iconPath = 'wifi-full.svg';
-                } else if (signalStrength >= 50) {
-                    iconPath = 'wifi-high.svg';
-                } else if (signalStrength >= 25) {
-                    iconPath = 'wifi-medium.svg';
-                } else if (signalStrength > 0) {
-                    iconPath = 'wifi-low.svg';
-                } else {
-                    iconPath = 'wifi-ultra-low.svg';
-                }
-    
-                // Resmi güncelle
-                wifiIcon.src = "{{ url_for('static', filename='images/icon/wifi/') }}" + iconPath;
+            function updateWifiSignalStrength() {
+                fetch('/get_wifi_signal_strength') 
+                    .then(response => response.json())
+                    .then(data => {
+                        var wifiIcon = document.getElementById('wifi-icon');
+                        var signalStrength = data.signal_strength; 
+                        var iconPath;
+
+                        if (signalStrength >= 75) {
+                            iconPath = 'wifi-full.svg';
+                        } else if (signalStrength >= 50) {
+                            iconPath = 'wifi-hight.svg';
+                        } else if (signalStrength >= 25) {
+                            iconPath = 'wifi-medium.svg';
+                        } else if (signalStrength > 0) {
+                            iconPath = 'wifi-low.svg';
+                        } else {
+                            iconPath = 'wifi-ultra-low.svg';
+                        }
+
+                        wifiIcon.src = "{{ url_for('static', filename='images/icon/wifi/') }}" + iconPath;
+                    })
+                    .catch(error => console.error('Error fetching WiFi signal strength:', error));
             }
 
             var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);

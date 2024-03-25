@@ -11,16 +11,16 @@
             <label class="record-label-chartsetting" for="startedDate">Started Date</label>
             <input class="record-input-chartsetting" type="text" id="startedDate" name="startedDate" value="{{ started_date }}" readonly><br>
     
-            <label class="record-label-chartsetting" for="recordInterval">Record Interval</label>
+            <label class="record-label-chartsetting" for="recordInterval">Record Interval (sec)</label>
             <input class="record-input-chartsetting" type="text" id="recordInterval" name="recordInterval" value="{{ record_interval }}" onclick="openNumpad('recordInterval')"><br>
         </div>
     
         <div class="chartsetting-right-container">
-            <label class="record-label-chartsetting" for="valueupdateInterval">Value Update Interval</label>
+            <label class="record-label-chartsetting" for="valueupdateInterval">Value Update Interval (sec)</label>
             <input class="record-input-chartsetting" type="text" id="valueupdateInterval" name="valueupdateInterval" value="{{ value_update_interval }}" onclick="openNumpad('valueupdateInterval')"><br>
     
-            <label class="record-label-chartsetting" for="maxPoint">Maximum Point</label>
-            <input class="record-input-chartsetting" type="text" id="maxPoint" name="maxPoint" value="{{ max_point }}" onclick="openNumpad('maxPoint')"><br>
+            <label class="record-label-chartsetting" for="timeRangeMin">Time Range (min)</label>
+            <input class="record-input-chartsetting" type="text" id="timeRangeMin" name="timeRangeMin" value="{{ time_Range_Min }}" onclick="openNumpad('timeRangeMin')"><br>
             
             <button class="record-button-chartsetting" id="chartparametersave" onclick="saveparameter()">Save</button>
         </div>
@@ -49,16 +49,24 @@
         }
         function saveparameter(){
             console.log(defaultrecording.value)
-            var defaultRecordingValue = document.getElementById('defaultrecording').value;
+            var defaultRecordingCheckbox = document.getElementById('defaultrecording');
+            var defaultRecordingValue;
+
+            if (defaultRecordingCheckbox.checked) {
+                defaultRecordingValue = 1;
+            } else {
+                defaultRecordingValue = 0;
+            }
+            console.log("Default Recording Value: ", defaultRecordingValue);
             var recordIntervalValue = document.getElementById('recordInterval').value;
             var valueUpdateIntervalValue = document.getElementById('valueupdateInterval').value;
-            var maxPointValue = document.getElementById('maxPoint').value;
+            var timeRangeMinValue = document.getElementById('timeRangeMin').value;
            
             var data = {
                 defaultrecording: defaultRecordingValue,
                 recordInterval: recordIntervalValue,
                 valueupdateInterval: valueUpdateIntervalValue,
-                maxPoint: maxPointValue
+                timeRangeMin: timeRangeMinValue
             };
 
             // Fetch API ile POST isteği yap
@@ -124,7 +132,7 @@
                 const input_id = inputField.id;
 
                 // inputField.value = labelField.textContent;
-                if(input_id === 'defaultrecording' || input_id === 'recordInterval' || input_id === 'valueupdateInterval' || input_id === 'maxPoint'){
+                if(input_id === 'recordInterval' || input_id === 'valueupdateInterval' || input_id === 'timeRangeMin'){
                     inputField.value = labelField.textContent;
                 }
                 if (new_value === '0' || input_id.value === '0') {

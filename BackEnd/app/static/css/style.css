@@ -38,6 +38,18 @@ body {
     cursor: pointer;         
 }
 
+.disconnect-button {
+    background-color: #ff0000c7;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 7px;
+    margin-top: 79px;
+    margin-left: 120px;
+}
+
 .login-container button:hover {
     background-color: #f0af38;
 }
@@ -831,7 +843,7 @@ button:hover {
 }
 
 .key.space {
-    width: 655px;
+    width: 588px;
 }
 
 .key.enter {
@@ -1430,3 +1442,56 @@ button:hover {
     height: 35px;
     margin-top: -62px;
   }
+
+  * Company Popup */
+.company-popup-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    max-width: 300px;
+    width: 1000%;
+    z-index: 9999; /* Popup'ı diğer elementlerin üstünde tutmak için */
+    overflow-y: auto; /* Eğer içerik fazla olursa, scrollbar görünsün */
+}
+
+.company-popup-header {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.company-popup-header h2 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.company-popup-body {
+    padding: 10px;
+}
+
+.company-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.company-list li {
+    padding: 8px 0;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.company-list li:last-child {
+    border-bottom: none;
+}
+
+.company-list li:hover {
+    background-color: #f9f9f9;
+}

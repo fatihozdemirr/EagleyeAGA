@@ -159,7 +159,7 @@ def Chart():
             co2_data.append(row['CO2'])
             ch4_data.append(row['CH4'])
     else :
-        rows = dataLogger.get_last_constant_data(globalVars.MaxPoint)
+        rows = dataLogger.get_data_by_time_range(globalVars.TimeRangeMin)
         for row in rows:
             labels.append(row['Datetime'])
             co_data.append(row['CO'])
@@ -541,50 +541,28 @@ def EthernetWifi():
     return render_template('EthernetWifi.html', get_logged_in_user=get_logged_in_user)
 
 def get_connection_type():
-    if platform.system().lower() == "windows":
-        result = subprocess.run(['ipconfig'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')  
-        output = result.stdout
-        print(output)
-        if 'Wireless' in output or 'LAN adapter' in output:
-            print('WindowsWifi')
-            return 'Wi-Fi'
-        elif 'Ethernet' in output or 'Ethernet Adapter' in output:
-            print('Windowseth')
-            return 'Ethernet'
-        else:
-            return 'Unknown'
-    elif platform.system().lower() == "linux":
-        result = subprocess.run(['iwconfig'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
+    if platform.system().lower() == "linux":
+        result = subprocess.run(['ifconfig'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
         output = result.stdout.lower()
-        if 'wi-fi' in output:
-            print('linuxWifi')
+        
+        if 'wlan0' in output:
             return 'Wi-Fi'
-        elif 'eth' in output or 'ethernet' in output:
-            print('linuxeth')
+        elif 'eth0' in output or 'ethernet' in output:
             return 'Ethernet'
-        else:
-            return 'Unknown'
     else:
         return 'Unknown'
 
 def get_wifi_info():
     connection_type = get_connection_type()
-
+    
     if connection_type == 'Wi-Fi':
-        if platform.system().lower() == "windows":
-            result = subprocess.run(['netsh', 'interface', 'ip', 'show', 'config'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-        elif platform.system().lower() == "linux":
-            result = subprocess.run(['ifconfig'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-        else:
-            return {'ip': None, 'mask': None, 'gateway': None}
-
+        result = subprocess.run(['ifconfig', 'wlan0'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
         output = result.stdout
-
-        # Regex kullanarak IP, mask ve gateway bilgilerini çıkartma
-        ip_pattern = re.compile(r'IPv4 Address[^\r\n:]+:\s*([^\s]+)')
-        mask_pattern = re.compile(r'Subnet Mask[^\r\n:]+:\s*([^\s]+)')
-        gateway_pattern = re.compile(r'Default Gateway[^\r\n:]+:\s*([^\s]+)')
-
+        
+        ip_pattern = re.compile(r'inet\s+([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)')
+        mask_pattern = re.compile(r'netmask\s+([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)')
+        gateway_pattern = re.compile(r'broadcast\s+([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)')
+        
         ip_match = ip_pattern.search(output)
         mask_match = mask_pattern.search(output)
         gateway_match = gateway_pattern.search(output)
@@ -597,96 +575,125 @@ def get_wifi_info():
 
     elif connection_type == 'Ethernet':
         if platform.system().lower() == "windows":
-            result = subprocess.run(['ipconfig'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-        elif platform.system().lower() == "linux":
-            result = subprocess.run(['ifconfig'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-        else:
+            # Windows'ta Ethernet bağlantı bilgileri alınamıyor.
             return {'ip': None, 'mask': None, 'gateway': None}
-
-        output = result.stdout
-
-        # Regex kullanarak IP, mask ve gateway bilgilerini çıkartma
-        ip_pattern = re.compile(r'IPv4 Address[^\r\n:]+:\s*([^\s]+)')
-        mask_pattern = re.compile(r'Subnet Mask[^\r\n:]+:\s*([^\s]+)')
-        gateway_pattern = re.compile(r'Default Gateway[^\r\n:]+:\s*([^\s]+)')
-
-        ip_match = ip_pattern.search(output)
-        mask_match = mask_pattern.search(output)
-        gateway_match = gateway_pattern.search(output)
-
-        ip = ip_match.group(1) if ip_match else None
-        mask = mask_match.group(1) if mask_match else None
-        gateway = gateway_match.group(1) if gateway_match else None
-
-        return {'ip': ip, 'mask': mask, 'gateway': gateway}
-
-    else:
-        return {'ip': None, 'mask': None, 'gateway': None}
+        elif platform.system().lower() == "linux":
+            result = subprocess.run(['netstat', '-ie'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
+            output = result.stdout.lower()
+            ip_pattern = re.compile(r'inet\s+([^\s]+)\s+netmask\s+([^\s]+)\s+broadcast\s+([^\s]+)')
+            ip_match = ip_pattern.search(output)
+            ip = ip_match.group(1) if ip_match else None
+            mask = ip_match.group(2) if ip_match else None
+            gateway = ip_match.group(3) if ip_match else None
+            print('ip:',ip)
+            return {'ip': ip, 'mask': mask, 'gateway': gateway}
 
 @main_bp.route('/connect_wifi', methods=['POST'])
 def connect_wifi():
-    selected_wifi = request.form.get('selected_wifi')
-    wifi_password = request.form.get('wifi_password')
+    selected_wifi = request.json.get('selected_wifi')
+    wifi_password = request.json.get('wifi_password')
 
     connection_result = connect_to_wifi(selected_wifi, wifi_password)
     
-    if connection_result['success']:
-        flash('Connected to Wi-Fi: {}'.format(selected_wifi), 'success')
-        session['connecting_wifi'] = False
-    else:
-        flash('Failed to connect to Wi-Fi: {}. Error: {}'.format(selected_wifi, connection_result['error']), 'danger')
-
-    return redirect(url_for('main.wifi_info'))
+    if connection_result[0]:  # Bağlantı başarılıysa
+        return jsonify({'success': True, 'message': connection_result[1]}), 200
+    else:  # Bağlantı başarısızsa
+        return jsonify({'success': False, 'message': connection_result[1]}), 500
+    
+    # return redirect(url_for('main.wifi_info'))
 
 def connect_to_wifi(ssid, password):
-    if platform.system() == 'Windows':
-        # Windows'ta bağlantı işlemleri
-        result = subprocess.run(['netsh', 'wlan', 'connect', 'name="{}"'.format(ssid), 'keyMaterial="{}"'.format(password)], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-        success = 'successfully' in result.stdout
-        return {'success': success, 'error': result.stdout if not success else None}
+    try:
+        print('ssid:', ssid)
+        print('password:', password)
+        # # wpa_supplicant.conf dosyasına yeni ağ bilgilerini ekleyin
+        # subprocess.run(['sudo', 'sh', '-c', f'echo -e "\\nnetwork={{\\n\\tssid=\\"{ssid}\\"\\n\\tpsk=\\"{password}\\"\\n\\tkey_mgmt=WPA-PSK\\n}}" >> /etc/wpa_supplicant/wpa_supplicant.conf'], capture_output=True, text=True)
 
-    elif platform.system() == 'Linux':
-        # Raspberry Pi'de bağlantı işlemleri
-        # Bu bölümü gerekli komutlarla güncelleyin (örneğin: wpa_supplicant)
-        # Bu işlem için gerekli izinlere sahip olmanız gerekebilir.
-        # Bu örnekte wpa_supplicant komutu kullanılmıştır, ancak sisteminize bağlı olarak farklı olabilir.
-        result = subprocess.run(['wpa_passphrase', ssid, password], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-        config = result.stdout
-        with open('/etc/wpa_supplicant/wpa_supplicant.conf', 'w') as file:
-            file.write(config)
-        subprocess.run(['wpa_cli', '-i', 'wlan0', 'reconfigure'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-        return {'success': True, 'error': None}
+        # # Wi-Fi yapılandırmasını güncellemek için wpa_cli kullanın
+        # subprocess.run(['sudo', 'wpa_cli', '-i', 'wlan0', 'reconfigure'], capture_output=True, text=True)
+
+        # # DHCP isteği gönder
+        # subprocess.run(['sudo', 'dhclient', '-v', 'wlan0'], capture_output=True, text=True)
+
+        return True, "Bağlantı başarıyla kuruldu."
+    except Exception as e:
+        return False, f"Bağlantı kurulurken bir hata oluştu: {str(e)}"
+    
+@main_bp.route('/disconnect_wifi', methods=['POST'])
+def disconnect_wifi():
+    result = subprocess.run(['sudo', 'iwconfig', 'wlan0'], capture_output=True, text=True)
+    print('result.stdout:',result.stdout)
+    if 'ESSID' in result.stdout:
+        # Wi-Fi bağlıysa bağlantıyı kes
+        result = subprocess.run(['sudo', 'ifconfig', 'wlan0', 'down'], capture_output=True, text=True)
+        time.sleep(2)  # İşlem tamamlanması için bir süre bekle
+        if result.returncode == 0:
+            print('result.returncode:',result.returncode)
+            return jsonify({'message': 'Wi-Fi bağlantısı başarıyla kesildi.'}), 200
+        else:
+            return jsonify({'message': 'Wi-Fi bağlantısı kesilirken bir hata oluştu.'}), 500
     else:
-        return {'success': False, 'error': 'Unsupported platform'}
+        return jsonify({'message': 'Bağlı bir Wi-Fi ağı bulunamadı.'}), 200
 
 @main_bp.route('/get_available_wifis', methods=['GET'])
 def get_available_wifis():
-    if platform.system() == 'Windows':
-        result = subprocess.run(['netsh', 'wlan', 'show', 'network'], stdout=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-        wifi_pattern = re.compile(r'SSID [^\r\n:]+:\s*([^\s]+)')
-        wifi_matches = wifi_pattern.findall(result.stdout)
-        return jsonify({'wifis': wifi_matches})
+    result = subprocess.run(['iwgetid', 'wlan0'], stdout=subprocess.PIPE, text=True)
+    connected_wifi = result.stdout.strip()
+    
+    result = subprocess.run(['iwlist', 'wlan0', 'scan'], stdout=subprocess.PIPE, text=True)
+    output = result.stdout
+    wifi_pattern = re.compile(r'ESSID:"(.*)"')
+    wifi_matches = wifi_pattern.findall(output)
+    
+    if connected_wifi in wifi_matches:
+        wifi_matches.remove(connected_wifi)
+        wifi_matches.insert(0, connected_wifi)
+        
+    return jsonify({'wifis': wifi_matches})
+
+def get_wifi_signal_level():
+    result = subprocess.run(['iwconfig', 'wlan0'], capture_output=True, text=True)
+    output = result.stdout
+
+    signal_level_pattern = re.compile(r'Link Quality=(\d+)/(\d+)')
+    match = signal_level_pattern.search(output)
+
+    if match:
+        signal_level = int(match.group(1))
+        return signal_level
     else:
-        # Raspberry Pi üzerinde yapılacak işlemler
-        result = subprocess.run(['iwlist', 'wlan0', 'scan'], stdout=subprocess.PIPE, text=True)
-        output = result.stdout
-        wifi_pattern = re.compile(r'ESSID:"(.*)"')
-        wifi_matches = wifi_pattern.findall(output)
-        return jsonify({'wifis': wifi_matches})
+        return 0
+
+@main_bp.route('/get_wifi_signal_strength', methods=['GET'])
+def get_wifi_signal_strength():
+    signal_level = get_wifi_signal_level()  
+    signal_strength_percent = int((signal_level / 100) * 100)
+    
+    return jsonify({'signal_strength': signal_strength_percent})
 
 @main_bp.route('/wifi_info', methods=['GET', 'POST'])
 def wifi_info():
     wifi_info = get_wifi_info()
+    connection_type = get_connection_type()
     connecting_wifi = session.get('connecting_wifi', False)
-    return render_template('wifi_info.html',wifi_info=wifi_info, get_logged_in_user=get_logged_in_user, connecting_wifi=connecting_wifi)
+    return render_template('wifi_info.html',wifi_info=wifi_info,connection_type=connection_type, get_logged_in_user=get_logged_in_user, connecting_wifi=connecting_wifi)
+
+def restart_pi():
+    subprocess.run(["sudo", "reboot"])
+    return redirect(url_for('main.mainmenu'))
 
 @main_bp.route('/Restart')
 def Restart():
-    return render_template('Restart.html', get_logged_in_user=get_logged_in_user)
+    restart_pi()
+    return "Raspberry Pi is Restart..."
 
-@main_bp.route('/Shutdown')
-def Shutdown():
-    return render_template('Shutdown.html', get_logged_in_user=get_logged_in_user)
+def shutdown_pi():
+    subprocess.run(["sudo", "shutdown", "-h", "now"])
+
+@main_bp.route('/shutdown_pi_route')
+def shutdown_pi_route():
+    shutdown_pi()
+    return "Raspberry Pi is shutting down..."
 
 
 @main_bp.route('/ChartSettingParameter')
@@ -695,14 +702,14 @@ def ChartSettingParameter():
     started_date = globalVars.StartedDate
     record_interval = globalVars.RecordInterval
     value_update_interval = globalVars.ValueUpdateInterval
-    max_point = globalVars.MaxPoint
+    time_Range_Min = globalVars.TimeRangeMin
     
     return render_template('ChartSettingParameter.html',
                             default_recording=default_recording,
                             started_date=started_date,
                             record_interval=record_interval,
                             value_update_interval=value_update_interval,
-                            max_point=max_point,
+                            time_Range_Min=time_Range_Min,
                             get_logged_in_user=get_logged_in_user)
 
 @main_bp.route('/savevalues', methods=['POST'])
@@ -711,17 +718,17 @@ def save_values():
     default_recording = data.get('defaultrecording')
     record_interval = data.get('recordInterval')
     value_update_interval = data.get('valueupdateInterval')
-    max_point = data.get('maxPoint')
+    time_Range_Min = data.get('timeRangeMin')
     
     globalVars.update_app_parameters('DefaultRecording', default_recording)
     globalVars.update_app_parameters('RecordInterval', record_interval)
     globalVars.update_app_parameters('ValueUpdateInterval', value_update_interval)
-    globalVars.update_app_parameters('MaxPoint', max_point)
+    globalVars.update_app_parameters('TimeRangeMin', time_Range_Min)
     
     globalVars.DefaultRecording = int(default_recording)
     globalVars.RecordInterval = int(record_interval)
     globalVars.ValueUpdateInterval = int(value_update_interval)
-    globalVars.MaxPoint = int(max_point)
+    globalVars.TimeRangeMin = int(time_Range_Min)
 
     return jsonify({'status': 'success', 'message': 'Reset calibration is done'})
 
@@ -748,10 +755,61 @@ def get_total_data_size():
     
     return total_data_size_mb,total_data,total_operation_data,total_operation_data_size_mb
 
-@main_bp.route('/SystemInformatıon')
-def SystemInformatıon():
+@main_bp.route('/system_info')
+def system_info():
     total_data_size_mb,total_data,total_operation_data_size_mb,total_operation_data = get_total_data_size()
-    return render_template('SystemInformatıon.html',total_operation_data_size_mb=total_operation_data_size_mb,total_operation_data=total_operation_data,total_data=total_data, total_data_size_mb=total_data_size_mb,get_logged_in_user=get_logged_in_user)
+    # Disk bilgilerini al
+    disk_usage = psutil.disk_usage('/')
+    disk_total = disk_usage.total / (1024 ** 3)  
+    disk_total = round(disk_total, 2)
+    disk_used = disk_usage.used / (1024 ** 3)  
+    disk_used = round(disk_used, 2)
+    disk_space = disk_total - disk_used
+    disk_space = round(disk_space, 2)
+    disk_percent = disk_usage.percent
+
+    # Uptime bilgisini al (saniye cinsinden)
+    boot_time = psutil.boot_time()
+    uptime_seconds = int(time.time()) - boot_time
+
+    # Uptime'ı gün, saat ve dakika olarak hesaplayın
+    uptime_days = uptime_seconds // (24 * 3600)
+    uptime_hours = (uptime_seconds % (24 * 3600)) // 3600
+    uptime_minutes = (uptime_seconds % 3600) // 60
+
+    # İnsan tarafından okunabilir bir formata dönüştürün
+    uptime_human_readable = f"{uptime_days} gün, {uptime_hours} saat, {uptime_minutes} dakika"
+
+    # Opsiyonel olarak saat ve dakikaları ayrı değişkenler olarak da saklayabilirsiniz
+    hours = uptime_hours
+    minutes = uptime_minutes
+
+    print("Uptime (Saat):", hours)
+    print("Uptime (Dakika):", minutes)
+    
+    # print("Cihaz Modeli:", model)
+
+    # # Raspberry Pi model bilgisini al 
+    # with open('/proc/cpuinfo', 'r') as file:
+    #     for line in file:
+    #         if line.startswith('Hardware'):
+    #             hardware = line.split(':')[1].strip()
+    #         elif line.startswith('Model'):
+    #             model = line.split(':')[1].strip()
+    
+    return render_template('system_info.html',
+                           total_operation_data_size_mb=total_operation_data_size_mb,
+                           total_operation_data=total_operation_data,
+                           total_data=total_data, 
+                           total_data_size_mb=total_data_size_mb,
+                           disk_total=disk_total,
+                           disk_used=disk_used,
+                           disk_space=disk_space,
+                           disk_percent=disk_percent,
+                           hours=hours,
+                           minutes=minutes,
+                        #    model=model,
+                           get_logged_in_user=get_logged_in_user)
 
 @main_bp.route('/deletehistory', methods=['POST'])
 def deletehistory():
@@ -881,3 +939,34 @@ def delete_company(companyid):
     db.session.delete(company)
     db.session.commit()
     return jsonify({'status': 'success', 'message': 'Company deleted successfully'})
+
+
+@main_bp.route('/get_companies', methods=['GET'])
+def get_companies():
+    companies = [{'id': company.id, 'name': company.name} for company in Company.query.all()]
+    return jsonify(companies)
+
+
+
+@main_bp.route('/select_company', methods=['POST'])
+def select_company():
+    selected_company = request.json['company']
+    # Seçilen şirketi işleyin, örneğin veritabanına kaydedebilirsiniz
+    return jsonify({"message": "Company selected successfully"})
+
+
+@main_bp.route('/get_furnaces', methods=['GET','POST'])
+def get_furnaces():
+    data = request.get_json() 
+    selectedCompanyid = data['companyId']
+    
+    furnaces = [{'id': furnace.id, 'name': furnace.name} for furnace in Furnace.query.filter_by(company_id=selectedCompanyid).all() ]
+    return jsonify(furnaces)
+
+
+
+@main_bp.route('/select_furnace', methods=['POST'])
+def select_furnace():
+    selected_frunace = request.json['furnace']
+    # Seçilen şirketi işleyin, örneğin veritabanına kaydedebilirsiniz
+    return jsonify({"message": "Furnace selected successfully"})

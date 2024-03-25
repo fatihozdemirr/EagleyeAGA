@@ -19,21 +19,41 @@
                             </a>
                         </div>
                     </div>
-                    <!-- {% set username, role = get_logged_in_user() %}
-                    {% if role != 'Operator' %} -->
-                    <div class="mainbottomadd-container">
-                        <div class="button-center">
-                            <a href="{{ url_for('main.Calibration') }}" class="custom-button-classes ">
-                                <img src="/static/images/calibration.svg" >
-                                <span>Calibration</span>
-                            </a>
+                    {% set username, role = get_logged_in_user() %}
+                    {% if role == 'Operator' %}
+                        <div class="mainbottomadd-container">
+                            <div class="button-center">
+                                <a class="custom-button-classes disabled" onclick="alert('You do NOT have authority!')">
+                                    <img src="/static/images/calibration.svg">
+                                    <span>Calibration</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <!-- {% endif %} -->
+                    {% else %}
+                        <div class="mainbottomadd-container">
+                            <div class="button-center">
+                                <a href="{{ url_for('main.Calibration') }}" class="custom-button-classes ">
+                                    <img src="/static/images/calibration.svg" >
+                                    <span>Calibration</span>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="flex-container">
                 <div class="grid-container">
+                    {% set username, role = get_logged_in_user() %}
+                    {% if role == 'Operator' %}
+                        <div class="mainbottomadd-container">
+                            <div class="button-center">
+                                <a class="custom-button-classes " onclick="alert('You do NOT have authority!')">
+                                    <img src="/static/images/record.svg" >
+                                    <span>Record</span>
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
                         <div class="mainbottomadd-container">
                             <div class="button-center">
                                 <a href="{{ url_for('main.Operation') }}" class="custom-button-classes ">
@@ -42,6 +62,7 @@
                                 </a>
                             </div>
                         </div>
+                    {% endif %}
                     <div class="mainbottomadd-container">
                         <div class="button-center">
                             <a href="{{ url_for('main.Setting') }}" class="custom-button-classes ">

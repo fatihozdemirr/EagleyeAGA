@@ -69,10 +69,21 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     var config = {
+        /*
+        toImageButtonOptions: {
+            format: 'svg', // one of png, svg, jpeg, webp
+            filename: 'custom_image',
+            height: 500,
+            width: 700,
+            scale: 1 // Multiply title/legend/axis/canvas sizes by this factor
+          },*/
+
+        
         modeBarButtonsToRemove: ['zoomOut2d','zoomIn2d','toggleSpikelines','hoverClosestCartesian','hoverCompareCartesian'],    
         displaylogo : false,
         displayModeBar : true,       
-        responsive: false
+        responsive: false,
+        
     };
 
     var data = [trace1, trace2, trace3];
@@ -82,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     socket.on('chart_sensor_data', function(data) {
 
-        if (myChart.data[0].x.length > data.MaxPoint) {
+        if (myChart.data[0].x[0] < data.MinDate) {
             myChart.data[0].x.shift();  // İlk veri noktasını kaldır
             myChart.data[0].y.shift();
             myChart.data[1].x.shift();  

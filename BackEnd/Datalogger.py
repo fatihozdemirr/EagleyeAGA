@@ -24,23 +24,20 @@ def get_data(start_date, end_date):
 
     return rows
 
-def get_last_constant_data(point_count):
+def get_data_by_time_range(timeRangeMinutes):
     # Veritabanı bağlantısını aç
     conn = sqlite3.connect(globalVars.DatabasePath)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor() 
    
-    # Toplam geriye gidilecek saniye = point sayısı * her bir kayıt arasındaki saniye
-    #total_seconds_back = point_count * globalVars.RecordInterval
     
     # Minimum tarihi hesapla (şimdiki zamandan 'total_seconds_back' saniye önce)
-    #min_datetime = datetime.now() - timedelta(seconds=total_seconds_back)
+    min_datetime = datetime.now() - timedelta(seconds=timeRangeMinutes*60)
     
     # Minimum tarihten itibaren olan kayıtları al
-    #cur.execute('SELECT Datetime, CO, CO2, CH4 FROM datalogger WHERE Datetime > ?', (min_datetime.strftime('%Y-%m-%d %H:%M:%S'),))
-    cur.execute('SELECT Datetime, CO, CO2, CH4 FROM (SELECT Datetime, CO, CO2, CH4 FROM datalogger WHERE Datetime <= ? ORDER BY Datetime DESC LIMIT ?) ORDER BY Datetime ASC', (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), point_count))
+    cur.execute('SELECT Datetime, CO, CO2, CH4 FROM datalogger WHERE Datetime > ? LIMIT 5000', (min_datetime.strftime('%Y-%m-%d %H:%M:%S'),))
 
-
+   
     rows = cur.fetchall()
 
     # Veritabanı bağlantısını kapat
@@ -62,8 +59,7 @@ class DataLogger:
     def start(self):
         if not self._running:
             self._running = True
-            self._thread = threading.Thread(target=self._run)
-            
+            self._thread = threading.Thread(target=self._run)            
             self._thread.start()
 
     def stop(self):
@@ -74,8 +70,8 @@ class DataLogger:
     def get_data(self, start_date, end_date):
         return get_data(start_date, end_date)
     
-    def get_last_constant_data(self, point):
-        return get_last_constant_data(point)
+    def get_data_by_time_range(self, timeRangeMinutes):
+        return get_data_by_time_range(timeRangeMinutes)
 
 dataLogger = DataLogger()
 if globalVars.OperationWorking or globalVars.DefaultRecording:

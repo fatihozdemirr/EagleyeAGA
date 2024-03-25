@@ -35,7 +35,7 @@ class GlobalVars :
         self.StartedDate = ""      
         self.RecordInterval = 1
         self.ValueUpdateInterval = 1
-        self.MaxPoint = 5000
+        self.TimeRangeMin = 60
         
         self.OperationWorking = 0
         self.Port = 'COM3' if os.name == 'nt' else '/dev/ttyUSB0'
@@ -124,8 +124,8 @@ class GlobalVars :
                 self.RecordInterval = int(row[2])
             if row[1] == "ValueUpdateInterval":
                 self.ValueUpdateInterval = int(row[2])
-            if row[1] == "MaxPoint":
-                self.MaxPoint = int(row[2])
+            if row[1] == "TimeRangeMin":
+                self.TimeRangeMin = int(row[2])
 
         # veritabanı bağlantısını kapat
         conn.close()

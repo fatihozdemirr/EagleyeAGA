@@ -249,7 +249,7 @@
                         otherLabel.style.display = 'none';
                     });
                     if (popUpTitle) {
-                        popUpTitle.innerHTML = 'Zero Calibrate with Nitrogen Gas'; // Sayfa başlığını güncelle
+                        popUpTitle.innerHTML = 'Zero Calibrate with N2 Gas'; // Sayfa başlığını güncelle
                     }
                     if (closePopupButton) {
                         closePopupButton.style.display = 'block'; // Kapat butonunu gizle
@@ -477,13 +477,58 @@
                         document.getElementById("keyboardContainer").style.display = "none";
                     });
 
+                    let previousValue_CO = document.getElementById("CO_inputoffset"); 
+                    let preinput_CO = previousValue_CO.value;
+                    let previousValue_CO2 = document.getElementById("CO2_inputoffset"); 
+                    let preinput_CO2 = previousValue_CO2.value;
+                    let previousValue_CH4 = document.getElementById("CH4_inputoffset"); 
+                    let preinput_CH4 = previousValue_CH4.value;
+
                     // Enter tuşuna basıldığında
                     document.querySelector('.numpad .enter').addEventListener('click', function () {
                         numpadInputCompleted = true;
+                        UpdateDatabase  = true;
                         const labelField = document.getElementById("numpadLabel"); 
                         const new_value = labelField.textContent;
                         const inputField = document.getElementById(inputId);
                         const input_id = inputField.id;
+                        let previousValue;
+                        
+                        //// VALIDATION /////
+                        if (input_id == 'CO_inputoffset') {
+                            previousValue = preinput_CO;
+                            let presentCO = parseFloat(new_value);
+                            let min8 = -5;
+                            let max8 = 5;
+                            if (isNaN(presentCO) || presentCO < min8 || presentCO > max8) {
+                                previousValue = preinput_CO;
+                                inputField.value = previousValue;
+                                alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
+                                UpdateDatabase = false;
+                            }
+                        }else if (input_id == 'CO2_inputoffset') {
+                            previousValue = preinput_CO2;
+                            let presentCO2 = parseFloat(new_value);
+                            let min8 = -0.5;
+                            let max8 = 0.5;
+                            if (isNaN(presentCO2) || presentCO2 < min8 || presentCO2 > max8) {
+                                previousValue = preinput_CO2;
+                                inputField.value = previousValue;
+                                alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
+                                UpdateDatabase = false;
+                            }
+                        }else if (input_id == 'CH4_inputoffset') {
+                            previousValue = preinput_CH4;
+                            let presentCH4 = parseFloat(new_value);
+                            let min8 = -1;
+                            let max8 = 1;
+                            if (isNaN(presentCH4) || presentCH4 < min8 || presentCH4 > max8) {
+                                previousValue = preinput_CH4;
+                                inputField.value = previousValue;
+                                alert('Please enter a value between ' + min8 + ' and ' + max8 + '.');
+                                UpdateDatabase = false;
+                            }
+                        }
 
                         // inputField.value = labelField.textContent;
                         if(input_id === 'CO_inputoffset' || input_id === 'CH4_inputoffset'){
@@ -497,31 +542,33 @@
                             inputField.value ='0';
                         }
 
-                        // if (input_id && new_value) {
-                            // AJAX isteği ile Flask endpoint'ını çağır
-                        fetch('/update_calibration_data', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
-                                new_value: new_value,
-                            }),
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            // İsteğin başarılı olması durumunda yapılacak işlemler
-                            // console.log(data);
-                        })
-                        .catch(error => {
-                            // İstekte hata olması durumunda yapılacak işlemler
-                            console.error('Error:', error);
-                        });
-                        // } 
-                        // else {
-                        //     console.error('Invalid inputIdchange.');
-                        // }
+                        if(UpdateDatabase == true){
+                            // if (input_id && new_value) {
+                                // AJAX isteği ile Flask endpoint'ını çağır
+                            fetch('/update_calibration_data', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    input_id: input_id,  // Güncellenmesi istenen input alanının ID'si
+                                    new_value: new_value,
+                                }),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                // İsteğin başarılı olması durumunda yapılacak işlemler
+                                // console.log(data);
+                            })
+                            .catch(error => {
+                                // İstekte hata olması durumunda yapılacak işlemler
+                                console.error('Error:', error);
+                            });
+                            // } 
+                            // else {
+                            //     console.error('Invalid inputIdchange.');
+                            // }
+                        }
 
                         document.getElementById("keyboardContainer").style.display = "none";
                         isLabelCleared = false;

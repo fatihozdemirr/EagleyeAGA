@@ -11,54 +11,46 @@
         <form class="settime-form" action="{{ url_for('main.connect_wifi') }}" method="post">
             <label class=" record-label-livedata" for="wifi_list">Wi-Fi Network:</label>
             <select class=" wifi-container-input" id="wifi_list" name="selected_wifi">
-                <option value="" selected disabled>Select a Wi-Fi network</option>
-                {% for wifi in available_wifis %}
-                    <option value="{{ wifi }}">{{ wifi }}</option>
-                {% endfor %}
+                <option value="" selected disabled>Loading Wi-Fi networks...</option>
             </select>
             <br>
             <label class=" record-label-livedata" for="wifi_password">Password:</label>
             <input class=" record-container-input" type="password" id="wifi_password" name="wifi_password">
             <br>
-            {% if connecting_wifi %}
+            <button id="connectButton" type="submit">Connecting...</button>
+            <!-- {% if connecting_wifi %}
                 <button type="button" disabled>Connecting...</button>
             {% else %}
                 <button type="submit">Connect</button>
-            {% endif %}
+            {% endif %} -->
         </form>
         <div class="wifiinformation">
-            {% if wifi_info and wifi_info.ip %}
+            {% if connection_type == 'Wi-Fi' %}
                 <p>IP Address : {{ wifi_info.ip }}</p>
                 <p>Subnet Mask: {{ wifi_info.mask }}</p>
                 <p>Gateway    : {{ wifi_info.gateway }}</p>
+            {% elif connection_type == 'Ethernet' %}
+                <p>Connected via Ethernet</p>
             {% else %}
                 <p>No Wi-Fi connection detected.</p>
             {% endif %}
         </div>
-         <!-- {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div>
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %} -->
+        <button class="disconnect-button" id="disconnect_button">Disconnect</button>
     </div>
 
     <div id="autoTab" class="tabcontent">
         <form class="setethernet-form" action="{{ url_for('main.wifi_info') }}" method="post">
             <div class="ethernetinformation">
-            {% if wifi_info and wifi_info.ip %}
-                <p>IP Address : {{ wifi_info.ip }}</p>
-                <p>Subnet Mask: {{ wifi_info.mask }}</p>
-                <p>Gateway    : {{ wifi_info.gateway }}</p>
-            {% else %}
-                <p>No Wi-Fi connection detected.</p>
-            {% endif %}
-        </div>
+                {% if connection_type == 'Ethernet' %}
+                    <p>IP Address : {{ wifi_info.ip }}</p>
+                    <p>Subnet Mask: {{ wifi_info.mask }}</p>
+                    <p>Gateway    : {{ wifi_info.gateway }}</p>
+                {% elif connection_type == 'Wi-Fi' %}
+                    <p>Connected via Wi-Fi</p>
+                {% else %}
+                    <p>No Ethernet connection detected.</p>
+                {% endif %}
+            </div>
         </form>
     </div>
     <div class="generally-footer">
@@ -74,27 +66,108 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var wifiList = document.getElementById('wifi_list');
+            var passwordInput = document.getElementById('wifi_password');
+            var connectButton = document.getElementById('connectButton');
+
             fetch('/get_available_wifis')
                 .then(response => response.json())
                 .then(data => {
-                    // Optionları doldur
-                    wifiList.innerHTML = ''; // Önceki optionları temizle
-                    var defaultOption = document.createElement('option');
-                    defaultOption.value = '';
-                    defaultOption.text = 'Select a Wi-Fi network';
-                    defaultOption.disabled = true;
-                    defaultOption.selected = true;
-                    wifiList.appendChild(defaultOption);
-
-                    data.wifis.forEach(wifi => {
-                        var option = document.createElement('option');
-                        option.value = wifi;
-                        option.textContent = wifi;
-                        wifiList.appendChild(option);
-                    });
+                    wifiList.innerHTML = ''; // Temizle
+                    if (data.wifis.length === 0) {
+                        var defaultOption = document.createElement('option');
+                        defaultOption.text = 'No Wi-Fi networks found';
+                        wifiList.appendChild(defaultOption);
+                    } else {
+                        data.wifis.forEach(wifi => {
+                            var option = document.createElement('option');
+                            option.value = wifi;
+                            option.textContent = wifi;
+                            wifiList.appendChild(option);
+                        });
+                        // Bağlı olduğunuz ağı seç
+                        // var connectedWifi = data.connected_wifi;
+                        // if (connectedWifi && data.wifis.includes(connectedWifi)) {
+                        //     wifiList.value = connectedWifi;
+                        // }
+                        var connectedWifi = data.connected_wifi;
+                        if (connectedWifi && !data.wifis.includes(connectedWifi)) {
+                            var connectedOption = document.createElement('option');
+                            connectedOption.value = connectedWifi;
+                            connectedOption.textContent = connectedWifi;
+                            wifiList.insertBefore(connectedOption, wifiList.firstChild); // Listenin başına ekle
+                        }
+                    }
                 })
-                .catch(error => console.error('Error fetching available WiFis:', error));
+                .catch(error => {
+                    console.error('Error fetching available WiFis:', error);
+                    var defaultOption = document.createElement('option');
+                    defaultOption.text = 'Failed to fetch Wi-Fi networks';
+                    wifiList.appendChild(defaultOption);
+                });
+
+            connectButton.addEventListener('click', function () {
+                var selectedWifi = wifiList.value;
+                var password = passwordInput.value;
+                console.log('wifi:',selectedWifi)
+                console.log('password:',password)
+                // Seçili Wi-Fi ağı ve şifre ile sunucuya bağlanma isteği gönder
+                fetch('/connect_wifi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ selected_wifi: selectedWifi, wifi_password: password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error connecting to Wi-Fi:', error);
+                    alert('Error connecting to Wi-Fi. Please try again.');
+                });
+            });
+
+            var disconnectButton = document.getElementById('disconnect_button');
+            disconnectButton.addEventListener('click', function () {
+                fetch('/disconnect_wifi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Disconnected from Wi-Fi.');
+                        fetch('/get_available_wifis')
+                            .then(response => response.json())
+                            .then(data => {
+                                updateWifiList(data.wifis);
+                            })
+                            .catch(error => console.error('Error fetching available WiFis:', error));
+                    } 
+                })
+                .catch(error => console.error('Error disconnecting from Wi-Fi:', error));
+            });
         });
+
+        function updateWifiList(wifis) {
+            var wifiList = document.getElementById('wifi_list');
+            wifiList.innerHTML = ''; // Temizle
+            if (wifis.length === 0) {
+                var defaultOption = document.createElement('option');
+                defaultOption.text = 'No Wi-Fi networks found';
+                wifiList.appendChild(defaultOption);
+            } else {
+                wifis.forEach(wifi => {
+                    var option = document.createElement('option');
+                    option.value = wifi;
+                    option.textContent = wifi;
+                    wifiList.appendChild(option);
+                });
+            }
+        }
 
         function openCity(evt, cityName) {
             var i, tabcontent, tablinks;

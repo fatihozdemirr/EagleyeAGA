@@ -11,7 +11,7 @@
                     <input class=" record-container-input" type="datetime-local" id="startDateTime" value="{{ operation.start_date.strftime('%Y-%m-%d %H:%M:%S') if operation.start_date else '' }}">
                     <div style="margin-bottom: 1rem;"></div>
                     <label class=" record-label-livedata">Company</label>
-                    <input class=" record-container-input" type="text" id="company" value="{{ operation.company }}" autocomplete="off" placeholder="Company" onclick="openNumpad('company')">
+                    <input class="record-container-input" type="text" id="company" value="{{ operation.company }}" readonly="true" placeholder="Select a Company" onclick="openCompanyPopup()" data-company-id="{{ operation.company_id }}">
                     <div style="margin-bottom: 1rem;"></div>
                     <label class=" record-label-livedata">Operator</label>
                     <input class=" record-container-input" type="text" id="operator" readonly="True" 
@@ -43,9 +43,9 @@
                 <div style="margin-bottom: 1rem;"></div>
                 <label class=" record-label-livedata">Furnace</label>
                 <div style="display: flex;">
-                    <input class="record-container-input" type="text" id="furnace" value="{{ operation.furnace }}" placeholder="Furnace" onclick="openNumpad('furnace')">
-                    <button style="margin-top: -8px;" onclick="window.location.href='/manage_company_furnace'">...</button>
-                    <!-- <button style="margin-top: -8px;" onclick='window.location.href="{{ url_for("main.manage_company_furnace") }}"'>...</button> -->
+                    <input class="record-container-input" type="text" id="furnace" readonly="true" value="{{ operation.furnace }}" placeholder="Select a Furnace" onclick="openFurnacePopup()">
+                    <!-- <button style="margin-top: -8px;" onclick="window.location.href='/manage_company_furnace'">...</button> -->
+                    <button style="margin-top: -8px;" onclick='window.location.href="{{ url_for("main.manage_company_furnace") }}"'>...</button>
                 </div>
                 <div style="margin-bottom: 1rem;"></div>
                 <button class= 'save-button' id="saveButton">
@@ -57,6 +57,48 @@
         <input type="hidden" id="operationId" value="{{ operation.id }}">     
     </div>
     <div id="keyboardContainer" class="popup"></div>
+
+
+
+    <div id="companyPopup" class="popup">
+        <div class="company-popup-content">
+            <div class="company-popup-header">
+                <h2>Select a Company  <span class="close-button" onclick="closeCompanyPopup()">&times;</span> </h2>                           
+            </div>        
+            <div class="company-popup-body">
+                <span class="clear-button" onclick="clearCompanySelection()">-Clear Selection-</span>
+                <ul id="companyList" class="company-list">                
+                    <!-- Şirketler burada listelenecek -->
+                    {% for company in companies %}
+                    <li onclick="selectCompany('{{ company.name }}')">{{ company.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>         
+        </div>
+    </div>
+    
+    <div id="furnacePopup" class="popup">
+        <div class="company-popup-content">
+            <div class="company-popup-header">
+                <h2>Select a Furnace <span class="close-button" onclick="closeFurnacePopup()">&times;</span></h2>                              
+            </div>
+            <div class="company-popup-body">
+                <span class="clear-button" onclick="clearFurnaceSelection()">-Clear Selection-</span>
+                <ul id="furnaceList" class="company-list">
+                    <!-- Şirketler burada listelenecek -->
+                    {% for furnace in furnaces %}
+                    <li onclick="selectFurnace('{{ furnace.name }}')">{{ furnace.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    
+
+
+
+
     <script>
         const operationId = document.getElementById('operationId').value; // Operasyon ID'sini al
         
@@ -294,6 +336,93 @@
         function closeKeyboard() {
             document.getElementById("keyboardContainer").style.display = "none";
         }
+
+
+
+        function openCompanyPopup() {
+            closeFurnacePopup();
+            fetch('/get_companies')
+                .then(response => response.json())
+                .then(data => {
+                    const companyList = document.getElementById("companyList");
+                    companyList.innerHTML = ""; // Önceki listeyi temizle
+                    data.forEach(company => {
+                        const listItem = document.createElement("li");
+                        listItem.textContent = company.name;
+                        listItem.onclick = function() {
+                            selectCompany(company.name,company.id);
+                            
+                        };
+                        companyList.appendChild(listItem);
+                    });
+                    document.getElementById("companyPopup").style.display = "block";
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    
+        function selectCompany(companyName,companyId) {
+            clearFurnaceSelection();
+            document.getElementById("company").value = companyName;
+            document.getElementById("company").dataset.companyId = companyId;
+            document.getElementById("companyPopup").style.display = "none";
+        }
+        
+        function openFurnacePopup() {
+            closeCompanyPopup();
+            const selectedCompanyId = document.getElementById("company").dataset.companyId; // Seçili şirketin ID'sini al
+            console.log(selectedCompanyId)
+            fetch('/get_furnaces', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ companyId: selectedCompanyId }), // Seçili şirketin ID'sini istek gövdesine ekle
+            })
+            .then(response => response.json())
+            .then(data => {
+                const furnaceList = document.getElementById("furnaceList");
+                furnaceList.innerHTML = ""; // Önceki listeyi temizle
+                data.forEach(furnace => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = furnace.name;
+                    listItem.onclick = function() {
+                        selectFurnace(furnace.name); // Seçili fırını ve şirketi gönder
+                    };
+                    furnaceList.appendChild(listItem);
+                });
+                document.getElementById("furnacePopup").style.display = "block";
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        
+    
+        function selectFurnace(furnaceName) {
+            document.getElementById("furnace").value = furnaceName;
+            document.getElementById("furnacePopup").style.display = "none";
+        }
+
+        function closeCompanyPopup() {
+            document.getElementById("companyPopup").style.display = "none";
+        }
+    
+        function closeFurnacePopup() {
+            document.getElementById("furnacePopup").style.display = "none";
+        }
+    
+        function clearCompanySelection() {
+            document.getElementById("company").value = "";
+            document.getElementById("company").dataset.companyId = "";
+            closeCompanyPopup();
+        }
+    
+        function clearFurnaceSelection() {
+            clearCompanySelection();
+            document.getElementById("furnace").value = "";
+            closeFurnacePopup();
+        }
+
+
     </script>
 </body>
 </html>
