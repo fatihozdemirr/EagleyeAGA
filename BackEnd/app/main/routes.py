@@ -257,7 +257,7 @@ def update_calibration_data():
         
         if button_id in ['CObuttonspan', 'CO2buttonspan', 'CH4buttonspan']:
             smartGas.span_calibration_queries(button_id, True, float(conc_cal))
-            calibration_type = f'SPAN-{button_id.replace("buttonspan", "")}'
+            calibration_type = f'SPAN-%{button_id.replace("buttonspan", "")}'
             calibration_value = float(conc_cal)
             timestamp = datetime.now()
             # formatted_timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
@@ -286,7 +286,7 @@ def update_calibration_data():
             
         if zero_start is not None and zero_start is True:
             smartGas.zero_calibration_queries(True)
-            calibration_type = 'ZERO CO|CO2|CH4'
+            calibration_type = 'ZERO %CO|%CO2|%CH4'
             calibration_value = 0.0  
             timestamp = datetime.now()
             username, _ = get_logged_in_user()

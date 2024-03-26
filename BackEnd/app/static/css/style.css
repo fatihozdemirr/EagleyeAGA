@@ -1495,3 +1495,10 @@ button:hover {
 .company-list li:hover {
     background-color: #f9f9f9;
 }
+
+.addnewuser-spaninfo {
+    margin-left: 50px;
+    font-size: 13px;
+    font-family: Calibri, sans-serif;
+    color: gray;
+}
